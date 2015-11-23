@@ -73,16 +73,14 @@ python-pep8:
 python-pylint:
 	pylint -r n --rcfile=$(PYLIB_SRCDIR)/pylintrc $(PYLIB_SRCDIR)/syslogng
 
-modules_python_pylib_TESTS = modules/python/pylib/test_pylib
+modules_python_pylib_TESTS = modules/python/pylib/test_pylib.sh
 
 check_PROGRAMS += $(modules_python_pylib_TESTS)
 
-modules/python/pylib/test_pylib$(EXEEXT): Makefile
+modules/python/pylib/test_pylib.sh: Makefile
 	mkdir -p modules/python/pylib && \
 	echo "$(MAKE) MAKEFLAGS= python-checks" > "$@" && \
 	chmod +x "$@"
-
-modules_python_pylib_test_pylib_SOURCES = modules/python/pylib/test_pylib$(EXEEXT)
 
 endif
 

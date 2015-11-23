@@ -70,7 +70,7 @@ INSTALL_EXEC_HOOKS	=
 UNINSTALL_HOOKS		=
 CLEAN_HOOKS =
 
-AUTOMAKE_OPTIONS	= subdir-objects
+AUTOMAKE_OPTIONS	= subdir-objects parallel-tests
 
 ${top_srcdir}/ChangeLog:
 	(cd $(top_srcdir); git log) > $@
@@ -116,6 +116,7 @@ include scl/Makefile.am
 include debian/Makefile.am
 include tgz2build/Makefile.am
 
+TEST_EXTENSIONS = .sh
 @VALGRIND_CHECK_RULES@
 
 VALGRIND_SUPPRESSIONS_FILES = $(top_srcdir)/syslog-ng.supp
