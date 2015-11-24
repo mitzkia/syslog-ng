@@ -36,7 +36,8 @@ EXTRA_DIST += \
 	modules/python/pylib/syslogng/debuggercli/tests/test_templatelang.py	\
 	modules/python/pylib/syslogng/debuggercli/tests/test_tflang.py		\
 	modules/python/pylib/setup.py						\
-	modules/python/pylib/pylintrc
+	modules/python/pylib/pylintrc						\
+	modules/python/pylib/test_pylib.sh
 
 PYLIB_PATH = modules/python/pylib
 PYLIB_BUILDDIR = $(abs_builddir)/$(PYLIB_PATH)
