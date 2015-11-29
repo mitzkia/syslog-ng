@@ -30,6 +30,7 @@ PREOPEN_CORE		= $(PREOPEN_SYSLOGFORMAT) $(PREOPEN_BASICFUNCS)
 syslog_ng_tools		= ${top_srcdir}/lib
 
 export top_srcdir
+export MAKE
 
 CLEAN_SUBDIRS		=
 
