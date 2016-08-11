@@ -26,21 +26,37 @@ def save_testdb_configuration(options):
         configuration_file.write("InstallDir: %s\n" % options.install_dir)
         configuration_file.write("LogLevel: %s\n" % options.log_level)
 
+# from _pytest._pluggy import HookspecMarker
+#
+# hookspec = HookspecMarker("pytest")
+# @hookspec(historic=True)
+# def pytest_namespace():
+#     """return dict of name->object to be made globally available in
+#     the pytest namespace.  This hook is called at plugin registration
+#     time.
+#     """
+#     return {"aaa": "bbb"}
+
 
 def main():
-    parser = get_parser()
-    opts = parser.parse_args(sys.argv[1:])
+    # parser = get_parser()
+    # opts = parser.parse_args(sys.argv[1:])
+    #
+    # test_directory = "func_tests/"
+    # if opts.running_test == "unit":
+    #     test_directory = "src/"
+    #
+    # if opts.syslog_ng_install == "custom" and not opts.install_dir:
+    #     logging.error("Missing custom install path for syslog_ng, see help with [-h]")
+    #     sys.exit(1)
+    #
+    # save_testdb_configuration(opts)
+    # aaa = "dasdsa"
+    # def pytest_namespace():
+    #     return {"aaa": "bbb"}
 
-    test_directory = "func_tests/"
-    if opts.running_test == "unit":
-        test_directory = "src/"
-
-    if opts.syslog_ng_install == "custom" and not opts.install_dir:
-        logging.error("Missing custom install path for syslog_ng, see help with [-h]")
-        sys.exit(1)
-
-    save_testdb_configuration(opts)
-    pytest.main(test_directory)
+    # pytest.mark.usefixtures("aaa")
+    pytest.main("-lvs -n 2 func_tests/parallel/")
 
 if __name__ == "__main__":
     main()
