@@ -163,6 +163,7 @@ include doc/Makefile.am
 include contrib/Makefile.am
 include scl/Makefile.am
 include tgz2build/Makefile.am
+include dockerfiles/Makefile.am
 
 TEST_EXTENSIONS = .sh
 @VALGRIND_CHECK_RULES@
