@@ -8,6 +8,7 @@ from source.driver_io.file.writer import FileWriter
 from source.driver_io.file.listener import FileListener
 from source.syslog_ng.drivers.driver_data_provider import DriverDataProvider
 from source.syslog_ng.configuration.interface import SyslogNgConfigInterface
+from source.message.interface import MessageInterface
 
 
 class SetupClasses(object):
@@ -103,6 +104,10 @@ class SetupClasses(object):
                     file_writer=getattr(self, "file_writer_for_%s" % topology),
                     topology=topology
                 ))
+        setattr(self, "message_interface_for_%s" % topology,
+                MessageInterface(
+                    testdb_logger=getattr(self, "testdb_logger_for_%s" % topology),
+                ))
 
         if topology == "server":
             self.testdb_path_database = self.testdb_path_database_for_server
@@ -116,6 +121,7 @@ class SetupClasses(object):
 
             self.driver_data_provider = self.driver_data_provider_for_server
             self.syslog_ng_config_interface = self.syslog_ng_config_interface_for_server
+            self.message_interface = self.message_interface_for_server
 
     def teardown(self):
         self.log_writer.info("=============================Testcase finish: [%s]================================" % self.testcase_name)
