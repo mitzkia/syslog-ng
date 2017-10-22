@@ -6,6 +6,8 @@ class DriverDataProvider(object):
         self.log_writer = testdb_logger.set_logger("DriverDataProvider")
         self.file_register = registers['file']
         self.port_register = registers['port']
+        ipv4_address = "'127.0.0.1'"
+        ipv6_address = "'::1'"
 
         self.driver_database = {
             "file": {
@@ -58,6 +60,44 @@ class DriverDataProvider(object):
                 "driver_io": {
                     "writer": writers['file'],
                     "listener": listeners['file'],
+                },
+            },
+            "tcp": {
+                "group_type": "source_destination",
+                "driver_properties": {
+                    "config_type": "local_socket_based",
+                    "connection_type": "local_socket_based",
+                    "socket_type": "stream",
+                    "message_format": "rfc3164",
+                    "disk_buffer_support": True,
+                    "tls_support": True,
+                },
+                "mandatory_options": {
+                    "ip": ipv4_address,
+                    "port": "",
+                },
+                "driver_io": {
+                    "writer": writers['local_socket'],
+                    "listener": listeners['local_socket'],
+                },
+            },
+            "udp": {
+                "group_type": "source_destination",
+                "driver_properties": {
+                    "config_type": "local_socket_based",
+                    "connection_type": "local_socket_based",
+                    "socket_type": "dgram",
+                    "message_format": "rfc3164",
+                    "disk_buffer_support": True,
+                    "tls_support": True,
+                },
+                "mandatory_options": {
+                    "ip": ipv4_address,
+                    "port": "",
+                },
+                "driver_io": {
+                    "writer": writers['local_socket'],
+                    "listener": listeners['local_socket'],
                 },
             },
             "wildcard_file": {
@@ -126,6 +166,8 @@ class DriverDataProvider(object):
         selected_mandatory_options = self.select_mandatory_options_from_defined_options(empty_mandatory_options=empty_mandatory_options, defined_driver_options=defined_driver_options)
         if self.is_driver_in_specified_connection_type(driver_name=driver_name, connection_type="file_based"):
             return selected_mandatory_options['file_path']
+        elif self.is_driver_in_specified_connection_type(driver_name=driver_name, connection_type="local_socket_based"):
+            return (selected_mandatory_options['ip'].replace("'", ""), selected_mandatory_options['port'])
         elif self.is_driver_in_specified_connection_type(driver_name=driver_name, connection_type="internal"):
             # There is no mandatory option
             pass
@@ -160,6 +202,8 @@ class DriverDataProvider(object):
             return self.file_register.get_registered_dir_path(prefix=driver_id)
         elif option_name == "filename_pattern":
             return self.file_register.get_registered_file_name(prefix=driver_id)
+        elif option_name == "port":
+            return self.port_register.get_registered_tcp_port(prefix=driver_id)
         else:
             self.log_writer.error("Unknown mandatory option: %s" % option_name)
             assert False

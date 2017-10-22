@@ -4,7 +4,7 @@ class SyslogNgConfigWriter(object):
         self.syslog_ng_config = syslog_ng_config
 
         self.syslog_ng_config_content = ""
-        self.first_place_driver_options = ["file_path"]
+        self.first_place_driver_options = ["file_path", "ip"]
 
     @staticmethod
     def write_raw_config(raw_config, file_register, file_writer, topology):
@@ -50,10 +50,13 @@ class SyslogNgConfigWriter(object):
                 self.syslog_ng_config_content += "    %s(%s);\n" % (option_name, option_value)
         self.syslog_ng_config_content += globals_options_footer
 
-    def render_first_place_driver_options(self, driver_options):
+    def render_first_place_driver_options(self, driver_options, statement_name):
         for option_name, option_value in driver_options.items():
             if option_name in self.first_place_driver_options:
-                self.syslog_ng_config_content += "        %s\n" % option_value
+                if (option_name == "ip") and (statement_name == "source"):
+                    self.syslog_ng_config_content += "        %s(%s)\n" % (option_name, option_value)
+                else:
+                    self.syslog_ng_config_content += "        %s\n" % option_value
 
     def render_driver_options(self, driver_options):
         for option_name, option_value in driver_options.items():
@@ -71,7 +74,7 @@ class SyslogNgConfigWriter(object):
                 self.syslog_ng_config_content += "    %s (\n" % driver_name
 
                 # driver options
-                self.render_first_place_driver_options(driver_options)
+                self.render_first_place_driver_options(driver_options, statement_name)
                 self.render_driver_options(driver_options)
 
                 # driver footer
