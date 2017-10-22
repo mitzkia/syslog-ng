@@ -5,6 +5,7 @@ class DriverDataProvider(object):
     def __init__(self, testdb_logger, writers, listeners, registers):
         self.log_writer = testdb_logger.set_logger("DriverDataProvider")
         self.file_register = registers['file']
+        self.port_register = registers['port']
 
         self.driver_database = {
             "file": {
