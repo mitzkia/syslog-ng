@@ -8,7 +8,7 @@ def init_unittest(request):
 
 def test_get_all_source_drivers(request):
     sc = init_unittest(request)
-    assert sorted(sc.driver_data_provider.get_all_source_drivers()) == sorted(['file', 'pipe'])
+    assert sorted(sc.driver_data_provider.get_all_source_drivers()) == sorted(['file', 'pipe', 'wildcard_file'])
 
 
 def test_get_all_destination_drivers(request):
