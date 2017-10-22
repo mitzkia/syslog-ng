@@ -7,8 +7,6 @@ class DriverSender(object):
         driver_name = source_driver_properties['driver_name']
         connection_mandatory_options = source_driver_properties['connection_mandatory_options']
 
-        input_messages = self.message_interface.create_message_for_source_driver(
-            driver_name=driver_name, defined_message_parts=defined_message_parts, counter=counter)
-        source_driver_properties['writer_class'].write_content(
-            file_path=connection_mandatory_options, content=input_messages, driver_name=driver_name)
+        input_messages = self.message_interface.create_message_for_source_driver(driver_name=driver_name, defined_message_parts=defined_message_parts, counter=counter)
+        source_driver_properties['writer_class'].write_content(file_path=connection_mandatory_options, content=input_messages, driver_name=driver_name)
         message_queue.append({"driver_id": source_driver_id, "messages": input_messages})
