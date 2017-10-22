@@ -58,10 +58,11 @@ class MessageInterface(object):
     def create_message_for_source_driver(self, driver_name="file", defined_message_parts=None, counter=1):
         if not defined_message_parts:
             defined_message_parts = {}
-        if driver_name == "file":
+        if driver_name in ['file']:
             generated_message = self.create_multiple_bsd_messages(defined_bsd_message_parts=defined_message_parts, counter=counter)
         else:
-            generated_message = ""
+            self.log_writer.error("Not defined, or unknown driver: %s" % driver_name)
+            assert False
         return generated_message
 
     def create_message_for_destination_driver(self, driver_name="file", defined_message_parts=None, counter=1):
@@ -71,7 +72,8 @@ class MessageInterface(object):
             defined_message_parts['priority'] = "skip"
             generated_message = self.create_multiple_bsd_messages(defined_bsd_message_parts=defined_message_parts, counter=counter, add_newline=True)
         else:
-            generated_message = ""
+            self.log_writer.error("Not defined, or unknown driver: %s" % driver_name)
+            assert False
         return generated_message
 
     def validate_defined_message_parts(self, defined_message_parts, default_message_parts):
