@@ -19,7 +19,7 @@ class MessageInterface(object):
         self.default_ietf_message_parts = {
             "priority": "38",
             "syslog_protocol_version": "1",
-            "iso_timestamp": "2017-06-01T08:05:42+02:00",
+            "iso_timestamp": "2017-06-01T08:05:04+02:00",
             "hostname": socket.gethostname(),
             "program": "testprogram",
             "pid": "9999",
@@ -43,15 +43,15 @@ class MessageInterface(object):
         return messages
 
 # Interface for IETFSyslog
-    def create_ietf_message(self, defined_ietf_message_parts=None, counter=1):
+    def create_ietf_message(self, defined_ietf_message_parts=None, counter=1, add_newline=False):
         self.validate_defined_message_parts(defined_message_parts=defined_ietf_message_parts, default_message_parts=self.default_ietf_message_parts)
         generated_ietf_message_parts = self.set_message_parts(defined_message_parts=defined_ietf_message_parts, default_message_parts=self.default_ietf_message_parts)
-        return self.ietf_syslog.create_ietf_message(generated_message_parts=generated_ietf_message_parts, counter=counter)
+        return self.ietf_syslog.create_ietf_message(generated_message_parts=generated_ietf_message_parts, counter=counter, add_newline=add_newline)
 
-    def create_multiple_ietf_messages(self, defined_ietf_message_parts=None, counter=2):
+    def create_multiple_ietf_messages(self, defined_ietf_message_parts=None, counter=2, add_newline=False):
         messages = []
         for actaul_counter in range(1, counter + 1):
-            messages.append(self.create_ietf_message(defined_ietf_message_parts=defined_ietf_message_parts, counter=actaul_counter))
+            messages.append(self.create_ietf_message(defined_ietf_message_parts=defined_ietf_message_parts, counter=actaul_counter, add_newline=add_newline))
         return messages
 
 # Other

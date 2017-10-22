@@ -3,7 +3,7 @@ class IETF(object):
         self.log_writer = testdb_logger.set_logger("IETF")
 
     @staticmethod
-    def create_ietf_message(generated_message_parts, counter):
+    def create_ietf_message(generated_message_parts, counter, add_newline=False):
         message = ""
         if "priority" in generated_message_parts:
             message += "<%s>" % generated_message_parts["priority"]
@@ -23,6 +23,8 @@ class IETF(object):
             message += '[meta sequenceId="1"] '
         if "message" in generated_message_parts:
             message += "%s %s" % (generated_message_parts["message"], counter)
+        if add_newline:
+            message += "\n"
 
         message_length = len(message.encode('utf-8'))
         message = "%d %s" % (message_length, message)
