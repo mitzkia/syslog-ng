@@ -13,7 +13,7 @@ class SetupTestcase(SetupClasses):
             self.log_writer.error("Missing syslog-ng configuration. Please configure syslog-ng with one of the methods")
             assert False
         self.start_listeners()
-        if (self.source_driver in self.driver_data_provider.get_all_drivers_with_property(property_name="connection_type", property_value="file_based")) or (self.source_driver == "all"):
+        if self.source_driver in ['file']:
             self.send_message(message_counter=message_counter)
         self.start_syslog_ng()
         if self.source_driver in self.driver_data_provider.get_all_drivers_with_property(property_name="connection_type", property_value="local_socket_based"):
