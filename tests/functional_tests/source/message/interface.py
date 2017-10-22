@@ -75,7 +75,7 @@ class MessageInterface(object):
             defined_message_parts['priority'] = "skip"
             generated_message = self.create_multiple_bsd_messages(defined_bsd_message_parts=defined_message_parts, counter=counter, add_newline=True)
         elif driver_name in ['tcp', 'udp']:
-            defined_message_parts['hostname'] = "localhost"
+            defined_message_parts['hostname'] = socket.gethostname()
             generated_message = self.create_multiple_bsd_messages(defined_bsd_message_parts=defined_message_parts, counter=counter, add_newline=True)
         else:
             self.log_writer.error("Not defined, or unknown driver: %s" % driver_name)
