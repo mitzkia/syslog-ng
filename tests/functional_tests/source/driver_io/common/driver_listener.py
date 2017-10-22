@@ -6,5 +6,5 @@ class DriverListener(object):
         driver_name = destination_driver_properties['driver_name']
         connection_mandatory_options = destination_driver_properties['connection_mandatory_options']
 
-        actual_received_messages = destination_driver_properties['listener_class'].wait_for_content(connection_mandatory_options, driver_name)
+        actual_received_messages = destination_driver_properties['listener_class'].wait_for_content(connection_mandatory_options, driver_name=driver_name)
         message_queue.append({"driver_id": destination_driver_id, "messages": actual_received_messages})
