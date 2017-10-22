@@ -11,6 +11,8 @@ class FileWriter(object):
             assert False
 
     def write_content_to_regular_file(self, file_path, content):
+        if (content == "") or (content == []):
+            assert False
         self.log_writer.info("SUBSTEP Content write\n>>>Content:%s \n>>>to: [%s]" % (content, file_path))
         with open(file_path, 'a+') as file_object:
             if isinstance(content, list):
