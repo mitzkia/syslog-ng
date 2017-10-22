@@ -55,26 +55,26 @@ def test_create_bsd_message_with_defined_message_parts(request):
 
 def test_create_ietf_message(request):
     sc = init_unittest(request)
-    expected_messages = '124 <38>1 2017-06-01T08:05:42+02:00 tristram testprogram 9999 - [meta sequenceId="1"] test ÁÉŐÚŰÓÜ-ááéúóö message 1'
+    expected_messages = '124 <38>1 2017-06-01T08:05:04+02:00 tristram testprogram 9999 - [meta sequenceId="1"] test ÁÉŐÚŰÓÜ-ááéúóö message 1'
     assert sc.message_interface.create_ietf_message() == expected_messages
 
 
 def test_create_multiple_ietf_message(request):
     sc = init_unittest(request)
     expected_messages = [
-        '124 <38>1 2017-06-01T08:05:42+02:00 tristram testprogram 9999 - [meta sequenceId="1"] test ÁÉŐÚŰÓÜ-ááéúóö message 1',
-        '124 <38>1 2017-06-01T08:05:42+02:00 tristram testprogram 9999 - [meta sequenceId="1"] test ÁÉŐÚŰÓÜ-ááéúóö message 2'
+        '124 <38>1 2017-06-01T08:05:04+02:00 tristram testprogram 9999 - [meta sequenceId="1"] test ÁÉŐÚŰÓÜ-ááéúóö message 1',
+        '124 <38>1 2017-06-01T08:05:04+02:00 tristram testprogram 9999 - [meta sequenceId="1"] test ÁÉŐÚŰÓÜ-ááéúóö message 2'
     ]
     assert sc.message_interface.create_multiple_ietf_messages() == expected_messages
 
 
 def test_create_ietf_message_with_defined_message_parts(request):
     sc = init_unittest(request)
-    expected_messages = '102 <99>99 2099-09-09T08:05:42+02:00 test-machine test-program 1111 9 [meta sequenceId="1"] Test message 1'
+    expected_messages = '102 <99>99 2099-09-09T08:05:04+02:00 test-machine test-program 1111 9 [meta sequenceId="1"] Test message 1'
     defined_ietf_message_parts = {
         "priority": "99",
         "syslog_protocol_version": "99",
-        "iso_timestamp": "2099-09-09T08:05:42+02:00",
+        "iso_timestamp": "2099-09-09T08:05:04+02:00",
         "hostname": "test-machine",
         "program": "test-program",
         "pid": "1111",
