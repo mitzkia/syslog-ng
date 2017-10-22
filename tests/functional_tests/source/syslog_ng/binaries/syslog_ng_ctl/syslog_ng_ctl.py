@@ -137,14 +137,14 @@ class SyslogNgCtl(object):
 
     def is_line_in_stats(self, stats_line):
         statistics = str(self.stats()[1])
-        result = "\n%s\n" % stats_line in statistics
+        result = "%s\n" % stats_line in statistics
         if result:
             self.first_matched_stats = statistics
         return result
 
     def is_line_in_query(self, query_line):
         statistics = str(self.query()[1])
-        result = "\n%s\n" % query_line in statistics
+        result = "%s\n" % query_line in statistics
         if result:
             self.first_matched_query = statistics
         return result
