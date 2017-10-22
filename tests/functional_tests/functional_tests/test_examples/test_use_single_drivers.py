@@ -10,6 +10,16 @@ def test_use_single_drivers_default_pipe(request):
     syslog_ng_tc.build_config_with_single_drivers(source_driver="pipe", destination_driver="pipe")
     syslog_ng_tc.run()
 
+def test_use_single_drivers_default_tcp(request):
+    syslog_ng_tc = SetupTestcase(testcase_context=request)
+    syslog_ng_tc.build_config_with_single_drivers(source_driver="tcp", destination_driver="tcp")
+    syslog_ng_tc.run()
+
+def test_use_single_drivers_default_udp(request):
+    syslog_ng_tc = SetupTestcase(testcase_context=request)
+    syslog_ng_tc.build_config_with_single_drivers(source_driver="udp", destination_driver="udp")
+    syslog_ng_tc.run()
+
 def test_use_single_drivers_with_templated_destination(request):
     syslog_ng_tc = SetupTestcase(testcase_context=request)
     global_options = {"stats_level": 3, "threaded": "yes"}
