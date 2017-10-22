@@ -7,6 +7,9 @@ from source.register.port import PortRegister
 from source.driver_io.file.common import FileCommon
 from source.driver_io.file.writer import FileWriter
 from source.driver_io.file.listener import FileListener
+from source.driver_io.local_socket.common import LocalSocketCommon
+from source.driver_io.local_socket.listener import LocalSocketListener
+from source.driver_io.local_socket.writer import LocalSocketWriter
 from source.syslog_ng.drivers.driver_data_provider import DriverDataProvider
 from source.syslog_ng.configuration.interface import SyslogNgConfigInterface
 from source.message.interface import MessageInterface
@@ -87,13 +90,29 @@ class SetupClasses(object):
                     testdb_logger=getattr(self, "testdb_logger_for_%s" % topology),
                     file_common=getattr(self, "file_common_for_%s" % topology)
                 ))
+        setattr(self, "local_socket_common_for_%s" % topology,
+                LocalSocketCommon(
+                    testdb_logger=getattr(self, "testdb_logger_for_%s" % topology),
+                ))
+        setattr(self, "local_socket_writer_for_%s" % topology,
+                LocalSocketWriter(
+                    testdb_logger=getattr(self, "testdb_logger_for_%s" % topology),
+                    local_socket_common=getattr(self, "local_socket_common_for_%s" % topology)
+                ))
+        setattr(self, "local_socket_listener_for_%s" % topology,
+                LocalSocketListener(
+                    testdb_logger=getattr(self, "testdb_logger_for_%s" % topology),
+                    local_socket_common=getattr(self, "local_socket_common_for_%s" % topology)
+                ))
 
         writers = {
             "file": getattr(self, "file_writer_for_%s" % topology),
+            "local_socket": getattr(self, "local_socket_writer_for_%s" % topology),
         }
 
         listeners = {
             "file": getattr(self, "file_listener_for_%s" % topology),
+            "local_socket": getattr(self, "local_socket_listener_for_%s" % topology),
         }
 
         registers = {
@@ -184,6 +203,9 @@ class SetupClasses(object):
             self.file_common = self.file_common_for_server
             self.file_writer = self.file_writer_for_server
             self.file_listener = self.file_listener_for_server
+            self.local_socket_common = self.local_socket_common_for_server
+            self.local_socket_writer = self.local_socket_writer_for_server
+            self.local_socket_listener = self.local_socket_listener_for_server
 
             self.driver_data_provider = self.driver_data_provider_for_server
             self.syslog_ng_config_interface = self.syslog_ng_config_interface_for_server
