@@ -156,9 +156,9 @@ class DriverDataProvider(object):
     def get_option_value_for_option_name(self, driver_id, option_name):
         if option_name == "file_path":
             return self.file_register.get_registered_file_path(prefix=driver_id)
-        if option_name == "base_dir":
+        elif option_name == "base_dir":
             return self.file_register.get_registered_dir_path(prefix=driver_id)
-        if option_name == "filename_pattern":
+        elif option_name == "filename_pattern":
             return self.file_register.get_registered_file_name(prefix=driver_id)
         else:
             self.log_writer.error("Unknown mandatory option: %s" % option_name)
