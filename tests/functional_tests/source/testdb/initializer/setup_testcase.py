@@ -40,7 +40,7 @@ class SetupTestcase(SetupClasses):
         if destination_drivers == "all":
             destination_drivers = self.driver_data_provider.get_all_destination_drivers()
         self.source_driver = source_drivers
-        self.syslog_ng_config_interface.add_global_options({"stats_level": 3})
+        self.syslog_ng_config_interface.add_global_options({"stats_level": 3, "keep_hostname": "yes"})
         self.syslog_ng_config_interface.create_multiple_connected_source_with_destination(
             source_driver_names=[source_drivers]*len(destination_drivers),
             destination_driver_names=destination_drivers,
