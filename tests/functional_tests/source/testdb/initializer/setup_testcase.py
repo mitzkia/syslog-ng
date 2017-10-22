@@ -23,7 +23,7 @@ class SetupTestcase(SetupClasses):
 
     def build_config_with_single_drivers(self, source_driver="file", destination_driver="file", global_options=None, source_options=None, destination_options=None):
         if global_options is None:
-            global_options = {"stats_level": 3}
+            global_options = {"stats_level": 3, "keep_hostname": "yes"}
         self.log_writer.info("STEP Configuring syslog-ng with single drivers")
         self.source_driver = source_driver
         self.syslog_ng_config_interface.add_global_options(global_options)
