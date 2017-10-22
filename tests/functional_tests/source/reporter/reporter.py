@@ -66,7 +66,7 @@ class Reporter(object):
 
     def check_expected_number_of_messages(self, key):
         if len(self.actual_message_collector[key]) != len(self.expected_message_collector[key]):
-            self.log_writer.error("Number of messages did not equals with expected")
+            self.log_writer.error("Number of messages did not equals with expected, driver_id:[%s]" % key)
             self.log_writer.error("Expected number of messages: [%s]" % len(self.expected_message_collector[key]))
             self.log_writer.error("Arrived number of messages: [%s]" % len(self.actual_message_collector[key]))
             return False
@@ -75,7 +75,7 @@ class Reporter(object):
 
     def check_expected_message_content(self, key):
         if self.actual_message_collector[key] != self.expected_message_collector[key]:
-            self.log_writer.error("Messages did not equals with expected")
+            self.log_writer.error("Messages did not equals with expected, driver_id:[%s]" % key)
             self.log_writer.error("Expected messages: [%s]" % self.expected_message_collector[key])
             self.log_writer.error("Arrived messages: [%s]" % self.actual_message_collector[key])
             return False
