@@ -44,6 +44,25 @@ class DriverDataProvider(object):
                     "listener": "",
                 },
             },
+            "network": {
+                "group_type": "source_destination",
+                "driver_properties": {
+                    "config_type": "local_socket_based",
+                    "connection_type": "local_socket_based",
+                    "socket_type": "stream",
+                    "message_format": "rfc3164",
+                    "disk_buffer_support": True,
+                    "tls_support": True,
+                },
+                "mandatory_options": {
+                    "ip": ipv4_address,
+                    "port": "",
+                },
+                "driver_io": {
+                    "writer": writers['local_socket'],
+                    "listener": listeners['local_socket'],
+                },
+            },
             "pipe": {
                 "group_type": "source_destination",
                 "driver_properties": {
@@ -60,6 +79,25 @@ class DriverDataProvider(object):
                 "driver_io": {
                     "writer": writers['file'],
                     "listener": listeners['file'],
+                },
+            },
+            "syslog": {
+                "group_type": "source_destination",
+                "driver_properties": {
+                    "config_type": "local_socket_based",
+                    "connection_type": "local_socket_based",
+                    "socket_type": "stream",
+                    "message_format": "rfc5424",
+                    "disk_buffer_support": True,
+                    "tls_support": True,
+                },
+                "mandatory_options": {
+                    "ip": ipv4_address,
+                    "port": "",
+                },
+                "driver_io": {
+                    "writer": writers['local_socket'],
+                    "listener": listeners['local_socket'],
                 },
             },
             "tcp": {

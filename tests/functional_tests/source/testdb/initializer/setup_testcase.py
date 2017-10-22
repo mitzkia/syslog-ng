@@ -16,7 +16,7 @@ class SetupTestcase(SetupClasses):
         if self.source_driver in ['file']:
             self.send_message(message_counter=message_counter)
         self.start_syslog_ng()
-        if self.source_driver in ['pipe', 'tcp', 'udp']:
+        if self.source_driver in ['pipe', 'tcp', 'udp', 'syslog', 'network']:
             self.send_message(message_counter=message_counter)
         self.stop_listeners()
         self.compare_results(expected_raw_message=expected_raw_message)

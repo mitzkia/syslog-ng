@@ -67,7 +67,7 @@ class SyslogNgCtl(object):
                 for source_driver_id, source_driver_properties in source_driver.items():
                     if source_driver_properties['driver_name'] not in ["internal", "udp"]:
                         driver_name = source_driver_properties['driver_name']
-                        if driver_name in ['tcp']:
+                        if driver_name in ['tcp', 'network', 'syslog']:
                             connection_mandatory_options = "%s,%s" % (driver_name, source_driver_properties['connection_mandatory_options'][0])
                             state_type='o'
                         else:
@@ -85,14 +85,15 @@ class SyslogNgCtl(object):
                 for destination_driver_id, destination_driver_properties in destination_driver.items():
                     if "internal" not in destination_driver_properties['connection_mandatory_options']:
                         driver_name = destination_driver_properties['driver_name']
-                        if driver_name in ['tcp', 'udp']:
-                            connection_mandatory_options = "%s,%s:%s" % (driver_name, destination_driver_properties['connection_mandatory_options'][0], destination_driver_properties['connection_mandatory_options'][1])
-                            state_type='a'
+                        if driver_name in ['tcp', 'udp', 'network', 'syslog']:
+                            if driver_name == "udp":
+                                connection_mandatory_options = "udp,%s:%s" % (destination_driver_properties['connection_mandatory_options'][0], destination_driver_properties['connection_mandatory_options'][1])
+                            else:
+                                connection_mandatory_options = "tcp,%s:%s" % (destination_driver_properties['connection_mandatory_options'][0], destination_driver_properties['connection_mandatory_options'][1])
                         else:
                             connection_mandatory_options = destination_driver_properties['connection_mandatory_options']
-                            state_type='a'
                         assert self.wait_for_query_counter(component="dst.%s" % driver_name, config_id=destination_statement_id, instance=connection_mandatory_options, counter_type="processed", message_counter=message_counter) is True
-                        assert self.wait_for_stats_counter(component="dst.%s" % driver_name, config_id=destination_statement_id, instance=connection_mandatory_options, state_type=state_type, counter_type="processed", message_counter=message_counter) is True
+                        assert self.wait_for_stats_counter(component="dst.%s" % driver_name, config_id=destination_statement_id, instance=connection_mandatory_options, state_type="a", counter_type="processed", message_counter=message_counter) is True
         else:
             self.log_writer.info("Skip checking destination counters. (Maybe raw config was used)")
 

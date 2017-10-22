@@ -58,7 +58,7 @@ class MessageInterface(object):
     def create_message_for_source_driver(self, driver_name="file", defined_message_parts=None, counter=1):
         if not defined_message_parts:
             defined_message_parts = {}
-        if driver_name in ['file', 'wildcard_file', 'tcp', 'udp']:
+        if driver_name in ['file', 'wildcard_file', 'tcp', 'udp', 'network', 'syslog']:
             generated_message = self.create_multiple_bsd_messages(defined_bsd_message_parts=defined_message_parts, counter=counter)
         elif driver_name in ['pipe']:
             defined_message_parts['hostname'] = "skip"
@@ -74,9 +74,11 @@ class MessageInterface(object):
         if driver_name in ["file", "pipe", 'wildcard_file']:
             defined_message_parts['priority'] = "skip"
             generated_message = self.create_multiple_bsd_messages(defined_bsd_message_parts=defined_message_parts, counter=counter, add_newline=True)
-        elif driver_name in ['tcp', 'udp']:
+        elif driver_name in ['tcp', 'udp', 'network']:
             defined_message_parts['hostname'] = socket.gethostname()
             generated_message = self.create_multiple_bsd_messages(defined_bsd_message_parts=defined_message_parts, counter=counter, add_newline=True)
+        elif driver_name in ['syslog']:
+            generated_message = self.create_multiple_ietf_messages(defined_ietf_message_parts=defined_message_parts, counter=counter, add_newline=True)
         else:
             self.log_writer.error("Not defined, or unknown driver: %s" % driver_name)
             assert False
