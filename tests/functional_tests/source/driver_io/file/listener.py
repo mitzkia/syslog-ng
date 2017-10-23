@@ -29,6 +29,7 @@ class FileListener(object):
     def get_content_from_named_pipe(self, file_path, raw=True):
         fd = os.open(file_path, os.O_RDONLY | os.O_NONBLOCK)
         merged_pipe_content = ""
+        pipe_content = ""
         while True:
             try:
                 pipe_content = os.read(fd, 1024)
