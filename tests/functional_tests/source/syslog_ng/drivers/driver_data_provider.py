@@ -41,6 +41,24 @@ class DriverDataProvider(object):
                     "listener": "",
                 },
             },
+            "pipe": {
+                "group_type": "source_destination",
+                "driver_properties": {
+                    "config_type": "file_based",
+                    "connection_type": "file_based",
+                    "socket_type": "",
+                    "message_format": "rfc3164",
+                    "disk_buffer_support": True,
+                    "tls_support": False,
+                },
+                "mandatory_options": {
+                    "file_path": "",
+                },
+                "driver_io": {
+                    "writer": writers['file'],
+                    "listener": listeners['file'],
+                },
+            },
         }
 
     def is_driver_in_specified_connection_type(self, driver_name, connection_type):
