@@ -3,10 +3,11 @@ from source.driver_io.common.driver_listener import DriverListener
 
 
 class ThreadedListener(object):
-    def __init__(self, testdb_logger, syslog_ng_config_interface, testdb_reporter=None):
+    def __init__(self, testdb_logger, syslog_ng_config_interface, testdb_reporter, driver_data_provider):
         self.log_writer = testdb_logger.set_logger("ThreadedListener")
         self.syslog_ng_config_interface = syslog_ng_config_interface
         self.testdb_reporter = testdb_reporter
+        self.driver_data_provider = driver_data_provider
 
         self.driver_listener = DriverListener(testdb_logger=testdb_logger)
         self.message_queue = Manager().list()

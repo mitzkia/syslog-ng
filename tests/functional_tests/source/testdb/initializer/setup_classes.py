@@ -157,7 +157,8 @@ class SetupClasses(object):
                 ThreadedListener(
                     testdb_logger=getattr(self, "testdb_logger_for_%s" % topology),
                     syslog_ng_config_interface=getattr(self, "syslog_ng_config_interface_for_%s" % topology),
-                    testdb_reporter=getattr(self, "testdb_reporter_for_%s" % topology)
+                    testdb_reporter=getattr(self, "testdb_reporter_for_%s" % topology),
+                    driver_data_provider=getattr(self, "driver_data_provider_for_%s" % topology),
                 ))
 
         setattr(self, "threaded_sender_for_%s" % topology,
