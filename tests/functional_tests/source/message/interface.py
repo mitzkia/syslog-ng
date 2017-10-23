@@ -78,7 +78,7 @@ class MessageInterface(object):
         elif driver_name in self.driver_data_provider.get_all_drivers_with_property(property_name="connection_type", property_value="local_socket_based") and driver_name in self.driver_data_provider.get_all_drivers_with_property(property_name="message_format", property_value="rfc3164"):
             defined_message_parts['hostname'] = socket.gethostname()
             generated_message = self.create_multiple_bsd_messages(defined_bsd_message_parts=defined_message_parts, counter=counter, add_newline=True)
-        elif driver_name in ['syslog']:
+        elif driver_name in self.driver_data_provider.get_all_drivers_with_property(property_name="message_format", property_value="rfc5424"):
             generated_message = self.create_multiple_ietf_messages(defined_ietf_message_parts=defined_message_parts, counter=counter, add_newline=True)
         elif driver_name in self.driver_data_provider.get_all_drivers_with_property(property_name="connection_type", property_value="remote_socket_based"):
             generated_message = ""
