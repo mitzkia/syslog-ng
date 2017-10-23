@@ -65,9 +65,14 @@ class SyslogNgCtl(object):
         if source_statement_properties != {}:
             for source_statement_id, source_driver in source_statement_properties.items():
                 for source_driver_id, source_driver_properties in source_driver.items():
-                    if source_driver_properties['driver_name'] != "internal":
+                    if source_driver_properties['driver_name'] not in ["internal", "udp"]:
                         driver_name = source_driver_properties['driver_name']
-                        connection_mandatory_options = source_driver_properties['connection_mandatory_options']
+                        if driver_name in ['tcp', 'network', 'syslog', 'udp6', 'tcp6', 'unix-dgram', 'unix-stream']:
+                            connection_mandatory_options = "%s,%s" % (driver_name, source_driver_properties['connection_mandatory_options'][0])
+                            state_type = 'o'
+                        else:
+                            connection_mandatory_options = source_driver_properties['connection_mandatory_options']
+                            state_type = 'a'
                         assert self.wait_for_query_counter(component="src.%s" % driver_name, config_id=source_statement_id, instance=connection_mandatory_options, counter_type="processed", message_counter=message_counter) is True
                         assert self.wait_for_stats_counter(component="src.%s" % driver_name, config_id=source_statement_id, instance=connection_mandatory_options, counter_type="processed", message_counter=message_counter) is True
         else:
@@ -80,7 +85,20 @@ class SyslogNgCtl(object):
                 for destination_driver_id, destination_driver_properties in destination_driver.items():
                     if "internal" not in destination_driver_properties['connection_mandatory_options']:
                         driver_name = destination_driver_properties['driver_name']
-                        connection_mandatory_options = destination_driver_properties['connection_mandatory_options']
+                        if driver_name in ['tcp', 'tcp6', 'udp', 'udp6', 'network', 'syslog']:
+                            if driver_name == "udp":
+                                connection_mandatory_options = "udp,%s:%s" % (destination_driver_properties['connection_mandatory_options'][0], destination_driver_properties['connection_mandatory_options'][1])
+                            elif driver_name == "udp6":
+                                connection_mandatory_options = "udp,[%s]:%s" % (destination_driver_properties['connection_mandatory_options'][0], destination_driver_properties['connection_mandatory_options'][1])
+                            elif driver_name == "tcp6":
+                                connection_mandatory_options = "tcp,[%s]:%s" % (destination_driver_properties['connection_mandatory_options'][0], destination_driver_properties['connection_mandatory_options'][1])
+                            else:
+                                connection_mandatory_options = "tcp,%s:%s" % (destination_driver_properties['connection_mandatory_options'][0], destination_driver_properties['connection_mandatory_options'][1])
+                        else:
+                            if driver_name in ["unix-stream", "unix-dgram"]:
+                                connection_mandatory_options = "%s,localhost.afunix:%s" % (driver_name, destination_driver_properties['connection_mandatory_options'])
+                            else:
+                                connection_mandatory_options = destination_driver_properties['connection_mandatory_options']
                         assert self.wait_for_query_counter(component="dst.%s" % driver_name, config_id=destination_statement_id, instance=connection_mandatory_options, counter_type="processed", message_counter=message_counter) is True
                         assert self.wait_for_stats_counter(component="dst.%s" % driver_name, config_id=destination_statement_id, instance=connection_mandatory_options, counter_type="processed", message_counter=message_counter) is True
         else:
