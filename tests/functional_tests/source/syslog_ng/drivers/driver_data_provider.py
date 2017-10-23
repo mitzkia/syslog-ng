@@ -202,9 +202,9 @@ class DriverDataProvider(object):
     def get_connection_mandatory_options(self, driver_name, defined_driver_options):
         empty_mandatory_options = copy.deepcopy(self.driver_database[driver_name]['mandatory_options'])
         selected_mandatory_options = self.select_mandatory_options_from_defined_options(empty_mandatory_options=empty_mandatory_options, defined_driver_options=defined_driver_options)
-        if self.is_driver_in_specified_connection_type(driver_name=driver_name, connection_type="file_based"):
+        if self.is_driver_in_specified_config_type(driver_name=driver_name, config_type="file_based"):
             return selected_mandatory_options['file_path']
-        elif self.is_driver_in_specified_connection_type(driver_name=driver_name, connection_type="local_socket_based"):
+        elif self.is_driver_in_specified_config_type(driver_name=driver_name, config_type="local_socket_based"):
             return (selected_mandatory_options['ip'].replace("'", ""), selected_mandatory_options['port'])
         elif self.is_driver_in_specified_connection_type(driver_name=driver_name, connection_type="internal"):
             # There is no mandatory option
