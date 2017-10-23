@@ -1,3 +1,5 @@
+import os
+
 class FileWriter(object):
     def __init__(self, testdb_logger, file_common):
         self.log_writer = testdb_logger.set_logger("FileWriter")
@@ -8,6 +10,10 @@ class FileWriter(object):
             self.write_content_to_regular_file(file_path=file_path, content=content)
         elif driver_name == "pipe":
             self.write_content_to_named_pipe(file_path=file_path, content=content)
+        elif driver_name == "wildcard_file":
+            file_path = file_path.replace("*", "log")
+            self.file_common.create_dir(os.path.dirname(file_path))
+            self.write_content_to_regular_file(file_path, content)
         else:
             self.log_writer.error("Unknown driver: %s" % driver_name)
             assert False
