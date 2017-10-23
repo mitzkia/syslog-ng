@@ -11,6 +11,10 @@ class Reporter(object):
     def compare_messages(self, expected_message, actual_message):
         assert expected_message == actual_message
 
+    def is_actual_driver_remote_socket_driver(self, actual_destination_id):
+        driver_name = actual_destination_id.split("_")[-1]
+        return "remote" in self.driver_data_provider.driver_database[driver_name]['driver_properties']['connection_type']
+
     def compare_collected_messages(self):
         self.log_writer.info("STEP Comparing collected messages")
         if not self.actual_message_collector:
@@ -18,10 +22,13 @@ class Reporter(object):
             assert False
         final_result = self.check_if_messages_arrived_from_every_source()
         for actual_destination_id in self.actual_message_collector:
-            result = self.check_expected_number_of_messages(key=actual_destination_id)
-            result2 = self.check_expected_message_content(key=actual_destination_id)
-            if (not result) or (not result2):
-                final_result = False
+            if self.is_actual_driver_remote_socket_driver(actual_destination_id):
+                final_result = True
+            else:
+                result = self.check_expected_number_of_messages(key=actual_destination_id)
+                result2 = self.check_expected_message_content(key=actual_destination_id)
+                if (not result) or (not result2):
+                    final_result = False
 
         assert final_result is True
 
@@ -60,6 +67,8 @@ class Reporter(object):
                     self.log_writer.error("We did not expect message for [%s], but it arrived." % actual_dict_key_element)
             for expected_dict_key_element in self.expected_message_collector.keys():
                 if expected_dict_key_element not in self.actual_message_collector.keys():
+                    if self.is_actual_driver_remote_socket_driver(expected_dict_key_element):
+                        return True
                     self.log_writer.error("We expect message for [%s], but it not arrived." % expected_dict_key_element)
             return False
         return True

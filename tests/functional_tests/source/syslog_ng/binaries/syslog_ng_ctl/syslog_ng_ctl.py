@@ -97,6 +97,16 @@ class SyslogNgCtl(object):
                         else:
                             if driver_name in ["unix-stream", "unix-dgram"]:
                                 connection_mandatory_options = "%s,localhost.afunix:%s" % (driver_name, destination_driver_properties['connection_mandatory_options'])
+                            elif driver_name == "amqp":
+                                connection_mandatory_options = "%s,/,%s,%s,syslog,fanout" % (driver_name, destination_driver_properties['connection_mandatory_options'][0], destination_driver_properties['connection_mandatory_options'][1])
+                            elif driver_name == "riemann":
+                                connection_mandatory_options = "%s,%s,%s" % (driver_name, destination_driver_properties['connection_mandatory_options'][0], destination_driver_properties['connection_mandatory_options'][1])
+                            elif driver_name == "http":
+                                connection_mandatory_options = "%s,%s" % (driver_name, destination_driver_properties['connection_mandatory_options'])
+                            elif driver_name == "mongodb":
+                                connection_mandatory_options = "%s,%s,syslog,,messages" % (driver_name, destination_driver_properties['connection_mandatory_options'].split("//")[1].split("/")[0])
+                            elif driver_name == "smtp":
+                                connection_mandatory_options = "%s,%s,%s" % (driver_name, destination_driver_properties['connection_mandatory_options'][0], destination_driver_properties['connection_mandatory_options'][1])
                             else:
                                 connection_mandatory_options = destination_driver_properties['connection_mandatory_options']
                         assert self.wait_for_query_counter(component="dst.%s" % driver_name, config_id=destination_statement_id, instance=connection_mandatory_options, counter_type="processed", message_counter=message_counter) is True
