@@ -139,6 +139,7 @@ class SetupClasses(object):
         setattr(self, "message_interface_for_%s" % topology,
                 MessageInterface(
                     testdb_logger=getattr(self, "testdb_logger_for_%s" % topology),
+                    driver_data_provider=getattr(self, "driver_data_provider_for_%s" % topology),
                 ))
         setattr(self, "executor_interface_for_%s" % topology,
                 ExecutorInterface(

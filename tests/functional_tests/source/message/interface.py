@@ -5,8 +5,9 @@ from source.message.ietf import IETF
 
 
 class MessageInterface(object):
-    def __init__(self, testdb_logger):
+    def __init__(self, testdb_logger, driver_data_provider):
         self.log_writer = testdb_logger.set_logger("MessageInterface")
+        self.driver_data_provider = driver_data_provider
 
         self.default_bsd_message_parts = {
             "priority": "38",
