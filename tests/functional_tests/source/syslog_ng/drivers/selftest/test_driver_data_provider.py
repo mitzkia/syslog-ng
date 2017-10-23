@@ -8,12 +8,12 @@ def init_unittest(request):
 
 def test_get_all_source_drivers(request):
     sc = init_unittest(request)
-    assert sorted(sc.driver_data_provider.get_all_source_drivers()) == sorted(['file'])
+    assert sorted(sc.driver_data_provider.get_all_source_drivers()) == sorted(['file', 'pipe', 'wildcard_file', 'tcp', 'udp', 'network', 'syslog', 'tcp6', 'udp6', 'unix-dgram', 'unix-stream'])
 
 
 def test_get_all_destination_drivers(request):
     sc = init_unittest(request)
-    assert sc.driver_data_provider.get_all_destination_drivers() == ['file']
+    assert sorted(sc.driver_data_provider.get_all_destination_drivers()) == sorted(['tcp6', 'syslog', 'network', 'udp', 'unix-dgram', 'tcp', 'smtp', 'pipe', 'file', 'stomp', 'amqp', 'redis', 'mongodb', 'udp6', 'unix-stream', 'riemann', 'http'])
 
 
 def test_is_driver_in_specified_connection_type(request):
