@@ -69,10 +69,10 @@ class SyslogNgCtl(object):
                         driver_name = source_driver_properties['driver_name']
                         if driver_name in ['tcp', 'network', 'syslog']:
                             connection_mandatory_options = "%s,%s" % (driver_name, source_driver_properties['connection_mandatory_options'][0])
-                            state_type='o'
+                            state_type = 'o'
                         else:
                             connection_mandatory_options = source_driver_properties['connection_mandatory_options']
-                            state_type='a'
+                            state_type = 'a'
                         assert self.wait_for_query_counter(component="src.%s" % driver_name, config_id=source_statement_id, instance=connection_mandatory_options, counter_type="processed", message_counter=message_counter) is True
                         assert self.wait_for_stats_counter(component="src.%s" % driver_name, config_id=source_statement_id, instance=connection_mandatory_options, state_type=state_type, counter_type="processed", message_counter=message_counter) is True
         else:
@@ -93,7 +93,15 @@ class SyslogNgCtl(object):
                         else:
                             connection_mandatory_options = destination_driver_properties['connection_mandatory_options']
                         assert self.wait_for_query_counter(component="dst.%s" % driver_name, config_id=destination_statement_id, instance=connection_mandatory_options, counter_type="processed", message_counter=message_counter) is True
+                        assert self.wait_for_query_counter(component="dst.%s" % driver_name, config_id=destination_statement_id, instance=connection_mandatory_options, counter_type="written", message_counter=message_counter) is True
+                        assert self.wait_for_query_counter(component="dst.%s" % driver_name, config_id=destination_statement_id, instance=connection_mandatory_options, counter_type="dropped", message_counter=0) is True
+                        assert self.wait_for_query_counter(component="dst.%s" % driver_name, config_id=destination_statement_id, instance=connection_mandatory_options, counter_type="queued", message_counter=0) is True
+                        assert self.wait_for_query_counter(component="dst.%s" % driver_name, config_id=destination_statement_id, instance=connection_mandatory_options, counter_type="memory_usage", message_counter=0) is True
                         assert self.wait_for_stats_counter(component="dst.%s" % driver_name, config_id=destination_statement_id, instance=connection_mandatory_options, state_type="a", counter_type="processed", message_counter=message_counter) is True
+                        assert self.wait_for_stats_counter(component="dst.%s" % driver_name, config_id=destination_statement_id, instance=connection_mandatory_options, state_type="a", counter_type="written", message_counter=message_counter) is True
+                        assert self.wait_for_stats_counter(component="dst.%s" % driver_name, config_id=destination_statement_id, instance=connection_mandatory_options, state_type="a", counter_type="dropped", message_counter=0) is True
+                        assert self.wait_for_stats_counter(component="dst.%s" % driver_name, config_id=destination_statement_id, instance=connection_mandatory_options, state_type="a", counter_type="queued", message_counter=0) is True
+                        assert self.wait_for_stats_counter(component="dst.%s" % driver_name, config_id=destination_statement_id, instance=connection_mandatory_options, state_type="a", counter_type="memory_usage", message_counter=0) is True
         else:
             self.log_writer.info("Skip checking destination counters. (Maybe raw config was used)")
 
@@ -115,7 +123,7 @@ class SyslogNgCtl(object):
         else:
             result_of_query_in_query = wait_till_function_not_true(func=self.is_line_in_query, arg1=query_line, monitoring_time=1)
 
-        self.testdb_logger.write_message_based_on_value(logsource=self.log_writer, message="Found stat line: [%s] in stats" % query_line, value=result_of_query_in_query)
+        self.testdb_logger.write_message_based_on_value(logsource=self.log_writer, message="Found stat line: [%s] in query" % query_line, value=result_of_query_in_query)
         return result_of_query_in_query
 
     def wait_for_stats_counter(self, component, config_id, instance, state_type="a", counter_type="processed", message_counter=1):
