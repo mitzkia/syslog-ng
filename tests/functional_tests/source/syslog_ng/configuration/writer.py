@@ -7,7 +7,8 @@ class SyslogNgConfigWriter(object):
         self.testdb_path_database = testdb_path_database
 
         self.syslog_ng_config_content = ""
-        self.first_place_driver_options = ["file_path"]
+        self.first_place_driver_options = ["file_path", "ip"]
+        self.disk_buffer_options = ['disk_buf_size', "mem_buf_length", "mem_buf_size", "reliable", "dir", "qout_size"]
 
     def write_raw_config(self, raw_config, file_writer, topology):
         syslog_ng_config_path = self.file_register.get_registered_file_path(prefix="config_%s" % topology, extension="conf")
@@ -52,14 +53,26 @@ class SyslogNgConfigWriter(object):
                 self.syslog_ng_config_content += "    %s(%s);\n" % (option_name, option_value)
         self.syslog_ng_config_content += globals_options_footer
 
-    def render_first_place_driver_options(self, driver_options):
+    def render_first_place_driver_options(self, driver_options, statement_name):
         for option_name, option_value in driver_options.items():
             if option_name in self.first_place_driver_options:
-                self.syslog_ng_config_content += "        %s\n" % option_value
+                if (option_name == "ip") and (statement_name == "source"):
+                    self.syslog_ng_config_content += "        %s(%s)\n" % (option_name, option_value)
+                else:
+                    self.syslog_ng_config_content += "        %s\n" % option_value
+
+    def render_disk_buffer_options(self, driver_options):
+        disk_buffer_options = set(driver_options.keys()).intersection(self.disk_buffer_options)
+        if len(disk_buffer_options) != 0:
+            self.syslog_ng_config_content += "        disk_buffer(\n"
+            self.syslog_ng_config_content += "            dir(%s)\n" % (self.testdb_path_database.testcase_working_dir)
+            for option_name in disk_buffer_options:
+                self.syslog_ng_config_content += "            %s(%s)\n" % (option_name, driver_options[option_name])
+            self.syslog_ng_config_content += "        )\n"
 
     def render_driver_options(self, driver_options):
         for option_name, option_value in driver_options.items():
-            if (option_name not in self.first_place_driver_options) and (option_value != "default"):
+            if (option_name not in self.first_place_driver_options) and (option_name not in self.disk_buffer_options) and (option_value != "default"):
                 self.syslog_ng_config_content += "        %s(%s)\n" % (option_name, option_value)
 
     def render_statements(self, statement_name):
@@ -73,7 +86,9 @@ class SyslogNgConfigWriter(object):
                 self.syslog_ng_config_content += "    %s (\n" % driver_name
 
                 # driver options
-                self.render_first_place_driver_options(driver_options)
+                self.render_first_place_driver_options(driver_options, statement_name)
+                if (statement_name == "destination") and (self.driver_data_provider.get_all_drivers_with_property(property_name="disk_buffer_support", property_value=True)):
+                    self.render_disk_buffer_options(driver_options)
                 self.render_driver_options(driver_options)
 
                 # driver footer
