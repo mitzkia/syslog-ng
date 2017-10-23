@@ -3,6 +3,7 @@ from source.testdb.path.path_database import TestdbPathDatabase
 from source.testdb.config.config_context import TestdbConfigContext
 from source.testdb.logger.logger import TestdbLogger
 from source.register.file import FileRegister
+from source.register.port import PortRegister
 from source.driver_io.file.common import FileCommon
 from source.driver_io.file.writer import FileWriter
 from source.driver_io.file.listener import FileListener
@@ -68,6 +69,10 @@ class SetupClasses(object):
                     testdb_logger=getattr(self, "testdb_logger_for_%s" % topology),
                     testdb_path_database=getattr(self, "testdb_path_database_for_%s" % topology),
                 ))
+        setattr(self, "port_register_for_%s" % topology,
+                PortRegister(
+                    testdb_logger=getattr(self, "testdb_logger_for_%s" % topology),
+                ))
         setattr(self, "file_common_for_%s" % topology,
                 FileCommon(
                     testdb_logger=getattr(self, "testdb_logger_for_%s" % topology),
@@ -93,6 +98,7 @@ class SetupClasses(object):
 
         registers = {
             "file": getattr(self, "file_register_for_%s" % topology),
+            "port": getattr(self, "port_register_for_%s" % topology),
         }
 
         setattr(self, "driver_data_provider_for_%s" % topology,
@@ -174,6 +180,7 @@ class SetupClasses(object):
             self.testdb_logger = self.testdb_logger_for_server
 
             self.file_register = self.file_register_for_server
+            self.port_register = self.port_register_for_server
             self.file_common = self.file_common_for_server
             self.file_writer = self.file_writer_for_server
             self.file_listener = self.file_listener_for_server
