@@ -59,6 +59,25 @@ class DriverDataProvider(object):
                     "listener": listeners['file'],
                 },
             },
+            "wildcard_file": {
+                "group_type": "source",
+                "driver_properties": {
+                    "config_type": "file_based",
+                    "connection_type": "file_based",
+                    "socket_type": "",
+                    "message_format": "rfc3164",
+                    "disk_buffer_support": True,
+                    "tls_support": False,
+                },
+                "mandatory_options": {
+                    "base_dir": "",
+                    "filename_pattern": "",
+                },
+                "driver_io": {
+                    "writer": writers['file'],
+                    "listener": listeners['file'],
+                },
+            },
         }
 
     def is_driver_in_specified_connection_type(self, driver_name, connection_type):
@@ -136,6 +155,10 @@ class DriverDataProvider(object):
     def get_option_value_for_option_name(self, driver_id, option_name):
         if option_name == "file_path":
             return self.file_register.get_registered_file_path(prefix=driver_id)
+        elif option_name == "base_dir":
+            return self.file_register.get_registered_dir_path(prefix=driver_id)
+        elif option_name == "filename_pattern":
+            return self.file_register.get_registered_file_name(prefix=driver_id)
         else:
             self.log_writer.error("Unknown mandatory option: %s" % option_name)
             assert False
