@@ -58,7 +58,10 @@ class MessageInterface(object):
     def create_message_for_source_driver(self, driver_name="file", defined_message_parts=None, counter=1):
         if not defined_message_parts:
             defined_message_parts = {}
-        if driver_name in ['file']:
+        if driver_name == "pipe":
+            defined_message_parts['hostname'] = "skip"
+            generated_message = self.create_multiple_bsd_messages(defined_bsd_message_parts=defined_message_parts, counter=counter)
+        elif driver_name in self.driver_data_provider.driver_database.keys():
             generated_message = self.create_multiple_bsd_messages(defined_bsd_message_parts=defined_message_parts, counter=counter)
         else:
             self.log_writer.error("Not defined, or unknown driver: %s" % driver_name)
