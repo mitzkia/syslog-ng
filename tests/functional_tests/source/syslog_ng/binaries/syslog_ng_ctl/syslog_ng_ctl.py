@@ -67,7 +67,7 @@ class SyslogNgCtl(object):
                 for source_driver_id, source_driver_properties in source_driver.items():
                     if source_driver_properties['driver_name'] not in ["internal", "udp"]:
                         driver_name = source_driver_properties['driver_name']
-                        if driver_name in ['tcp', 'network', 'syslog']:
+                        if driver_name in ['tcp', 'network', 'syslog', 'udp6', 'tcp6', 'unix-dgram', 'unix-stream']:
                             connection_mandatory_options = "%s,%s" % (driver_name, source_driver_properties['connection_mandatory_options'][0])
                             state_type = 'o'
                         else:
@@ -85,13 +85,30 @@ class SyslogNgCtl(object):
                 for destination_driver_id, destination_driver_properties in destination_driver.items():
                     if "internal" not in destination_driver_properties['connection_mandatory_options']:
                         driver_name = destination_driver_properties['driver_name']
-                        if driver_name in ['tcp', 'udp', 'network', 'syslog']:
+                        if driver_name in ['tcp', 'tcp6', 'udp', 'udp6', 'network', 'syslog']:
                             if driver_name == "udp":
                                 connection_mandatory_options = "udp,%s:%s" % (destination_driver_properties['connection_mandatory_options'][0], destination_driver_properties['connection_mandatory_options'][1])
+                            elif driver_name == "udp6":
+                                connection_mandatory_options = "udp,[%s]:%s" % (destination_driver_properties['connection_mandatory_options'][0], destination_driver_properties['connection_mandatory_options'][1])
+                            elif driver_name == "tcp6":
+                                connection_mandatory_options = "tcp,[%s]:%s" % (destination_driver_properties['connection_mandatory_options'][0], destination_driver_properties['connection_mandatory_options'][1])
                             else:
                                 connection_mandatory_options = "tcp,%s:%s" % (destination_driver_properties['connection_mandatory_options'][0], destination_driver_properties['connection_mandatory_options'][1])
                         else:
-                            connection_mandatory_options = destination_driver_properties['connection_mandatory_options']
+                            if driver_name in ["unix-stream", "unix-dgram"]:
+                                connection_mandatory_options = "%s,localhost.afunix:%s" % (driver_name, destination_driver_properties['connection_mandatory_options'])
+                            elif driver_name == "amqp":
+                                connection_mandatory_options = "%s,/,%s,%s,syslog,fanout" % (driver_name, destination_driver_properties['connection_mandatory_options'][0], destination_driver_properties['connection_mandatory_options'][1])
+                            elif driver_name == "riemann":
+                                connection_mandatory_options = "%s,%s,%s" % (driver_name, destination_driver_properties['connection_mandatory_options'][0], destination_driver_properties['connection_mandatory_options'][1])
+                            elif driver_name == "http":
+                                connection_mandatory_options = "%s,%s" % (driver_name, destination_driver_properties['connection_mandatory_options'])
+                            elif driver_name == "mongodb":
+                                connection_mandatory_options = "%s,%s,syslog,,messages" % (driver_name, destination_driver_properties['connection_mandatory_options'].split("//")[1].split("/")[0])
+                            elif driver_name == "smtp":
+                                connection_mandatory_options = "%s,%s,%s" % (driver_name, destination_driver_properties['connection_mandatory_options'][0], destination_driver_properties['connection_mandatory_options'][1])
+                            else:
+                                connection_mandatory_options = destination_driver_properties['connection_mandatory_options']
                         assert self.wait_for_query_counter(component="dst.%s" % driver_name, config_id=destination_statement_id, instance=connection_mandatory_options, counter_type="processed", message_counter=message_counter) is True
                         assert self.wait_for_query_counter(component="dst.%s" % driver_name, config_id=destination_statement_id, instance=connection_mandatory_options, counter_type="written", message_counter=message_counter) is True
                         assert self.wait_for_query_counter(component="dst.%s" % driver_name, config_id=destination_statement_id, instance=connection_mandatory_options, counter_type="dropped", message_counter=0) is True

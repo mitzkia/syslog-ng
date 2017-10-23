@@ -10,6 +10,27 @@ class DriverDataProvider(object):
         ipv6_address = "'::1'"
 
         self.driver_database = {
+            "amqp": {
+                "group_type": "destination",
+                "driver_properties": {
+                    "config_type": "remote_socket_based",
+                    "connection_type": "remote_socket_based",
+                    "socket_type": "stream",
+                    "message_format": "json",
+                    "disk_buffer_support": True,
+                    "tls_support": False,
+                },
+                "mandatory_options": {
+                    "host": ipv4_address,
+                    "port": 5672,
+                    "username": "guest",
+                    "password": "guest"
+                },
+                "driver_io": {
+                    "writer": writers['local_socket'],
+                    "listener": listeners['local_socket'],
+                },
+            },
             "file": {
                 "group_type": "source_destination",
                 "driver_properties": {
@@ -26,6 +47,43 @@ class DriverDataProvider(object):
                 "driver_io": {
                     "writer": writers['file'],
                     "listener": listeners['file'],
+                },
+            },
+            "http": {
+                "group_type": "destination",
+                "driver_properties": {
+                    "config_type": "remote_url_based",
+                    "connection_type": "remote_socket_based",
+                    "socket_type": "stream",
+                    "message_format": "json",
+                    "disk_buffer_support": True,
+                    "tls_support": False,
+                },
+                "mandatory_options": {
+                    "url": "'http://localhost:8080'",
+                },
+                "driver_io": {
+                    "writer": writers['local_socket'],
+                    "listener": listeners['local_socket'],
+                },
+            },
+            "mongodb": {
+                "group_type": "destination",
+                "driver_properties": {
+                    "config_type": "remote_uri_based",
+                    "connection_type": "remote_socket_based",
+                    "socket_type": "stream",
+                    "message_format": "json",
+                    "disk_buffer_support": True,
+                    "tls_support": False,
+                },
+                "mandatory_options": {
+                    "uri": "'mongodb://localhost:27017/syslog'",
+                    "collection": "messages"
+                },
+                "driver_io": {
+                    "writer": writers['local_socket'],
+                    "listener": listeners['local_socket'],
                 },
             },
             "internal": {
@@ -81,6 +139,86 @@ class DriverDataProvider(object):
                     "listener": listeners['file'],
                 },
             },
+            "redis": {
+                "group_type": "crash",
+                "driver_properties": {
+                    "config_type": "remote_socket_based",
+                    "connection_type": "remote_socket_based",
+                    "socket_type": "stream",
+                    "message_format": "json",
+                    "disk_buffer_support": True,
+                    "tls_support": False,
+                },
+                "mandatory_options": {
+                    "host": ipv4_address,
+                    "port": 6379,
+                },
+                "driver_io": {
+                    "writer": writers['local_socket'],
+                    "listener": listeners['local_socket'],
+                },
+            },
+            "riemann": {
+                "group_type": "destination",
+                "driver_properties": {
+                    "config_type": "remote_socket_based",
+                    "connection_type": "remote_socket_based",
+                    "socket_type": "stream",
+                    "message_format": "json",
+                    "disk_buffer_support": True,
+                    "tls_support": False,
+                },
+                "mandatory_options": {
+                    "host": ipv4_address,
+                    "port": 5555,
+                },
+                "driver_io": {
+                    "writer": writers['local_socket'],
+                    "listener": listeners['local_socket'],
+                },
+            },
+            "smtp": {
+                "group_type": "destination",
+                "driver_properties": {
+                    "config_type": "remote_socket_based",
+                    "connection_type": "remote_socket_based",
+                    "socket_type": "stream",
+                    "message_format": "json",
+                    "disk_buffer_support": True,
+                    "tls_support": False,
+                },
+                "mandatory_options": {
+                    "host": ipv4_address,
+                    "port": 1025,
+                    "from": "test@localhost.com",
+                    "to": "test@localhost.com",
+                    "subject": "test",
+                    "body": "test",
+                },
+                "driver_io": {
+                    "writer": writers['local_socket'],
+                    "listener": listeners['local_socket'],
+                },
+            },
+            "stomp": {
+                "group_type": "crash",
+                "driver_properties": {
+                    "config_type": "remote_socket_based",
+                    "connection_type": "remote_socket_based",
+                    "socket_type": "stream",
+                    "message_format": "json",
+                    "disk_buffer_support": True,
+                    "tls_support": False,
+                },
+                "mandatory_options": {
+                    "host": ipv4_address,
+                    "port": 61613,
+                },
+                "driver_io": {
+                    "writer": writers['local_socket'],
+                    "listener": listeners['local_socket'],
+                },
+            },
             "syslog": {
                 "group_type": "source_destination",
                 "driver_properties": {
@@ -119,6 +257,25 @@ class DriverDataProvider(object):
                     "listener": listeners['local_socket'],
                 },
             },
+            "tcp6": {
+                "group_type": "source_destination",
+                "driver_properties": {
+                    "config_type": "local_socket_based",
+                    "connection_type": "local_socket_based",
+                    "socket_type": "stream",
+                    "message_format": "rfc3164",
+                    "disk_buffer_support": True,
+                    "tls_support": True,
+                },
+                "mandatory_options": {
+                    "ip": ipv6_address,
+                    "port": "",
+                },
+                "driver_io": {
+                    "writer": writers['local_socket'],
+                    "listener": listeners['local_socket'],
+                },
+            },
             "udp": {
                 "group_type": "source_destination",
                 "driver_properties": {
@@ -132,6 +289,61 @@ class DriverDataProvider(object):
                 "mandatory_options": {
                     "ip": ipv4_address,
                     "port": "",
+                },
+                "driver_io": {
+                    "writer": writers['local_socket'],
+                    "listener": listeners['local_socket'],
+                },
+            },
+            "udp6": {
+                "group_type": "source_destination",
+                "driver_properties": {
+                    "config_type": "local_socket_based",
+                    "connection_type": "local_socket_based",
+                    "socket_type": "dgram",
+                    "message_format": "rfc3164",
+                    "disk_buffer_support": True,
+                    "tls_support": True,
+                },
+                "mandatory_options": {
+                    "ip": ipv6_address,
+                    "port": "",
+                },
+                "driver_io": {
+                    "writer": writers['local_socket'],
+                    "listener": listeners['local_socket'],
+                },
+            },
+            "unix-dgram": {
+                "group_type": "source_destination",
+                "driver_properties": {
+                    "config_type": "file_based",
+                    "connection_type": "local_socket_based",
+                    "socket_type": "dgram",
+                    "message_format": "rfc3164",
+                    "disk_buffer_support": True,
+                    "tls_support": False,
+                },
+                "mandatory_options": {
+                    "file_path": "",
+                },
+                "driver_io": {
+                    "writer": writers['local_socket'],
+                    "listener": listeners['local_socket'],
+                },
+            },
+            "unix-stream": {
+                "group_type": "source_destination",
+                "driver_properties": {
+                    "config_type": "file_based",
+                    "connection_type": "local_socket_based",
+                    "socket_type": "stream",
+                    "message_format": "rfc3164",
+                    "disk_buffer_support": True,
+                    "tls_support": False,
+                },
+                "mandatory_options": {
+                    "file_path": "",
                 },
                 "driver_io": {
                     "writer": writers['local_socket'],
@@ -206,6 +418,12 @@ class DriverDataProvider(object):
             return selected_mandatory_options['file_path']
         elif self.is_driver_in_specified_config_type(driver_name=driver_name, config_type="local_socket_based"):
             return (selected_mandatory_options['ip'].replace("'", ""), selected_mandatory_options['port'])
+        elif self.is_driver_in_specified_config_type(driver_name=driver_name, config_type="remote_socket_based"):
+            return (selected_mandatory_options['host'].replace("'", ""), selected_mandatory_options['port'])
+        elif self.is_driver_in_specified_config_type(driver_name=driver_name, config_type="remote_url_based"):
+            return selected_mandatory_options['url'].replace("'", "")
+        elif self.is_driver_in_specified_config_type(driver_name=driver_name, config_type="remote_uri_based"):
+            return selected_mandatory_options['uri'].replace("'", "")
         elif self.is_driver_in_specified_connection_type(driver_name=driver_name, connection_type="internal"):
             # There is no mandatory option
             pass
