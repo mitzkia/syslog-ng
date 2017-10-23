@@ -150,6 +150,7 @@ class SetupClasses(object):
                     testdb_logger=getattr(self, "testdb_logger_for_%s" % topology),
                     syslog_ng_config_interface=getattr(self, "syslog_ng_config_interface_for_%s" % topology),
                     message_interface=getattr(self, "message_interface_for_%s" % topology),
+                    driver_data_provider=getattr(self, "driver_data_provider_for_%s" % topology),
                 ))
         setattr(self, "threaded_listener_for_%s" % topology,
                 ThreadedListener(

@@ -1,8 +1,9 @@
 class Reporter(object):
-    def __init__(self, testdb_logger, syslog_ng_config_interface, message_interface):
+    def __init__(self, testdb_logger, syslog_ng_config_interface, message_interface, driver_data_provider):
         self.log_writer = testdb_logger.set_logger("Reporter")
         self.syslog_ng_config_interface = syslog_ng_config_interface
         self.message_interface = message_interface
+        self.driver_data_provider = driver_data_provider
 
         self.input_message_collector = {}
         self.expected_message_collector = {}
@@ -55,10 +56,10 @@ class Reporter(object):
 
     def check_if_messages_arrived_from_every_source(self):
         if self.actual_message_collector.keys() != self.expected_message_collector.keys():
-            for actual_dict_key_element in self.actual_message_collector.keys():
+            for actual_dict_key_element in self.actual_message_collector:
                 if actual_dict_key_element not in self.expected_message_collector.keys():
                     self.log_writer.error("We did not expect message for [%s], but it arrived." % actual_dict_key_element)
-            for expected_dict_key_element in self.expected_message_collector.keys():
+            for expected_dict_key_element in self.expected_message_collector:
                 if expected_dict_key_element not in self.actual_message_collector.keys():
                     self.log_writer.error("We expect message for [%s], but it not arrived." % expected_dict_key_element)
             return False
