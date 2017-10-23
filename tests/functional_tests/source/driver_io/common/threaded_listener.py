@@ -18,7 +18,7 @@ class ThreadedListener(object):
         destination_statement_properties = self.syslog_ng_config_interface.get_destination_statement_properties()
         for destination_statement_id, destination_driver in destination_statement_properties.items():
             for destination_driver_id, destination_driver_properties in destination_driver.items():
-                if "internal" not in destination_driver_properties['connection_mandatory_options']:
+                if "internal" not in destination_driver_properties['connection_mandatory_options'] and destination_driver_properties['driver_name'] not in self.driver_data_provider.get_all_drivers_with_property(property_name="connection_type", property_value="remote_socket_based"):
                     process = Process(
                         target=self.driver_listener.wait_for_content_on_driver,
                         args=(destination_driver_properties, destination_driver_id, self.message_queue)
