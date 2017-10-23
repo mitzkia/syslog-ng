@@ -1,8 +1,28 @@
 from source.testdb.initializer.setup_testcase import SetupTestcase
 
-def test_use_single_drivers_default(request):
+def test_use_single_drivers_default_file(request):
     syslog_ng_tc = SetupTestcase(testcase_context=request)
     syslog_ng_tc.build_config_with_single_drivers(source_driver="file", destination_driver="file")
+    syslog_ng_tc.run()
+
+def test_use_single_drivers_default_pipe(request):
+    syslog_ng_tc = SetupTestcase(testcase_context=request)
+    syslog_ng_tc.build_config_with_single_drivers(source_driver="pipe", destination_driver="pipe")
+    syslog_ng_tc.run()
+
+def test_use_single_drivers_default_tcp(request):
+    syslog_ng_tc = SetupTestcase(testcase_context=request)
+    syslog_ng_tc.build_config_with_single_drivers(source_driver="tcp", destination_driver="tcp")
+    syslog_ng_tc.run()
+
+def test_use_single_drivers_default_tcp_disk_buffer(request):
+    syslog_ng_tc = SetupTestcase(testcase_context=request)
+    syslog_ng_tc.build_config_with_single_drivers(source_driver="tcp", destination_driver="tcp", destination_options={"disk_buf_size": 400000, "mem_buf_size": 10000, "mem_buf_length": 20000, "reliable": "no"})
+    syslog_ng_tc.run()
+
+def test_use_single_drivers_default_udp(request):
+    syslog_ng_tc = SetupTestcase(testcase_context=request)
+    syslog_ng_tc.build_config_with_single_drivers(source_driver="udp", destination_driver="udp")
     syslog_ng_tc.run()
 
 def test_use_single_drivers_with_templated_destination(request):
