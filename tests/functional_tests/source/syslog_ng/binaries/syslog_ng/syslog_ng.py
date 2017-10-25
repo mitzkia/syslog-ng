@@ -40,6 +40,10 @@ class SyslogNg(object):
     def syslog_ng_reload_messages(self):
         return ["New configuration initialized", "Configuration reload request received, reloading configuration", "Configuration reload finished"]
 
+    @property
+    def unexpected_patterns_in_console_log(self):
+        return ["Error parsing", "WARNING", "Unable to detect"]
+
 # high level functions
     def start(self, external_tool=None, expected_run=True):
         self.expected_run = expected_run
@@ -234,3 +238,26 @@ class SyslogNg(object):
         if concurent_syslog_ng_pid or concurent_rsyslog_pid:
             raise SystemExit("Concurent syslogger already running, please stop it, syslog-ng.pid: [%s], rsyslog.pid: [%s]" % (
                 concurent_syslog_ng_pid, concurent_rsyslog_pid), 1)
+
+    def is_unexpected_pattern_in_console_log(self):
+        unexpected_console_log_lines = ""
+        with open(self.syslog_ng_path_database.get_stderr_log_path(), 'r') as file_object:
+            stderr_content_lines = file_object.readlines()
+            for line in stderr_content_lines:
+                if ("Adding include file" not in line) and \
+                        ("Trying to open module" not in line) and \
+                        ("Registering candidate plugin" not in line) and \
+                        ("Reading shared object for a candidate module" not in line) and \
+                        ("Starting to read include file" not in line) and \
+                        ("Finishing include" not in line) and \
+                        ("Compiling" not in line) and \
+                        ("Add path to classpath" not in line) and \
+                        ("Setting value" not in line) and \
+                        ("Last message got confirmed" not in line) and \
+                        ("Checking if the followed file has new lines" not in line) and \
+                        ("log_reader_fd_check" not in line) and \
+                        ("Module loaded and initialized successfully" not in line) and \
+                        ("Running application hooks" not in line) and \
+                        ("Syslog connection" not in line):
+                    unexpected_console_log_lines += line
+            self.log_writer.error("Found unexpected lines in console log [\n%s\n]" % unexpected_console_log_lines)
