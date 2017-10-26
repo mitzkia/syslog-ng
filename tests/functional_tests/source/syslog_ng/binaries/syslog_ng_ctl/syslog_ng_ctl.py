@@ -86,14 +86,16 @@ class SyslogNgCtl(object):
                     if "internal" not in destination_driver_properties['connection_mandatory_options']:
                         driver_name = destination_driver_properties['driver_name']
                         if driver_name in ['tcp', 'tcp6', 'udp', 'udp6', 'network', 'syslog']:
+                            ip_address = destination_driver_properties['connection_mandatory_options'][0]
+                            port = destination_driver_properties['connection_mandatory_options'][1]
                             if driver_name == "udp":
-                                connection_mandatory_options = "udp,%s:%s" % (destination_driver_properties['connection_mandatory_options'][0], destination_driver_properties['connection_mandatory_options'][1])
+                                connection_mandatory_options = "udp,%s:%s" % (ip_address, port)
                             elif driver_name == "udp6":
-                                connection_mandatory_options = "udp,[%s]:%s" % (destination_driver_properties['connection_mandatory_options'][0], destination_driver_properties['connection_mandatory_options'][1])
+                                connection_mandatory_options = "udp,[%s]:%s" % (ip_address, port)
                             elif driver_name == "tcp6":
-                                connection_mandatory_options = "tcp,[%s]:%s" % (destination_driver_properties['connection_mandatory_options'][0], destination_driver_properties['connection_mandatory_options'][1])
+                                connection_mandatory_options = "tcp,[%s]:%s" % (ip_address, port)
                             else:
-                                connection_mandatory_options = "tcp,%s:%s" % (destination_driver_properties['connection_mandatory_options'][0], destination_driver_properties['connection_mandatory_options'][1])
+                                connection_mandatory_options = "tcp,%s:%s" % (ip_address, port)
                         else:
                             if driver_name in ["unix-stream", "unix-dgram"]:
                                 connection_mandatory_options = "%s,localhost.afunix:%s" % (driver_name, destination_driver_properties['connection_mandatory_options'])
