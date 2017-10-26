@@ -37,10 +37,12 @@ class MessageInterface(object):
         generated_bsd_message_parts = self.set_message_parts(defined_message_parts=defined_bsd_message_parts, default_message_parts=self.default_bsd_message_parts)
         return self.bsd_syslog.create_bsd_message(generated_message_parts=generated_bsd_message_parts, counter=counter, add_newline=add_newline)
 
-    def create_multiple_bsd_messages(self, defined_bsd_message_parts=None, counter=2, add_newline=False):
+    def create_multiple_bsd_messages(self, defined_bsd_message_parts=None, counter=2, add_newline=False, raw=False):
         messages = []
         for actual_counter in range(1, counter + 1):
             messages.append(self.create_bsd_message(defined_bsd_message_parts=defined_bsd_message_parts, counter=actual_counter, add_newline=add_newline))
+        if raw:
+            return ''.join(messages)
         return messages
 
 # Interface for IETFSyslog
@@ -69,12 +71,12 @@ class MessageInterface(object):
             assert False
         return generated_message
 
-    def create_message_for_destination_driver(self, driver_name="file", defined_message_parts=None, counter=1):
+    def create_message_for_destination_driver(self, driver_name="file", defined_message_parts=None, counter=1, raw=False):
         if not defined_message_parts:
             defined_message_parts = {}
         if driver_name in self.driver_data_provider.get_all_drivers_with_property(property_name="connection_type", property_value="file_based"):
             defined_message_parts['priority'] = "skip"
-            generated_message = self.create_multiple_bsd_messages(defined_bsd_message_parts=defined_message_parts, counter=counter, add_newline=True)
+            generated_message = self.create_multiple_bsd_messages(defined_bsd_message_parts=defined_message_parts, counter=counter, add_newline=True, raw=raw)
         elif driver_name in self.driver_data_provider.get_all_drivers_with_property(property_name="connection_type", property_value="local_socket_based") and driver_name in self.driver_data_provider.get_all_drivers_with_property(property_name="message_format", property_value="rfc3164"):
             defined_message_parts['hostname'] = socket.gethostname()
             generated_message = self.create_multiple_bsd_messages(defined_bsd_message_parts=defined_message_parts, counter=counter, add_newline=True)
