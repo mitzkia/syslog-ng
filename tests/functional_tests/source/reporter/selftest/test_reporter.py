@@ -1,3 +1,4 @@
+import socket
 from source.testdb.initializer.setup_classes import SetupClasses
 
 
@@ -15,7 +16,7 @@ def test_save_expected_message(request):
     # debug
     sc.testdb_reporter.dump_collectors()
 
-    assert sc.testdb_reporter.expected_message_collector == {dst_driver_id: ['Jun  1 08:05:04 tristram testprogram[9999]: test ÁÉŐÚŰÓÜ-ááéúóö message 1\n']}
+    assert sc.testdb_reporter.expected_message_collector == {dst_driver_id: ['Jun  1 08:05:04 %s testprogram[9999]: test ÁÉŐÚŰÓÜ-ááéúóö message 1\n' % socket.gethostname()]}
 
 
 def test_save_expected_message_with_defined_message_parts(request):
@@ -41,8 +42,8 @@ def test_save_expected_message_with_defined_message_parts_with_multiple_destinat
     sc.testdb_reporter.dump_collectors()
 
     assert sc.testdb_reporter.expected_message_collector == {
-        dst_driver_id1: ['Jun  1 08:05:04 tristram test-program[9999]: test ÁÉŐÚŰÓÜ-ááéúóö message 1\n'],
-        dst_driver_id2: ['Jun  1 08:05:04 tristram test-program[9999]: test ÁÉŐÚŰÓÜ-ááéúóö message 1\n']
+        dst_driver_id1: ['Jun  1 08:05:04 %s test-program[9999]: test ÁÉŐÚŰÓÜ-ááéúóö message 1\n' % socket.gethostname()],
+        dst_driver_id2: ['Jun  1 08:05:04 %s test-program[9999]: test ÁÉŐÚŰÓÜ-ááéúóö message 1\n' % socket.gethostname()]
     }
 
 
@@ -57,8 +58,8 @@ def test_save_expected_message_counter_3(request):
 
     assert sc.testdb_reporter.expected_message_collector == {
         dst_driver_id: [
-            'Jun  1 08:05:04 tristram testprogram[9999]: test ÁÉŐÚŰÓÜ-ááéúóö message 1\n',
-            'Jun  1 08:05:04 tristram testprogram[9999]: test ÁÉŐÚŰÓÜ-ááéúóö message 2\n',
-            'Jun  1 08:05:04 tristram testprogram[9999]: test ÁÉŐÚŰÓÜ-ááéúóö message 3\n'
+            'Jun  1 08:05:04 %s testprogram[9999]: test ÁÉŐÚŰÓÜ-ááéúóö message 1\n' % socket.gethostname(),
+            'Jun  1 08:05:04 %s testprogram[9999]: test ÁÉŐÚŰÓÜ-ááéúóö message 2\n' % socket.gethostname(),
+            'Jun  1 08:05:04 %s testprogram[9999]: test ÁÉŐÚŰÓÜ-ááéúóö message 3\n' % socket.gethostname()
         ]
     }
