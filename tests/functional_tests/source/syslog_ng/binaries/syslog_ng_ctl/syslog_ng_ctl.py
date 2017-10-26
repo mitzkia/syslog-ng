@@ -74,7 +74,7 @@ class SyslogNgCtl(object):
                             connection_mandatory_options = source_driver_properties['connection_mandatory_options']
                             state_type = 'a'
                         assert self.wait_for_query_counter(component="src.%s" % driver_name, config_id=source_statement_id, instance=connection_mandatory_options, counter_type="processed", message_counter=message_counter) is True
-                        assert self.wait_for_stats_counter(component="src.%s" % driver_name, config_id=source_statement_id, instance=connection_mandatory_options, state_type='a', counter_type="processed", message_counter=message_counter) is True
+                        assert self.wait_for_stats_counter(component="src.%s" % driver_name, config_id=source_statement_id, instance=connection_mandatory_options, state_type=state_type, counter_type="processed", message_counter=message_counter) is True
         else:
             self.log_writer.info("Skip checking source counters. (Maybe raw config was used)")
 
@@ -129,6 +129,7 @@ class SyslogNgCtl(object):
                         assert self.wait_for_stats_counter(component="dst.%s" % driver_name, config_id=destination_statement_id, instance=connection_mandatory_options, state_type="a", counter_type="memory_usage", message_counter=0) is True
         else:
             self.log_writer.info("Skip checking destination counters. (Maybe raw config was used)")
+
 
     def check_counters(self, message_counter=1):
         self.log_writer.info("STEP Checking statistical counters")
