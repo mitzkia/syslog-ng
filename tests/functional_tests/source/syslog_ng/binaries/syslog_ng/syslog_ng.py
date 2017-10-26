@@ -38,7 +38,7 @@ class SyslogNg(object):
 
     @property
     def syslog_ng_reload_messages(self):
-        return ["New configuration initialized", "Configuration reload request received, reloading configuration"]
+        return ["New configuration initialized", "Configuration reload request received, reloading configuration", "Configuration reload finished"]
 
 # high level functions
     def start(self, external_tool=None, expected_run=True):
