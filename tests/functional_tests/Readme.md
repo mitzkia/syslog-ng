@@ -5,7 +5,7 @@
   * installed syslog-ng (from package or from source)
 
 * Package requirements:
-  * required packages: python3, pytest, colorlog
+  * required packages: python3, pytest, colorlog, psutil
   * optional packages: gdb, strace, valgrind, pytest-cov, pytest-mock, pytest-profiling, pytest-xdist, pytest-repeat
 
 ## How to start using the framework
