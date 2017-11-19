@@ -1,3 +1,4 @@
+import socket
 from source.testdb.initializer.setup_classes import SetupClasses
 
 
@@ -9,8 +10,8 @@ def init_unittest(request):
 def test_create_message_for_source_driver(request):
     sc = init_unittest(request)
     expected_messages = [
-        '<38>Jun  1 08:05:04 tristram testprogram[9999]: test ÁÉŐÚŰÓÜ-ááéúóö message 1',
-        '<38>Jun  1 08:05:04 tristram testprogram[9999]: test ÁÉŐÚŰÓÜ-ááéúóö message 2'
+        '<38>Jun  1 08:05:04 %s testprogram[9999]: test ÁÉŐÚŰÓÜ-ááéúóö message 1' % socket.gethostname(),
+        '<38>Jun  1 08:05:04 %s testprogram[9999]: test ÁÉŐÚŰÓÜ-ááéúóö message 2' % socket.gethostname()
     ]
     assert sc.message_interface.create_message_for_source_driver(driver_name="file", counter=2) == expected_messages
 
@@ -18,22 +19,22 @@ def test_create_message_for_source_driver(request):
 def test_create_message_for_destination_driver(request):
     sc = init_unittest(request)
     expected_messages = [
-        'Jun  1 08:05:04 tristram testprogram[9999]: test ÁÉŐÚŰÓÜ-ááéúóö message 1\n',
+        'Jun  1 08:05:04 %s testprogram[9999]: test ÁÉŐÚŰÓÜ-ááéúóö message 1\n' % socket.gethostname(),
     ]
     assert sc.message_interface.create_message_for_destination_driver(driver_name="file") == expected_messages
 
 
 def test_create_bsd_message(request):
     sc = init_unittest(request)
-    expected_messages = "<38>Jun  1 08:05:04 tristram testprogram[9999]: test ÁÉŐÚŰÓÜ-ááéúóö message 1"
+    expected_messages = "<38>Jun  1 08:05:04 %s testprogram[9999]: test ÁÉŐÚŰÓÜ-ááéúóö message 1" % socket.gethostname()
     assert sc.message_interface.create_bsd_message() == expected_messages
 
 
 def test_create_multiple_bsd_messages(request):
     sc = init_unittest(request)
     expected_messages = [
-        '<38>Jun  1 08:05:04 tristram testprogram[9999]: test ÁÉŐÚŰÓÜ-ááéúóö message 1',
-        '<38>Jun  1 08:05:04 tristram testprogram[9999]: test ÁÉŐÚŰÓÜ-ááéúóö message 2'
+        '<38>Jun  1 08:05:04 %s testprogram[9999]: test ÁÉŐÚŰÓÜ-ááéúóö message 1' % socket.gethostname(),
+        '<38>Jun  1 08:05:04 %s testprogram[9999]: test ÁÉŐÚŰÓÜ-ááéúóö message 2' % socket.gethostname()
     ]
     assert sc.message_interface.create_multiple_bsd_messages() == expected_messages
 
@@ -55,15 +56,15 @@ def test_create_bsd_message_with_defined_message_parts(request):
 
 def test_create_ietf_message(request):
     sc = init_unittest(request)
-    expected_messages = '124 <38>1 2017-06-01T08:05:04+02:00 tristram testprogram 9999 - [meta sequenceId="1"] test ÁÉŐÚŰÓÜ-ááéúóö message 1'
+    expected_messages = '124 <38>1 2017-06-01T08:05:04+02:00 %s testprogram 9999 - [meta sequenceId="1"] test ÁÉŐÚŰÓÜ-ááéúóö message 1' % socket.gethostname()
     assert sc.message_interface.create_ietf_message() == expected_messages
 
 
 def test_create_multiple_ietf_message(request):
     sc = init_unittest(request)
     expected_messages = [
-        '124 <38>1 2017-06-01T08:05:04+02:00 tristram testprogram 9999 - [meta sequenceId="1"] test ÁÉŐÚŰÓÜ-ááéúóö message 1',
-        '124 <38>1 2017-06-01T08:05:04+02:00 tristram testprogram 9999 - [meta sequenceId="2"] test ÁÉŐÚŰÓÜ-ááéúóö message 2'
+        '124 <38>1 2017-06-01T08:05:04+02:00 %s testprogram 9999 - [meta sequenceId="1"] test ÁÉŐÚŰÓÜ-ááéúóö message 1' % socket.gethostname(),
+        '124 <38>1 2017-06-01T08:05:04+02:00 %s testprogram 9999 - [meta sequenceId="2"] test ÁÉŐÚŰÓÜ-ááéúóö message 2' % socket.gethostname()
     ]
     assert sc.message_interface.create_multiple_ietf_messages() == expected_messages
 
