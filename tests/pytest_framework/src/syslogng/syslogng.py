@@ -28,18 +28,9 @@ class SyslogNg(object):
         self.registered_start = 0
         self.registered_stop = 0
         self.registered_reload = 0
-
-    @property
-    def syslog_ng_start_message(self):
-        return ["syslog-ng starting up;"]
-
-    @property
-    def syslog_ng_stop_message(self):
-        return ["syslog-ng shutting down"]
-
-    @property
-    def syslog_ng_reload_messages(self):
-        return ["New configuration initialized", "Configuration reload request received, reloading configuration", "Configuration reload finished"]
+        self.syslog_ng_start_message = ["syslog-ng starting up;"]
+        self.syslog_ng_stop_message = ["syslog-ng shutting down"]
+        self.syslog_ng_reload_messages = ["New configuration initialized", "Configuration reload request received, reloading configuration", "Configuration reload finished"]
 
     def start(self, syslog_ng_config, external_tool=None, expected_run=True):
         self.logger.info("syslog-ng start phase 5/1")
