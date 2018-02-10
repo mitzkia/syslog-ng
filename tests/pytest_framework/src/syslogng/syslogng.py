@@ -152,7 +152,7 @@ class SyslogNg(object):
         pid_in_process_list = False
 
         self.registered_start += 1
-        start_message_arrived = self.wait_for_expected_syslog_ng_messages(messages=self.syslog_ng_start_message, expected_occurance=self.registered_start)
+        start_message_arrived = self.wait_for_console_messages(messages=self.syslog_ng_start_message, expected_occurance=self.registered_start)
         self.logger.write_message_based_on_value(message="syslog-ng start phase 5/4: syslog-ng start message arrived", value=start_message_arrived, loglevel=logging.INFO)
         if start_message_arrived:
             control_socket_alive = self.syslog_ng_ctl.wait_for_control_socket_start()
@@ -168,7 +168,7 @@ class SyslogNg(object):
         pid_not_in_process_list = False
 
         self.registered_stop += 1
-        stop_message_arrived = self.wait_for_expected_syslog_ng_messages(messages=self.syslog_ng_stop_message, expected_occurance=self.registered_stop)
+        stop_message_arrived = self.wait_for_console_messages(messages=self.syslog_ng_stop_message, expected_occurance=self.registered_stop)
         self.logger.write_message_based_on_value(message="syslog-ng stop phase 3/2: syslog-ng stop message arrived", value=stop_message_arrived, loglevel=logging.INFO)
         if stop_message_arrived:
             control_socket_not_alive = self.syslog_ng_ctl.wait_for_control_socket_stop()
@@ -184,7 +184,7 @@ class SyslogNg(object):
         pid_in_process_list = False
 
         self.registered_reload += 1
-        reload_message_arrived = self.wait_for_expected_syslog_ng_messages(messages=self.syslog_ng_reload_messages, expected_occurance=self.registered_reload)
+        reload_message_arrived = self.wait_for_console_messages(messages=self.syslog_ng_reload_messages, expected_occurance=self.registered_reload)
         self.logger.write_message_based_on_value(message="syslog-ng reload phase 4/3: syslog-ng reload message arrived", value=reload_message_arrived, loglevel=logging.INFO)
         if reload_message_arrived:
             control_socket_alive = self.syslog_ng_ctl.wait_for_control_socket_start()
@@ -195,7 +195,7 @@ class SyslogNg(object):
         self.is_core_file_exist()
         return reload_message_arrived and control_socket_alive and pid_in_process_list
 
-    def wait_for_expected_syslog_ng_messages(self, messages, expected_occurance=1):
+    def wait_for_console_messages(self, messages, expected_occurance=1):
         result = []
         for message in messages:
             result.append(self.fileio.wait_for_messages_in_file(file_path=self.syslog_ng_runtime_files['stderr_path'], expected_message=message, expected_occurance=expected_occurance))
