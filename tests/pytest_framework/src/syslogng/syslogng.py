@@ -2,7 +2,7 @@ import os
 import shutil
 import logging
 
-from src.common.blocking import wait_till_function_not_false, wait_till_function_not_true
+from src.common.blocking import wait_until_false, wait_until_true
 from src.driverio.fileio import FileIO
 from src.executor.executor_interface import ExecutorInterface
 from src.syslogngctl.syslogngctl import SyslogNgCtl
@@ -87,7 +87,7 @@ class SyslogNg(object):
             self.handle_syslog_ng_start_process_result(syslog_ng_start_result=syslog_ng_start_result)
         else:
             self.syslog_ng_ctl.wait_for_control_socket_start()
-            wait_till_function_not_true(self.executor.is_pid_in_process_list, self.get_syslog_ng_pid(), monitoring_time=1)
+            wait_until_true(self.executor.is_pid_in_process_list, self.get_syslog_ng_pid(), monitoring_time=1)
 
     def handle_if_syslog_ng_already_killed(self):
         if not self.executor.is_pid_in_process_list(self.get_syslog_ng_pid()):
@@ -158,7 +158,7 @@ class SyslogNg(object):
             control_socket_alive = self.syslog_ng_ctl.wait_for_control_socket_start()
             self.logger.write_message_based_on_value(message="syslog-ng start phase 5/4: syslog-ng control socket alive", value=control_socket_alive, loglevel=logging.INFO)
         if control_socket_alive:
-            pid_in_process_list = wait_till_function_not_true(self.executor.is_pid_in_process_list, self.get_syslog_ng_pid(), monitoring_time=1)
+            pid_in_process_list = wait_until_true(self.executor.is_pid_in_process_list, self.get_syslog_ng_pid(), monitoring_time=1)
             self.logger.write_message_based_on_value(message="syslog-ng start phase 5/4: syslog-ng's pid is in process list", value=pid_in_process_list, loglevel=logging.INFO)
         self.is_core_file_exist()
         return start_message_arrived and control_socket_alive and pid_in_process_list
@@ -174,7 +174,7 @@ class SyslogNg(object):
             control_socket_not_alive = self.syslog_ng_ctl.wait_for_control_socket_stop()
             self.logger.write_message_based_on_value(message="syslog-ng stop phase 3/2: syslog-ng control socket not alive", value=control_socket_not_alive, loglevel=logging.INFO)
         if control_socket_not_alive:
-            pid_not_in_process_list = wait_till_function_not_false(self.executor.is_pid_in_process_list, self.get_syslog_ng_pid())
+            pid_not_in_process_list = wait_until_false(self.executor.is_pid_in_process_list, self.get_syslog_ng_pid())
             self.logger.write_message_based_on_value(message="syslog-ng stop phase 3/2: syslog-ng's pid is not in process list", value=pid_not_in_process_list, loglevel=logging.INFO)
         self.is_core_file_exist()
         return stop_message_arrived and control_socket_not_alive and pid_not_in_process_list
@@ -190,7 +190,7 @@ class SyslogNg(object):
             control_socket_alive = self.syslog_ng_ctl.wait_for_control_socket_start()
             self.logger.write_message_based_on_value(message="syslog-ng stop phase 4/3: syslog-ng control socket alive", value=control_socket_alive, loglevel=logging.INFO)
         if control_socket_alive:
-            pid_in_process_list = wait_till_function_not_true(self.executor.is_pid_in_process_list, self.get_syslog_ng_pid(), monitoring_time=1)
+            pid_in_process_list = wait_until_true(self.executor.is_pid_in_process_list, self.get_syslog_ng_pid(), monitoring_time=1)
             self.logger.write_message_based_on_value(message="syslog-ng stop phase 4/3: syslog-ng's pid is in process list", value=pid_in_process_list, loglevel=logging.INFO)
         self.is_core_file_exist()
         return reload_message_arrived and control_socket_alive and pid_in_process_list

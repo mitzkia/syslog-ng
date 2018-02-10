@@ -1,5 +1,5 @@
 import os
-from src.common.blocking import wait_till_function_not_false, wait_till_function_not_true
+from src.common.blocking import wait_until_false, wait_until_true
 from src.executor.executor_interface import ExecutorInterface
 
 
@@ -62,10 +62,10 @@ class SyslogNgCtl(object):
         return exit_code == 0
 
     def wait_for_control_socket_start(self):
-        return wait_till_function_not_true(self.is_control_socket_alive)
+        return wait_until_true(self.is_control_socket_alive)
 
     def wait_for_control_socket_stop(self):
-        return wait_till_function_not_false(self.is_control_socket_alive)
+        return wait_until_false(self.is_control_socket_alive)
 
     def check_counters_for_sources(self, message_counter, syslog_ng_config):
         source_statement_properties = syslog_ng_config['source_statements']
@@ -117,7 +117,7 @@ class SyslogNgCtl(object):
         if self.first_matched_query and (query_line in self.first_matched_query):
             result_of_query_in_query = True
         else:
-            result_of_query_in_query = wait_till_function_not_true(self.is_line_in_query, query_line, monitoring_time=1)
+            result_of_query_in_query = wait_until_true(self.is_line_in_query, query_line, monitoring_time=1)
 
         self.logger.info(self.query()[1])
         self.logger.write_message_based_on_value(message="Found stat line: [%s] in query" % query_line, value=result_of_query_in_query)
@@ -135,7 +135,7 @@ class SyslogNgCtl(object):
         if self.first_matched_stats and (stats_line in self.first_matched_stats):
             result_of_stats_in_stats = True
         else:
-            result_of_stats_in_stats = wait_till_function_not_true(self.is_line_in_stats, stats_line, monitoring_time=1)
+            result_of_stats_in_stats = wait_until_true(self.is_line_in_stats, stats_line, monitoring_time=1)
 
         self.logger.write_message_based_on_value(message="Found stat line: [%s] in stats" % stats_line, value=result_of_stats_in_stats)
         return result_of_stats_in_stats

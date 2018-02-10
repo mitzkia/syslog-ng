@@ -4,7 +4,7 @@ MONITORING_TIME = 10
 poll_freq = 0.001
 
 
-def wait_till_before_after_not_equals(func, args=None, monitoring_time=MONITORING_TIME):
+def wait_until_stabilized(func, args=None, monitoring_time=MONITORING_TIME):
     equal_counter = 0
     expected_equal_counter = 100
     t_end = time.monotonic() + monitoring_time
@@ -24,7 +24,7 @@ def wait_till_before_after_not_equals(func, args=None, monitoring_time=MONITORIN
     return False
 
 
-def wait_till_function_not_true(func, *args, monitoring_time=MONITORING_TIME):
+def wait_until_true(func, *args, monitoring_time=MONITORING_TIME):
     t_end = time.monotonic() + monitoring_time
     while time.monotonic() <= t_end:
         if args:
@@ -37,7 +37,7 @@ def wait_till_function_not_true(func, *args, monitoring_time=MONITORING_TIME):
     return False
 
 
-def wait_till_function_not_false(func, *args, monitoring_time=MONITORING_TIME):
+def wait_until_false(func, *args, monitoring_time=MONITORING_TIME):
     t_end = time.monotonic() + monitoring_time
     while time.monotonic() <= t_end:
         if args:

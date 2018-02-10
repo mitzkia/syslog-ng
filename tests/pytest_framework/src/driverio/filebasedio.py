@@ -2,7 +2,7 @@ import os
 import shutil
 import stat
 from itertools import takewhile, repeat
-from src.common.blocking import wait_till_function_not_true, wait_till_before_after_not_equals
+from src.common.blocking import wait_until_true, wait_until_stabilized
 
 
 class FileBasedIO(object):
@@ -142,22 +142,22 @@ class FileBasedIO(object):
         return result_file_creation and result_file_change and (lines_in_file == expected_line)
 
     def wait_for_expected_number_of_lines_in_file(self, file_path, expected_lines=1, monitoring_time=10):
-        result_expected_lines_arrived = wait_till_function_not_true(self.is_expected_number_of_lines_in_file, file_path, expected_lines, monitoring_time=monitoring_time)
+        result_expected_lines_arrived = wait_until_true(self.is_expected_number_of_lines_in_file, file_path, expected_lines, monitoring_time=monitoring_time)
         if not result_expected_lines_arrived:
             self.logger.error("Expected number of lines did not arrived, expected lines: [%s], arrived lines: [%s]" % (expected_lines, self.count_lines_in_file(file_path)))
         return result_expected_lines_arrived
 
     def wait_for_file_creation(self, file_path, monitoring_time=2):
-        result_file_creation = wait_till_function_not_true(self.is_file_exist, file_path, monitoring_time=monitoring_time)
+        result_file_creation = wait_until_true(self.is_file_exist, file_path, monitoring_time=monitoring_time)
         self.logger.write_message_based_on_value("File created, file_path: [%s]" % file_path, result_file_creation)
         return result_file_creation
 
     def wait_for_dir_creation(self, dir_path, monitoring_time=2):
-        result_dir_creation = wait_till_function_not_true(self.is_dir_exist, dir_path, monitoring_time=monitoring_time)
+        result_dir_creation = wait_until_true(self.is_dir_exist, dir_path, monitoring_time=monitoring_time)
         self.logger.write_message_based_on_value("Dir created, dir_path: [%s]" % dir_path, result_dir_creation)
         return result_dir_creation
 
     def wait_for_file_not_change(self, file_path, monitoring_time=5):
-        result_file_change = wait_till_before_after_not_equals(self.get_last_modification_time, file_path, monitoring_time=monitoring_time)
+        result_file_change = wait_until_stabilized(self.get_last_modification_time, file_path, monitoring_time=monitoring_time)
         self.logger.write_message_based_on_value("File stop changing, file_path: [%s]" % file_path, result_file_change)
         return result_file_change
