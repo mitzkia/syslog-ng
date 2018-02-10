@@ -43,15 +43,15 @@ class MessageInterface(object):
         return messages
 
 # Interface for IETFSyslog
-    def create_ietf_message(self, defined_ietf_message_parts=None, add_newline=True):
+    def create_ietf_message(self, defined_ietf_message_parts=None, add_newline=True, counter=1):
         self.validate_defined_message_parts(defined_message_parts=defined_ietf_message_parts, default_message_parts=self.default_ietf_message_parts)
-        generated_ietf_message_parts = self.set_message_parts(defined_message_parts=defined_ietf_message_parts, default_message_parts=self.default_ietf_message_parts)
+        generated_ietf_message_parts = self.set_message_parts(defined_message_parts=defined_ietf_message_parts, default_message_parts=self.default_ietf_message_parts, counter=counter)
         return self.ietf_syslog.create_ietf_message(generated_message_parts=generated_ietf_message_parts, add_newline=add_newline)
 
     def create_multiple_ietf_messages(self, defined_ietf_message_parts=None, message_counter=2, add_newline=True):
         messages = ""
-        for actaul_counter in range(1, message_counter + 1):
-            messages += self.create_ietf_message(defined_ietf_message_parts=defined_ietf_message_parts, add_newline=add_newline, counter=actaul_counter)
+        for actual_counter in range(1, message_counter + 1):
+            messages += self.create_ietf_message(defined_ietf_message_parts=defined_ietf_message_parts, add_newline=add_newline, counter=actual_counter)
         return messages
 
 # Other
