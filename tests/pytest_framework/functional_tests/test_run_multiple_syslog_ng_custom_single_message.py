@@ -27,5 +27,3 @@ def test_multiple_syslog_ng(tc):
 
     output_message = cfg_fd.read()
     assert test_message in output_message
-
-    assert "AAA" == "VVVVV"
