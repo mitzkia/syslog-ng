@@ -14,7 +14,7 @@ class FileRegister(object):
         self.random = Random()
 
     def get_registered_file_path(self, prefix, extension="log", subdir=None):
-        if self.__is_prefix_already_registered_in_collection(prefix=prefix, collection=self.registered_files):
+        if self.__is_prefix_already_registered(prefix=prefix, collection=self.registered_files):
             return self.registered_files[prefix]
         uniq_file_path = self.__generate_uniq_file_path(prefix=prefix, extension=extension, subdir=subdir)
         self.__register_uniq_file_path(prefix=prefix, uniq_file_path=uniq_file_path)
@@ -22,7 +22,7 @@ class FileRegister(object):
         return uniq_file_path
 
     def get_registered_dir_path(self, prefix):
-        if self.__is_prefix_already_registered_in_collection(prefix=prefix, collection=self.registered_dirs):
+        if self.__is_prefix_already_registered(prefix=prefix, collection=self.registered_dirs):
             return self.registered_dirs[prefix]
         uniq_dir_path = self.__generate_uniq_dir_path(prefix=prefix)
         self.__register_uniq_dir_path(prefix=prefix, uniq_dir_path=uniq_dir_path)
@@ -30,7 +30,7 @@ class FileRegister(object):
         return uniq_dir_path
 
     def get_registered_file_name(self, prefix, extension="*"):
-        if self.__is_prefix_already_registered_in_collection(prefix=prefix, collection=self.registered_file_names):
+        if self.__is_prefix_already_registered(prefix=prefix, collection=self.registered_file_names):
             return self.registered_file_names[prefix]
         uniq_file_name = self.__generate_uniq_file_name(prefix=prefix, extension=extension)
         self.__register_uniq_file_name(prefix=prefix, uniq_file_name=uniq_file_name)
@@ -38,7 +38,7 @@ class FileRegister(object):
         return uniq_file_name
 
     @staticmethod
-    def __is_prefix_already_registered_in_collection(prefix, collection):
+    def __is_prefix_already_registered(prefix, collection):
         return prefix in collection.keys()
 
     def __generate_uniq_file_path(self, prefix, extension, subdir):
