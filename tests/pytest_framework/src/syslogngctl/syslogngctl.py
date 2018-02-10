@@ -15,29 +15,33 @@ class SyslogNgCtl(object):
 
         self.first_matched_stats = None
         self.first_matched_query = None
+        self.stats_command = "%s stats --control=%s" % (self.syslog_ng_control_tool_path, self.syslog_ng_control_socket_path)
+        self.query_command = "%s query --control=%s" % (self.syslog_ng_control_tool_path, self.syslog_ng_control_socket_path)
 
-    def stats(self, reset=False, show_output=False):
-        stats_command = "%s stats --control=%s" % (self.syslog_ng_control_tool_path, self.syslog_ng_control_socket_path)
-        if reset:
-            stats_command += " --reset"
-        exit_code, stdout, stderr = self.executor.execute_command(stats_command)
+    def stats(self, show_output=False):
+        exit_code, stdout, stderr = self.executor.execute_command(self.stats_command)
         if show_output:
             self.logger.info(stdout)
         return exit_code, stdout, stderr
 
-    def query(self, pattern="*", query_get=True, query_list=False, query_sum=False, reset=False, show_output=False):
-        query_command = "%s query --control=%s" % (self.syslog_ng_control_tool_path, self.syslog_ng_control_socket_path)
-        if query_get:
-            query_command += " get"
-        elif query_sum:
-            query_command += " get --sum"
-        elif query_list:
-            query_command += " list"
-        elif reset:
-            query_command += " get --reset"
-        query_command += " '%s' " % pattern
+    def stats_reset(self):
+        exit_code, stdout, stderr = self.executor.execute_command("%s --reset" % self.stats_command)
+        return exit_code, stdout, stderr
 
-        exit_code, stdout, stderr = self.executor.execute_command(query_command)
+    def query_get(self, pattern="*", show_output=False):
+        return self.execute_query_command(command=" get '%s' " % pattern, show_output=show_output)
+
+    def query_get_sum(self, pattern="*", show_output=False):
+        return self.execute_query_command(command=" get --sum '%s' " % pattern, show_output=show_output)
+
+    def query_list(self, pattern="*", show_output=False):
+        return self.execute_query_command(command=" list '%s' " % pattern, show_output=show_output)
+
+    def query_reset(self, pattern="*"):
+        return self.execute_query_command(command=" get --reset '%s' " % pattern, show_output=False)
+
+    def execute_query_command(self, command, show_output=False):
+        exit_code, stdout, stderr = self.executor.execute_command(self.query_command + command)
         if show_output:
             self.logger.info(stdout)
         return exit_code, stdout, stderr
@@ -67,89 +71,86 @@ class SyslogNgCtl(object):
     def wait_for_control_socket_stop(self):
         return wait_until_false(self.is_control_socket_alive)
 
-    def check_counters_for_sources(self, message_counter, syslog_ng_config):
-        source_statement_properties = syslog_ng_config['source_statements']
-        if source_statement_properties != {}:
-            for source_statement_id, source_driver in source_statement_properties.items():
-                for source_driver_id, source_driver_properties in source_driver.items():
-                    if source_driver_properties['driver_name'] != "internal":
-                        driver_name = source_driver_properties['driver_name']
-                        connection_mandatory_options = source_driver_properties['connection_mandatory_options']
-                        assert self.wait_for_query_counter(component="src.%s" % driver_name, config_id=source_statement_id, instance=connection_mandatory_options, counter_type="processed", message_counter=message_counter) is True
-                        assert self.wait_for_stats_counter(component="src.%s" % driver_name, config_id=source_statement_id, instance=connection_mandatory_options, state_type='a', counter_type="processed", message_counter=message_counter) is True
-        else:
-            self.logger.info("Skip checking source counters. (Maybe raw config was used)")
+    def check_stats_and_query_counters(self, syslog_ng_config, destination_counter_values=None, source_counter_values=None):
+        self.check_source_counters(syslog_ng_config, source_counter_values)
+        self.check_destination_counters(syslog_ng_config, destination_counter_values)
 
-    def check_counters_for_destinations(self, message_counter, syslog_ng_config):
-        destination_statement_properties = syslog_ng_config['destination_statements']
-        if destination_statement_properties != {}:
-            for destination_statement_id, destination_driver in destination_statement_properties.items():
-                for destination_driver_id, destination_driver_properties in destination_driver.items():
-                    if "internal" not in destination_driver_properties['connection_mandatory_options']:
-                        driver_name = destination_driver_properties['driver_name']
-                        connection_mandatory_options = destination_driver_properties['connection_mandatory_options']
-                        assert self.wait_for_query_counter(component="dst.%s" % driver_name, config_id=destination_statement_id, instance=connection_mandatory_options, counter_type="processed", message_counter=message_counter) is True
-                        assert self.wait_for_query_counter(component="dst.%s" % driver_name, config_id=destination_statement_id, instance=connection_mandatory_options, counter_type="written", message_counter=message_counter) is True
-                        assert self.wait_for_query_counter(component="dst.%s" % driver_name, config_id=destination_statement_id, instance=connection_mandatory_options, counter_type="dropped", message_counter=0) is True
-                        assert self.wait_for_query_counter(component="dst.%s" % driver_name, config_id=destination_statement_id, instance=connection_mandatory_options, counter_type="queued", message_counter=0) is True
-                        assert self.wait_for_query_counter(component="dst.%s" % driver_name, config_id=destination_statement_id, instance=connection_mandatory_options, counter_type="memory_usage", message_counter=0) is True
-                        assert self.wait_for_stats_counter(component="dst.%s" % driver_name, config_id=destination_statement_id, instance=connection_mandatory_options, state_type="a", counter_type="processed", message_counter=message_counter) is True
-                        assert self.wait_for_stats_counter(component="dst.%s" % driver_name, config_id=destination_statement_id, instance=connection_mandatory_options, state_type="a", counter_type="written", message_counter=message_counter) is True
-                        assert self.wait_for_stats_counter(component="dst.%s" % driver_name, config_id=destination_statement_id, instance=connection_mandatory_options, state_type="a", counter_type="dropped", message_counter=0) is True
-                        assert self.wait_for_stats_counter(component="dst.%s" % driver_name, config_id=destination_statement_id, instance=connection_mandatory_options, state_type="a", counter_type="queued", message_counter=0) is True
-                        assert self.wait_for_stats_counter(component="dst.%s" % driver_name, config_id=destination_statement_id, instance=connection_mandatory_options, state_type="a", counter_type="memory_usage", message_counter=0) is True
-        else:
-            self.logger.info("Skip checking destination counters. (Maybe raw config was used)")
+    def check_source_counters(self, syslog_ng_config, source_counter_values):
+        for driver_name, statement_id, connection_mandatory_options in self.get_config_properties_for_stats(syslog_ng_config, "source_statements"):
+            self.wait_and_assert_for_query_counters(component="src.%s" % driver_name, config_id=statement_id, instance=connection_mandatory_options, counter_values=source_counter_values)
+            self.wait_and_assert_for_stats_counters(component="src.%s" % driver_name, config_id=statement_id, instance=connection_mandatory_options, counter_values=source_counter_values)
 
-    def check_counters(self, syslog_ng_config, message_counter):
-        self.logger.info("STEP Checking statistical counters")
-        self.check_counters_for_sources(message_counter=message_counter, syslog_ng_config=syslog_ng_config)
-        self.check_counters_for_destinations(message_counter=message_counter, syslog_ng_config=syslog_ng_config)
+    def check_destination_counters(self, syslog_ng_config, destination_counter_values):
+        for driver_name, statement_id, connection_mandatory_options in self.get_config_properties_for_stats(syslog_ng_config, "destination_statements"):
+            self.wait_and_assert_for_query_counters(component="dst.%s" % driver_name, config_id=statement_id, instance=connection_mandatory_options, counter_values=destination_counter_values)
+            self.wait_and_assert_for_stats_counters(component="dst.%s" % driver_name, config_id=statement_id, instance=connection_mandatory_options, counter_values=destination_counter_values)
 
-    def wait_for_query_counter(self, component, config_id, instance, counter_type="processed", message_counter=1):
-        query_line = "%s.%s#0.%s.%s=%s" % (
-            component,
-            config_id,
-            instance,
-            counter_type,
-            message_counter)
+    def get_config_properties_for_stats(self, syslog_ng_config, root_statement):
+        statement_properties = syslog_ng_config[root_statement]
+        if statement_properties != {}:
+            for statement_id, driver in statement_properties.items():
+                for driver_id, driver_properties in driver.items():
+                    driver_name = driver_properties['driver_name']
+                    connection_mandatory_options = driver_properties['connection_mandatory_options']
+                    yield driver_name, statement_id, connection_mandatory_options
 
-        if self.first_matched_query and (query_line in self.first_matched_query):
-            result_of_query_in_query = True
-        else:
-            result_of_query_in_query = wait_until_true(self.is_line_in_query, query_line, monitoring_time=1)
+    def wait_and_assert_for_query_counters(self, component, config_id, instance, counter_values):
+        if component.startswith("src"):
+            counter_types = ["processed"]
+        elif component.startswith("dst"):
+            counter_types = ["processed", "written", "dropped", "queued", "memory_usage"]
+        for counter_type in counter_types:
+            query_line = self.generate_query_line(component, config_id, instance, counter_type, counter_values[counter_type])
+            if self.first_matched_query and (query_line in self.first_matched_query):
+                result_of_query_in_query = True
+            else:
+                result_of_query_in_query = wait_until_true(self.is_line_in_statistics, query_line, self.query_get()[1], 'query', monitoring_time=1)
+            self.logger.info(self.query_get()[1])
+            self.logger.write_message_based_on_value(message="Found stat line: [%s] in query" % query_line, value=result_of_query_in_query)
+            assert result_of_query_in_query is True
 
-        self.logger.info(self.query()[1])
-        self.logger.write_message_based_on_value(message="Found stat line: [%s] in query" % query_line, value=result_of_query_in_query)
-        return result_of_query_in_query
+    def wait_and_assert_for_stats_counters(self, component, config_id, instance, counter_values):
+        if component.startswith("src"):
+            counter_types = ["processed"]
+        elif component.startswith("dst"):
+            counter_types = ["processed", "written", "dropped", "queued", "memory_usage"]
+        for counter_type in counter_types:
+            stats_line = self.generate_stats_line(component, config_id, instance, "a", counter_type, counter_values[counter_type])
+            if self.first_matched_stats and (stats_line in self.first_matched_stats):
+                result_of_stats_in_stats = True
+            else:
+                result_of_stats_in_stats = wait_until_true(self.is_line_in_statistics, stats_line, self.stats()[1], 'stats', monitoring_time=1)
+            self.logger.info(self.stats()[1])
+            self.logger.write_message_based_on_value(message="Found stat line: [%s] in stats" % stats_line, value=result_of_stats_in_stats)
+            assert result_of_stats_in_stats is True
 
-    def wait_for_stats_counter(self, component, config_id, instance, state_type="a", counter_type="processed", message_counter=1):
-        stats_line = "%s;%s#0;%s;%s;%s;%s" % (
-            component,
-            config_id,
-            instance,
-            state_type,
-            counter_type,
-            message_counter)
+    def save_statistics_output(self, statistics_output, statistics_from):
+        if statistics_from == "query":
+            self.first_matched_query = statistics_output
+        elif statistics_from == "stats":
+            self.first_matched_stats = statistics_output
 
-        if self.first_matched_stats and (stats_line in self.first_matched_stats):
-            result_of_stats_in_stats = True
-        else:
-            result_of_stats_in_stats = wait_until_true(self.is_line_in_stats, stats_line, monitoring_time=1)
+    def is_line_in_statistics(self, expected_line, statistics_output, statistics_from):
+        if expected_line in statistics_output:
+            self.save_statistics_output(statistics_output, statistics_from)
+            return True
+        return False
 
-        self.logger.write_message_based_on_value(message="Found stat line: [%s] in stats" % stats_line, value=result_of_stats_in_stats)
-        return result_of_stats_in_stats
+    def generate_stats_line(self, component, config_id, instance, state_type, counter_type, message_counter):
+        separator = ";"
+        stats_line = ""
+        stats_line += component + separator
+        stats_line += config_id + "#0" + separator
+        stats_line += instance + separator
+        stats_line += state_type + separator
+        stats_line += counter_type + separator + str(message_counter)
+        return stats_line
 
-    def is_line_in_stats(self, stats_line):
-        statistics = str(self.stats()[1])
-        result = "%s\n" % stats_line in statistics
-        if result:
-            self.first_matched_stats = statistics
-        return result
-
-    def is_line_in_query(self, query_line):
-        statistics = str(self.query()[1])
-        result = "%s\n" % query_line in statistics
-        if result:
-            self.first_matched_query = statistics
-        return result
+    def generate_query_line(self, component, config_id, instance, counter_type, message_counter):
+        separator = "."
+        query_line = ""
+        query_line += component + separator
+        query_line += config_id + "#0" + separator
+        query_line += instance + separator
+        query_line += counter_type + "=" + str(message_counter)
+        return query_line

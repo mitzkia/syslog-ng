@@ -36,7 +36,7 @@ class Drivers(Statements):
         self.driver_io.write(self.driver_connection_path, content=message)
 
     def get_query(self):
-        exit_code, stdout, stderr = self.syslog_ng_ctl.query(pattern="*%s.%s.%s*" % (self.statement_short_name, self.driver_name, self.statement_id))
+        exit_code, stdout, stderr = self.syslog_ng_ctl.query_get(pattern="*%s.%s.%s*" % (self.statement_short_name, self.driver_name, self.statement_id))
         statistical_elements = ["memory_usage", "written", "processed", "dropped", "queued", "stamp"]
         result = {}
         for stat_element in statistical_elements:
