@@ -67,7 +67,7 @@ class SyslogNgConfig(object):
             rendered_config = self.raw_config
         else:
             rendered_config = ConfigRenderer(self.logger_factory, self.syslog_ng_config).syslog_ng_config_content
-        self.fileio.write(config_path, rendered_config, re_create_file=True)
+        self.fileio.write(config_path, rendered_config, append=False)
 
     def set_raw_config(self, raw_config):
         self.raw_config = raw_config

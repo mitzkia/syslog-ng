@@ -3,7 +3,7 @@ import shutil
 import logging
 
 from src.common.blocking import wait_until_false, wait_until_true
-from src.driverio.fileio import FileIO
+from src.driverio.filemanager import FileManagerWaitForEvent, File
 from src.executor.executor_interface import ExecutorInterface
 from src.syslogngctl.syslogngctl import SyslogNgCtl
 
@@ -15,9 +15,9 @@ class SyslogNg(object):
         self.syslogngpath = syslogngpath
 
         self.syslog_ng_binary = os.path.join(syslogngpath.install_dir, "sbin/syslog-ng")
+        self.logger_factory = logger_factory
         self.logger = logger_factory.create_logger("SyslogNg")
         # class initializations
-        self.fileio = FileIO(logger_factory)
         self.executor = ExecutorInterface(logger_factory, syslogngpath.working_dir)
         self.syslog_ng_ctl = SyslogNgCtl(logger_factory, syslogngpath.runtime_parameters, self.syslog_ng_runtime_files['control_socket_path'])
 
@@ -196,14 +196,15 @@ class SyslogNg(object):
         return reload_message_arrived and control_socket_alive and pid_in_process_list
 
     def wait_for_console_messages(self, messages, expected_occurance=1):
+        std_error_file = FileManagerWaitForEvent(self.logger_factory, self.syslog_ng_runtime_files['stderr_path'])
         result = []
         for message in messages:
-            result.append(self.fileio.wait_for_messages_in_file(file_path=self.syslog_ng_runtime_files['stderr_path'], expected_message=message, expected_occurance=expected_occurance))
+            result.append(std_error_file.wait_for_message(expected_message=message, expected_occurance=expected_occurance))
         return all(result)
 
     def is_core_file_exist(self):
         for syslog_ng_core_file in [os.path.join(os.getcwd(), "core")]:
-            if self.fileio.is_file_exist(file_path=syslog_ng_core_file):
+            if File(self.logger_factory, syslog_ng_core_file).is_file_exist():
                 core_backtrace_filename = "core_backtrace.txt"
                 core_backtrace_path = os.path.join(self.syslogngpath.working_dir, core_backtrace_filename)
                 gdb_command = "gdb --core %s %s -ex 'bt full' --batch" % (syslog_ng_core_file, self.syslog_ng_binary)
@@ -224,7 +225,7 @@ class SyslogNg(object):
         return self.syslog_ng_process
 
     def dump_config(self):
-        self.fileio.get_content_from_regular_file(self.syslog_ng_runtime_files['config_path'])
+        File(self.logger_factory, self.syslog_ng_runtime_files['config_path']).dump_content()
 
     def dump_console_log(self):
-        self.fileio.get_content_from_regular_file(self.syslog_ng_runtime_files['stderr_path'])
+        File(self.logger_factory, self.syslog_ng_runtime_files['stderr_path']).dump_content()
