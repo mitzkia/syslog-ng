@@ -40,7 +40,7 @@ log {
     slng = tc.new_syslog_ng()
     slng.start(cfg)
 
-    dst_file_content = fileio.read(file_path=dst_file, expected_message_counter=6)
+    dst_file_content = fileio.read_file(file_path=dst_file, expected_message_counter=6)
 
     assert find_regexp_in_content("^>>>>ALMA<<<<.*almafa$", dst_file_content) is True
     assert find_regexp_in_content("^>>>>BELA MAG<<<<.*belafa magja$", dst_file_content) is True

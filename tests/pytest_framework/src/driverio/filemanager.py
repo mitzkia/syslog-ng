@@ -49,6 +49,25 @@ class File(object):
         with open(self.file_path, 'r') as file_object:
             return file_object.read()
 
+    def get_pipe_content(self):
+        file_object = os.open(self.file_path, os.O_RDONLY | os.O_NONBLOCK)
+        merged_content = ""
+        while True:
+            try:
+                pipe_content = os.read(file_object, 1024)
+                if pipe_content:
+                    merged_content += pipe_content.decode('utf-8')
+                else:
+                    self.logger.error("writer closed")
+                    break
+            except BlockingIOError:
+                break
+        return merged_content
+
+    def write_content(self, content, open_mode):
+        with open(self.file_path, open_mode) as file_object:
+            file_object.write(self.normalize_line_endings(content))
+
     def dump_content(self):
         self.logger.info(self.get_content())
 
@@ -57,6 +76,12 @@ class File(object):
 
     def count_message_in_file(self, expected_message):
         return self.get_content().count(expected_message)
+
+    @staticmethod
+    def normalize_line_endings(line):
+        if not line.endswith("\n"):
+            line += "\n"
+        return line
 
 class Dir(object):
     def __init__(self, dir_path):

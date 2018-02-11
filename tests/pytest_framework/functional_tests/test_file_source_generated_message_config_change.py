@@ -17,7 +17,7 @@ def test_file_source_generated_message_config_change(tc):
     slng.dump_config()
 
     # change config-1 to config-2
-    cfg_fs.update_file_source_options({"file_path": "input2", "follow-freq": "2"})
+    cfg_fs.update_driver_options({"file_path": "input2", "follow-freq": "2"})
 
     # reload syslog-ng
     slng.reload(cfg)
