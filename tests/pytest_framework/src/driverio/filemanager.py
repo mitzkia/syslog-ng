@@ -1,7 +1,6 @@
 import os
 import shutil
 import stat
-from itertools import takewhile, repeat
 from src.common.blocking import wait_until_true, wait_until_stabilized
 
 

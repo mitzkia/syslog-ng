@@ -60,7 +60,7 @@ class ConfigRenderer(Statements):
         for statement_id, driver in self.syslog_ng_config["%s_statements" % statement_name].items():
             # statement header
             self.syslog_ng_config_content += "\n%s %s {\n" % (statement_name, statement_id)
-            for driver_id, driver_properties in driver.items():
+            for _driver_id, driver_properties in driver.items():
                 driver_name = driver_properties['driver_name']
                 driver_options = driver_properties['driver_options']
                 # driver header

@@ -62,8 +62,7 @@ class SyslogNgCtl(object):
         return exit_code, stdout, stderr
 
     def is_control_socket_alive(self):
-        exit_code, stdout, stderr = self.stats()
-        return exit_code == 0
+        return self.stats()[0] == 0
 
     def wait_for_control_socket_start(self):
         return wait_until_true(self.is_control_socket_alive)
@@ -89,7 +88,7 @@ class SyslogNgCtl(object):
         statement_properties = syslog_ng_config[root_statement]
         if statement_properties != {}:
             for statement_id, driver in statement_properties.items():
-                for driver_id, driver_properties in driver.items():
+                for _driver_id, driver_properties in driver.items():
                     driver_name = driver_properties['driver_name']
                     connection_mandatory_options = driver_properties['connection_mandatory_options']
                     yield driver_name, statement_id, connection_mandatory_options

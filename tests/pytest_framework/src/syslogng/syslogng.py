@@ -199,7 +199,7 @@ class SyslogNg(object):
                 core_backtrace_filename = "core_backtrace.txt"
                 core_backtrace_path = os.path.join(self.syslogngpath.working_dir, core_backtrace_filename)
                 gdb_command = "gdb --core %s %s -ex 'bt full' --batch" % (syslog_ng_core_file, self.syslog_ng_binary)
-                exit_code, output, error = self.executor.execute_command(command=gdb_command)
+                output = self.executor.execute_command(command=gdb_command)[1]
                 with open(core_backtrace_path, 'w') as file_object:
                     file_object.write(output)
                 shutil.move(syslog_ng_core_file, "%s/" % self.syslogngpath.working_dir)
