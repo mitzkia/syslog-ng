@@ -31,27 +31,27 @@ class MessageInterface(object):
         self.ietf_syslog = IETF(logger_factory=logger_factory)
 
 # Interface for BSDSyslog
-    def create_bsd_message(self, defined_bsd_message_parts=None, add_newline=True, counter=1):
+    def create_bsd_message(self, defined_bsd_message_parts=None, add_newline=True, counter=1, use_message_counter=True):
         self.validate_defined_message_parts(defined_message_parts=defined_bsd_message_parts, default_message_parts=self.default_bsd_message_parts)
-        generated_bsd_message_parts = self.set_message_parts(defined_message_parts=defined_bsd_message_parts, default_message_parts=self.default_bsd_message_parts, counter=counter)
+        generated_bsd_message_parts = self.set_message_parts(defined_message_parts=defined_bsd_message_parts, default_message_parts=self.default_bsd_message_parts, counter=counter, use_message_counter=use_message_counter)
         return self.bsd_syslog.create_bsd_message(generated_message_parts=generated_bsd_message_parts, add_newline=add_newline)
 
-    def create_multiple_bsd_messages(self, defined_bsd_message_parts=None, message_counter=2, add_newline=True):
+    def create_multiple_bsd_messages(self, defined_bsd_message_parts=None, message_counter=2, add_newline=True, use_message_counter=True):
         messages = ""
         for actual_counter in range(1, message_counter + 1):
-            messages += self.create_bsd_message(defined_bsd_message_parts=defined_bsd_message_parts, add_newline=add_newline, counter=actual_counter)
+            messages += self.create_bsd_message(defined_bsd_message_parts=defined_bsd_message_parts, add_newline=add_newline, counter=actual_counter, use_message_counter=use_message_counter)
         return messages
 
 # Interface for IETFSyslog
-    def create_ietf_message(self, defined_ietf_message_parts=None, add_newline=True, counter=1):
+    def create_ietf_message(self, defined_ietf_message_parts=None, add_newline=True, counter=1, use_message_counter=True):
         self.validate_defined_message_parts(defined_message_parts=defined_ietf_message_parts, default_message_parts=self.default_ietf_message_parts)
-        generated_ietf_message_parts = self.set_message_parts(defined_message_parts=defined_ietf_message_parts, default_message_parts=self.default_ietf_message_parts, counter=counter)
+        generated_ietf_message_parts = self.set_message_parts(defined_message_parts=defined_ietf_message_parts, default_message_parts=self.default_ietf_message_parts, counter=counter, use_message_counter=use_message_counter)
         return self.ietf_syslog.create_ietf_message(generated_message_parts=generated_ietf_message_parts, add_newline=add_newline)
 
-    def create_multiple_ietf_messages(self, defined_ietf_message_parts=None, message_counter=2, add_newline=True):
+    def create_multiple_ietf_messages(self, defined_ietf_message_parts=None, message_counter=2, add_newline=True, use_message_counter=True):
         messages = ""
         for actual_counter in range(1, message_counter + 1):
-            messages += self.create_ietf_message(defined_ietf_message_parts=defined_ietf_message_parts, add_newline=add_newline, counter=actual_counter)
+            messages += self.create_ietf_message(defined_ietf_message_parts=defined_ietf_message_parts, add_newline=add_newline, counter=actual_counter, use_message_counter=use_message_counter)
         return messages
 
 # Other
@@ -60,7 +60,7 @@ class MessageInterface(object):
             raise Exception("Found unknown log message part: %s" % defined_message_parts)
 
     @staticmethod
-    def set_message_parts(defined_message_parts, default_message_parts, counter=1):
+    def set_message_parts(defined_message_parts, default_message_parts, counter=1, use_message_counter=True):
         generated_message_parts = copy.deepcopy(default_message_parts)
         for message_part in default_message_parts.keys():
             if defined_message_parts:
@@ -73,5 +73,6 @@ class MessageInterface(object):
                     generated_message_parts[message_part] = defined_message_parts[message_part]
                 elif (message_part in defined_message_parts.keys()) and (defined_message_parts[message_part] == "skip"):
                     generated_message_parts.pop(message_part)
-        generated_message_parts['message'] += " - %s" % counter
+        if use_message_counter:
+            generated_message_parts['message'] += " - %s" % counter
         return generated_message_parts

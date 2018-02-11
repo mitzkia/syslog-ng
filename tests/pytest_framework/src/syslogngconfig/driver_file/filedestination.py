@@ -43,8 +43,8 @@ class FileDestination(Drivers):
     def remove_file_source(self):
         self.remove_driver_from_statement("%s_statements" % self.statement_name, self.statement_id, self.driver_id)
 
-    def get_expected_output_message(self, message_parts, expected_message_counter=1):
+    def get_expected_output_message(self, message_parts, expected_message_counter=1, use_message_counter=True):
         message_parts = {**message_parts, **{"priority": "skip"}}
         if expected_message_counter == 1:
-            return self.message.create_bsd_message(defined_bsd_message_parts=message_parts, add_newline=True)
-        return self.message.create_multiple_bsd_messages(defined_bsd_message_parts=message_parts, message_counter=expected_message_counter, add_newline=True)
+            return self.message.create_bsd_message(defined_bsd_message_parts=message_parts, add_newline=True, use_message_counter=use_message_counter)
+        return self.message.create_multiple_bsd_messages(defined_bsd_message_parts=message_parts, message_counter=expected_message_counter, add_newline=True, use_message_counter=use_message_counter)
