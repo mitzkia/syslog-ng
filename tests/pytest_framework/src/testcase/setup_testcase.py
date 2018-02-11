@@ -18,7 +18,7 @@ class SetupTestCase(object):
 
         self.logger_factory = LoggerFactory(self.runtime_parameters['report_file'],
                                             self.runtime_parameters['loglevel'])
-        self.logger = self.logger_factory.create_logger("SetupTestCase")
+        self.logger = self.logger_factory.create_logger("SetupTestCase", use_console_handler=False)
 
         self.instantiate_main_interfaces()
 

@@ -15,5 +15,5 @@ class LoggerFactory(object):
         except KeyError:
             raise Exception("Unknown defined loglevel: [%s]" % loglevel)
 
-    def create_logger(self, logger_name):
-        return Logger(logger_name, self.report_file, self.log_level)
+    def create_logger(self, logger_name, use_console_handler=True):
+        return Logger(logger_name, self.report_file, self.log_level, use_console_handler=use_console_handler)

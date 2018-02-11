@@ -4,10 +4,11 @@ from colorlog import ColoredFormatter
 
 
 class Logger(logging.Logger):
-    def __init__(self, logger_name, report_file, loglevel):
+    def __init__(self, logger_name, report_file, loglevel, use_console_handler=True):
         super().__init__(logger_name, loglevel)
         self.handlers = []
-        self.__set_consolehandler()
+        if use_console_handler:
+            self.__set_consolehandler()
         self.__set_filehandler(file_name=report_file)
 
     def __set_filehandler(self, file_name=None):
