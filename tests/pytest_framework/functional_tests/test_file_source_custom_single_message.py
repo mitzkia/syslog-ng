@@ -24,4 +24,4 @@ def test_file_source_custom_single_message(tc):
 
     # check expected and actual message
     assert expected_output_message.match(output_message)
-    assert find_regexp_in_content(".*%s$" % test_message.rstrip(), output_message) is True
+    assert find_regexp_in_content(".*%s$" % test_message, output_message) is True
