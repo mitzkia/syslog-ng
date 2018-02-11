@@ -31,7 +31,7 @@ class RuntimeParameters(dict):
     def get_testcase_name(testcase_context):
         if not testcase_context.node.name:
             raise Exception("Can not parse testcase name")
-        return testcase_context.node.name
+        return testcase_context.node.name.replace("[", "_").replace("]", "_")
 
     @staticmethod
     def framework_root_dir():
