@@ -102,6 +102,8 @@ class SyslogNgCtl(object):
             else:
                 result_of_query_in_query = wait_until_true(self.is_line_in_statistics, query_line, self.query_get()[1], 'query', monitoring_time=1)
             self.logger.write_message_based_on_value(message="Found stat line: [%s] in query" % query_line, value=result_of_query_in_query)
+            if not result_of_query_in_query:
+                self.logger.info(self.query_get()[1])
             assert result_of_query_in_query is True
 
     def wait_and_assert_for_stats_counters(self, component, config_id, instance, counter_values):
@@ -112,6 +114,8 @@ class SyslogNgCtl(object):
             else:
                 result_of_stats_in_stats = wait_until_true(self.is_line_in_statistics, stats_line, self.stats()[1], 'stats', monitoring_time=1)
             self.logger.write_message_based_on_value(message="Found stat line: [%s] in stats" % stats_line, value=result_of_stats_in_stats)
+            if not result_of_stats_in_stats:
+                self.logger.info(self.stats()[1])
             assert result_of_stats_in_stats is True
 
     def save_statistics_output(self, statistics_output, statistics_from):
