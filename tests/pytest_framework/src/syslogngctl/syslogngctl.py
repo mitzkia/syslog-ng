@@ -94,11 +94,7 @@ class SyslogNgCtl(object):
                     yield driver_name, statement_id, connection_mandatory_options
 
     def wait_and_assert_for_query_counters(self, component, config_id, instance, counter_values):
-        if component.startswith("src"):
-            counter_types = ["processed"]
-        elif component.startswith("dst"):
-            counter_types = ["processed", "written", "dropped", "queued", "memory_usage"]
-        for counter_type in counter_types:
+        for counter_type in self.get_counter_types_by_component(component):
             query_line = self.generate_query_line(component, config_id, instance, counter_type, counter_values[counter_type])
             if self.first_matched_query and (query_line in self.first_matched_query):
                 result_of_query_in_query = True
@@ -109,11 +105,7 @@ class SyslogNgCtl(object):
             assert result_of_query_in_query is True
 
     def wait_and_assert_for_stats_counters(self, component, config_id, instance, counter_values):
-        if component.startswith("src"):
-            counter_types = ["processed"]
-        elif component.startswith("dst"):
-            counter_types = ["processed", "written", "dropped", "queued", "memory_usage"]
-        for counter_type in counter_types:
+        for counter_type in self.get_counter_types_by_component(component):
             stats_line = self.generate_stats_line(component, config_id, instance, "a", counter_type, counter_values[counter_type])
             if self.first_matched_stats and (stats_line in self.first_matched_stats):
                 result_of_stats_in_stats = True
@@ -153,3 +145,9 @@ class SyslogNgCtl(object):
         query_line += instance + separator
         query_line += counter_type + "=" + str(message_counter)
         return query_line
+
+    def get_counter_types_by_component(self, component):
+        if component.startswith("src"):
+            return ["processed"]
+        elif component.startswith("dst"):
+            return ["processed", "written", "dropped", "queued", "memory_usage"]
