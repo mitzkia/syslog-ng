@@ -55,7 +55,8 @@ class MessageInterface(object):
         return messages
 
 # Other
-    def validate_defined_message_parts(self, defined_message_parts, default_message_parts):
+    @staticmethod
+    def validate_defined_message_parts(defined_message_parts, default_message_parts):
         if defined_message_parts and (set(defined_message_parts) - set(default_message_parts.keys())):
             raise Exception("Found unknown log message part: %s" % defined_message_parts)
 

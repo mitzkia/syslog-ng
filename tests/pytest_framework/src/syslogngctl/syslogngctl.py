@@ -84,7 +84,8 @@ class SyslogNgCtl(object):
             self.wait_and_assert_for_query_counters(component="dst.%s" % driver_name, config_id=statement_id, instance=connection_mandatory_options, counter_values=destination_counter_values)
             self.wait_and_assert_for_stats_counters(component="dst.%s" % driver_name, config_id=statement_id, instance=connection_mandatory_options, counter_values=destination_counter_values)
 
-    def get_config_properties_for_stats(self, syslog_ng_config, root_statement):
+    @staticmethod
+    def get_config_properties_for_stats(syslog_ng_config, root_statement):
         statement_properties = syslog_ng_config[root_statement]
         if statement_properties != {}:
             for statement_id, driver in statement_properties.items():
@@ -100,7 +101,6 @@ class SyslogNgCtl(object):
                 result_of_query_in_query = True
             else:
                 result_of_query_in_query = wait_until_true(self.is_line_in_statistics, query_line, self.query_get()[1], 'query', monitoring_time=1)
-            self.logger.info(self.query_get()[1])
             self.logger.write_message_based_on_value(message="Found stat line: [%s] in query" % query_line, value=result_of_query_in_query)
             assert result_of_query_in_query is True
 
@@ -111,7 +111,6 @@ class SyslogNgCtl(object):
                 result_of_stats_in_stats = True
             else:
                 result_of_stats_in_stats = wait_until_true(self.is_line_in_statistics, stats_line, self.stats()[1], 'stats', monitoring_time=1)
-            self.logger.info(self.stats()[1])
             self.logger.write_message_based_on_value(message="Found stat line: [%s] in stats" % stats_line, value=result_of_stats_in_stats)
             assert result_of_stats_in_stats is True
 
@@ -127,7 +126,8 @@ class SyslogNgCtl(object):
             return True
         return False
 
-    def generate_stats_line(self, component, config_id, instance, state_type, counter_type, message_counter):
+    @staticmethod
+    def generate_stats_line(component, config_id, instance, state_type, counter_type, message_counter):
         separator = ";"
         stats_line = ""
         stats_line += component + separator
@@ -137,7 +137,8 @@ class SyslogNgCtl(object):
         stats_line += counter_type + separator + str(message_counter)
         return stats_line
 
-    def generate_query_line(self, component, config_id, instance, counter_type, message_counter):
+    @staticmethod
+    def generate_query_line(component, config_id, instance, counter_type, message_counter):
         separator = "."
         query_line = ""
         query_line += component + separator
@@ -146,7 +147,8 @@ class SyslogNgCtl(object):
         query_line += counter_type + "=" + str(message_counter)
         return query_line
 
-    def get_counter_types_by_component(self, component):
+    @staticmethod
+    def get_counter_types_by_component(component):
         if component.startswith("src"):
             return ["processed"]
         elif component.startswith("dst"):

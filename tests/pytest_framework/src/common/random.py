@@ -11,4 +11,3 @@ class Random(random.Random):
 
     def get_unique_id(self, length=UNIQUE_LENGTH):
         return str(self.getrandbits(16*8))[0:length]
-

@@ -12,8 +12,7 @@ class Drivers(Statements):
         if "file_path" in mandatory_option.keys():
             if not mandatory_option['file_path']:
                 return {"file_path": self.file_register.get_registered_file_path(prefix=driver_type)}
-            else:
-                return {"file_path": self.file_register.get_registered_file_path(prefix=mandatory_option['file_path'])}
+            return {"file_path": self.file_register.get_registered_file_path(prefix=mandatory_option['file_path'])}
 
     def generate_driver_options(self, mandatory_option, driver_options):
         if not driver_options:

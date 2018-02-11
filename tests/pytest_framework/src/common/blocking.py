@@ -1,7 +1,7 @@
 import time
 
 MONITORING_TIME = 10
-poll_freq = 0.001
+POLL_FREQ = 0.001
 
 
 def wait_until_stabilized(func, args=None, monitoring_time=MONITORING_TIME):
@@ -11,11 +11,11 @@ def wait_until_stabilized(func, args=None, monitoring_time=MONITORING_TIME):
     while time.monotonic() <= t_end:
         if args:
             result_before = func(args)
-            time.sleep(poll_freq)
+            time.sleep(POLL_FREQ)
             result_after = func(args)
         else:
             result_before = func()
-            time.sleep(poll_freq)
+            time.sleep(POLL_FREQ)
             result_after = func()
         if result_before == result_after:
             equal_counter += 1
@@ -33,7 +33,7 @@ def wait_until_true(func, *args, monitoring_time=MONITORING_TIME):
         else:
             if func():
                 return True
-        time.sleep(poll_freq)
+        time.sleep(POLL_FREQ)
     return False
 
 
@@ -46,5 +46,5 @@ def wait_until_false(func, *args, monitoring_time=MONITORING_TIME):
         else:
             if not func():
                 return True
-        time.sleep(poll_freq)
+        time.sleep(POLL_FREQ)
     return False

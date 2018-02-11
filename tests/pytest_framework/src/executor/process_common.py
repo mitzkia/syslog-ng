@@ -40,7 +40,8 @@ class ProcessCommon(object):
         exit_code = proc.wait()
         return exit_code
 
-    def send_signal_to_process(self, process, process_signal):
+    @staticmethod
+    def send_signal_to_process(process, process_signal):
         process.send_signal(process_signal)
         exit_code = process.wait()
         return exit_code

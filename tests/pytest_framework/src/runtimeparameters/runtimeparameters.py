@@ -1,7 +1,7 @@
 import os
-import psutil
 import shlex
 from subprocess import PIPE
+import psutil
 
 
 class RuntimeParameters(dict):

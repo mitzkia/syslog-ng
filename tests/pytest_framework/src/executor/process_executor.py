@@ -1,7 +1,7 @@
 import os
 import shlex
-import psutil
 import signal
+import psutil
 
 from src.executor.process_common import ProcessCommon
 

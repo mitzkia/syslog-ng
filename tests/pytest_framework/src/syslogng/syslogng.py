@@ -61,10 +61,8 @@ class SyslogNg(object):
 
 # Low level functions
     def run_syntax_check_on_config(self):
-        exit_code, stdout, stderr = self.executor.execute_command(
-            command=self.get_syslog_ng_start_command(syntax_check=True)
-        )
-        self.handle_config_syntax_check_result(exit_code, stdout, stderr)
+        exit_code = self.executor.execute_command(command=self.get_syslog_ng_start_command(syntax_check=True))[0]
+        self.handle_config_syntax_check_result(exit_code)
 
     def run_syslog_ng_process(self, external_tool=None):
         self.syslog_ng_process = self.executor.start_process(
@@ -106,7 +104,7 @@ class SyslogNg(object):
         start_command += "-c %s " % self.syslog_ng_runtime_files['control_socket_path']
         return start_command
 
-    def handle_config_syntax_check_result(self, exit_code, stdout, stderr):
+    def handle_config_syntax_check_result(self, exit_code):
         if self.expected_run and (exit_code != 0):
             raise Exception("syslog-ng start phase 5/3: syslog-ng can not start with config")
         elif not self.expected_run and (exit_code != 0):

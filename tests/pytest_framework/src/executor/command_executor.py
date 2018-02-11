@@ -1,6 +1,6 @@
 import shlex
-import psutil
 from subprocess import PIPE
+import psutil
 
 
 class CommandExecutor(object):
