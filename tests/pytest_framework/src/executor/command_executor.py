@@ -1,4 +1,3 @@
-import shlex
 from subprocess import PIPE
 import psutil
 
@@ -8,9 +7,8 @@ class CommandExecutor(object):
         self.logger = logger_factory.create_logger("CommandExecutor")
 
     def execute_command(self, command):
-        command_args = shlex.split(command)
         self.logger.info("Following command will be executed: [%s]" % command)
-        with psutil.Popen(command_args, stderr=PIPE, stdout=PIPE) as proc:
+        with psutil.Popen(command, stderr=PIPE, stdout=PIPE) as proc:
             exit_code = proc.wait(timeout=10)
             stdout = str(proc.stdout.read(), 'utf-8')
             stderr = str(proc.stderr.read(), 'utf-8')

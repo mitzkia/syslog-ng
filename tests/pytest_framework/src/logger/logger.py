@@ -1,15 +1,16 @@
 import logging
 import sys
-from colorlog import ColoredFormatter
+from colorlog import ColoredFormatter # kikapcsolhato legyene console esetben
 
 
 class Logger(logging.Logger):
-    def __init__(self, logger_name, report_file, loglevel, use_console_handler=True):
+    def __init__(self, logger_name, report_file, loglevel, use_console_handler=True, use_file_handler=True):
         super().__init__(logger_name, loglevel)
         self.handlers = []
         if use_console_handler:
             self.__set_consolehandler()
-        self.__set_filehandler(file_name=report_file)
+        if use_file_handler:
+            self.__set_filehandler(file_name=report_file)
 
     def __set_filehandler(self, file_name=None):
         file_handler = logging.FileHandler(file_name)

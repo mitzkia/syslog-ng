@@ -1,6 +1,6 @@
 from src.syslogngconfig.config_renderer import ConfigRenderer
-from src.syslogngconfig.drivers.filebased import FileSource, FileDestination, PipeSource, PipeDestination
-from src.driverio.fileio import FileIO
+from src.syslogngconfig.drivers.filebased import FileSource, FileDestination
+from src.driverio.fileinterface import FileInterface
 from src.syslogngconfig.logpath.logpath import LogPaths
 from src.syslogngconfig.globaloptions.globaloptions import GlobalOptions
 from src.syslogngctl.syslogngctl import SyslogNgCtl
@@ -16,7 +16,7 @@ class SyslogNgConfig(object):
         self.file_register = file_register
         self.syslog_ng_ctl = SyslogNgCtl(logger_factory, syslogngpath.runtime_parameters, self.syslog_ng_runtime_files['control_socket_path'])
 
-        self.fileio = FileIO(logger_factory)
+        self.fileinterface = FileInterface(logger_factory)
         self.syslog_ng_config = {
             "version": syslogngpath.runtime_parameters['syslog_ng_version'],
             "include": ["scl.conf"],
@@ -45,15 +45,15 @@ class SyslogNgConfig(object):
         file_destination_driver.build_file_based_driver(file_name_prefix, driver_options, existing_statement_id)
         return file_destination_driver
 
-    def get_pipesource(self, file_name_prefix, driver_options=None, existing_statement_id=None):
-        pipe_source_driver = PipeSource(self.logger_factory, self.syslog_ng_config, self.file_register, self.syslog_ng_ctl)
-        pipe_source_driver.build_file_based_driver(file_name_prefix, driver_options, existing_statement_id)
-        return pipe_source_driver
+    # def get_pipesource(self, file_name_prefix, driver_options=None, existing_statement_id=None):
+    #     pipe_source_driver = PipeSource(self.logger_factory, self.syslog_ng_config, self.file_register, self.syslog_ng_ctl)
+    #     pipe_source_driver.build_file_based_driver(file_name_prefix, driver_options, existing_statement_id)
+    #     return pipe_source_driver
 
-    def get_pipedestination(self, file_name_prefix, driver_options=None, existing_statement_id=None):
-        pipe_destination_driver = PipeDestination(self.logger_factory, self.syslog_ng_config, self.file_register, self.syslog_ng_ctl)
-        pipe_destination_driver.build_file_based_driver(file_name_prefix, driver_options, existing_statement_id)
-        return pipe_destination_driver
+    # def get_pipedestination(self, file_name_prefix, driver_options=None, existing_statement_id=None):
+    #     pipe_destination_driver = PipeDestination(self.logger_factory, self.syslog_ng_config, self.file_register, self.syslog_ng_ctl)
+    #     pipe_destination_driver.build_file_based_driver(file_name_prefix, driver_options, existing_statement_id)
+    #     return pipe_destination_driver
 
     def create_logpath(self, sources, destinations, flags="flow_control"):
         logpath = LogPaths(self.logger_factory, self.syslog_ng_config, sources, destinations, flags)
@@ -69,7 +69,7 @@ class SyslogNgConfig(object):
             rendered_config = self.raw_config
         else:
             rendered_config = ConfigRenderer(self.logger_factory, self.syslog_ng_config).syslog_ng_config_content
-        self.fileio.write(config_path, rendered_config, open_mode='w')
+        self.fileinterface.write_content(config_path, rendered_config, open_mode='w')
 
     def set_raw_config(self, raw_config):
         self.raw_config = raw_config

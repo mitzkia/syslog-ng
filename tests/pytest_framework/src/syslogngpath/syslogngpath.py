@@ -21,14 +21,14 @@ class SyslogNgPath(object):
 
         self.syslog_ng_runtime_files.update({
             instance_name: {
-                "stdout_path": os.path.join(self.working_dir, "slng_stdout_%s.log" % instance_name),
-                "stderr_path": os.path.join(self.working_dir, "slng_stderr_%s.log" % instance_name),
-                "stdout_fd": open(os.path.join(self.working_dir, "slng_stdout_%s.log" % instance_name), 'w'),
-                "stderr_fd": open(os.path.join(self.working_dir, "slng_stderr_%s.log" % instance_name), 'w'),
-                "config_path": os.path.join(self.working_dir, "slng_config_%s.conf" % instance_name),
-                "persist_path": os.path.join(self.working_dir, "slng_persist_%s.persist" % instance_name),
-                "pid_path": os.path.join(self.working_dir, "slng_pid_%s.pid" % instance_name),
-                "control_socket_path": os.path.join(self.working_dir_relative, "slng_control_socket_%s.ctl" % instance_name),
+                "stdout_path": os.path.join(self.working_dir, "slng_stdout_{}.log".format(instance_name)),
+                "stderr_path": os.path.join(self.working_dir, "slng_stderr_{}.log".format(instance_name)),
+                "stdout_fd": open(os.path.join(self.working_dir, "slng_stdout_{}.log".format(instance_name)), 'w'),
+                "stderr_fd": open(os.path.join(self.working_dir, "slng_stderr_{}.log".format(instance_name)), 'w'),
+                "config_path": os.path.join(self.working_dir, "slng_config_{}.conf".format(instance_name)),
+                "persist_path": os.path.join(self.working_dir, "slng_persist_{}.persist".format(instance_name)),
+                "pid_path": os.path.join(self.working_dir, "slng_pid_{}.pid".format(instance_name)),
+                "control_socket_path": os.path.join(self.working_dir_relative, "slng_control_socket_{}.ctl".format(instance_name)),
             }
         })
 

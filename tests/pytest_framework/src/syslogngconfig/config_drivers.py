@@ -13,6 +13,8 @@ class Drivers(Statements):
             if not mandatory_option['file_path']:
                 return {"file_path": self.file_register.get_registered_file_path(prefix=driver_type)}
             return {"file_path": self.file_register.get_registered_file_path(prefix=mandatory_option['file_path'])}
+        if "file_name":
+                return {"file_name": self.file_register.get_registered_file_name(prefix="almafa")}
 
     @staticmethod
     def merge_mandatory_and_driver_options(mandatory_option, driver_options):
@@ -26,7 +28,7 @@ class Drivers(Statements):
     def remove_driver_from_statement(self, root_statement, statement_id, driver_id):
         self.syslog_ng_config[root_statement][statement_id].pop(driver_id)
 
-    def get_query(self):
+    def query_get(self):
         stdout = self.syslog_ng_ctl.query_get(pattern="*%s.%s.%s*" % (self.statement_short_name, self.driver_name, self.statement_id))[1]
         statistical_elements = ["memory_usage", "written", "processed", "dropped", "queued", "stamp"]
         result = {}

@@ -27,24 +27,12 @@ def wait_until_stabilized(func, args=None, monitoring_time=MONITORING_TIME):
 def wait_until_true(func, *args, monitoring_time=MONITORING_TIME):
     t_end = time.monotonic() + monitoring_time
     while time.monotonic() <= t_end:
-        if args:
-            if func(*args):
-                return True
-        else:
-            if func():
-                return True
+        result = func(*args)
+        if result:
+            return result
         time.sleep(POLL_FREQ)
     return False
-
 
 def wait_until_false(func, *args, monitoring_time=MONITORING_TIME):
-    t_end = time.monotonic() + monitoring_time
-    while time.monotonic() <= t_end:
-        if args:
-            if not func(*args):
-                return True
-        else:
-            if not func():
-                return True
-        time.sleep(POLL_FREQ)
-    return False
+    negate = lambda func, *args: not func(*args)
+    return wait_until_true(negate, func, *args)

@@ -1,5 +1,5 @@
 import pytest
-from src.testcase.setup_testcase import SetupTestCase
+from src.testcase.setup_testcase import SetupTestCase, SetupUnitTestCase
 from datetime import datetime
 
 
@@ -38,6 +38,9 @@ def runslow(request):
 def tc(request):
     return SetupTestCase(request)
 
+@pytest.fixture
+def tc_unittest(request):
+    return SetupUnitTestCase(request)
 
 def get_current_date():
     return 'reports/' + datetime.now().strftime('%Y-%m-%d-%H-%M-%S-%f')

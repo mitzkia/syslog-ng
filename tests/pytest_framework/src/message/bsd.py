@@ -5,23 +5,21 @@ class BSD(object):
     def __init__(self, logger_factory):
         self.logger = logger_factory.create_logger("BSD")
 
-    @staticmethod
-    def create_bsd_message(generated_message_parts, add_newline=False):
-        message = ""
-        if "priority" in generated_message_parts:
-            message += "<%s>" % generated_message_parts["priority"]
-        if "bsd_timestamp" in generated_message_parts:
-            message += "%s " % generated_message_parts["bsd_timestamp"]
-        if "hostname" in generated_message_parts:
-            message += "%s " % generated_message_parts["hostname"]
-        if "program" in generated_message_parts:
-            message += "%s" % generated_message_parts["program"]
-        if "pid" in generated_message_parts:
-            message += "[%s]: " % generated_message_parts["pid"]
-        if "message" in generated_message_parts:
-            message += "%s" % (generated_message_parts["message"])
-        if add_newline and not generated_message_parts["message"].endswith("\n"):
+    def create_bsd_message(self, generated_message_parts):
+        # NEEEEM jo, itt nem lehet 2 fv, 
+        # nezzuk vegig megegyszer a teszteset oldalrol, onnan lehet 2 fv-t hivni
+        message = "<{}> {} {} {}[{}]: {}".format(
+            generated_message_parts['priority'],
+            generated_message_parts['bsd_timestamp'],
+            generated_message_parts['hostname'],
+            generated_message_parts['program'],
+            generated_message_parts['pid'],
+            generated_message_parts['message'],
+            )
+        if not generated_message_parts["message"].endswith("\n"):
             message += "\n"
-        if "regexp" in generated_message_parts.values():
-            return re.compile(message)
         return message
+
+    def create_regexp_bsd_message(self, generated_message_parts):
+        bsd_message = self.create_bsd_message(generated_message_parts)
+        return re.compile(bsd_message)

@@ -17,8 +17,9 @@ class SetupTestCase(object):
         self.prepare_testcase_working_dir(self.runtime_parameters)
 
         self.logger_factory = LoggerFactory(self.runtime_parameters['report_file'],
-                                            self.runtime_parameters['loglevel'])
-        self.logger = self.logger_factory.create_logger("SetupTestCase", use_console_handler=False)
+                                            self.runtime_parameters['loglevel'],
+                                            use_console_handler=False)
+        self.logger = self.logger_factory.create_logger("SetupTestCase")
 
         self.instantiate_main_interfaces()
 
@@ -37,7 +38,7 @@ class SetupTestCase(object):
         self.message = MessageInterface(self.logger_factory)
         self.syslogngpath = SyslogNgPath(self.runtime_parameters)
 
-    def log_assertion_error_for_current_testcase(self):
+    def log_assertion_error(self):
         terminalreporter = self.testcase_context.config.pluginmanager.getplugin('terminalreporter')
         if terminalreporter.stats.get('failed'):
             for failed_report in terminalreporter.stats.get('failed'):
@@ -50,7 +51,7 @@ class SetupTestCase(object):
                 inner_function()
             except:
                 pass
-        self.log_assertion_error_for_current_testcase()
+        self.log_assertion_error()
 
     # Helper functions for test cases
     def new_bsd_message(self, message_parts=None, message_counter=1):
@@ -73,3 +74,22 @@ class SetupTestCase(object):
         syslog_ng = SyslogNg(self.syslogngpath, self.logger_factory, instance_name)
         self.teardown_actions.append(syslog_ng.stop)
         return syslog_ng
+
+
+class SetupUnitTestCase(object):
+    def __init__(self, testcase_context):
+        self.runtime_parameters = {
+            "working_dir": "",
+            "working_dir_relative": "",
+            "report_file": "",
+            "testcase_name": testcase_context.node.name,
+            "testcase_path": testcase_context.node.fspath,
+            "install_dir": "",
+            "syslog_ng_version": "3.13",
+            "libjvm_dir": "/usr/lib/jvm/default-java/jre/lib/amd64/server/",
+            "loglevel": "info"
+        }
+        self.logger_factory = LoggerFactory(
+            self.runtime_parameters['report_file'], 
+            self.runtime_parameters['loglevel'], 
+            use_file_handler=False)

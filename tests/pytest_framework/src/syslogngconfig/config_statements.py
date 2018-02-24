@@ -1,3 +1,4 @@
+# vegyuk ki innen a Messageinterface-t es tegyuk oda ahol hasznalkil
 from src.message.message_interface import MessageInterface
 
 

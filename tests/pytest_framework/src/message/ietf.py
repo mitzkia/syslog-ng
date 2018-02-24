@@ -6,7 +6,7 @@ class IETF(object):
         self.logger = logger_factory.create_logger("IETF")
 
     @staticmethod
-    def create_ietf_message(generated_message_parts, add_newline=False):
+    def create_ietf_message(generated_message_parts):
         message = ""
         if "priority" in generated_message_parts:
             message += "<%s>" % generated_message_parts["priority"]
@@ -26,7 +26,7 @@ class IETF(object):
             message += '[meta sequenceId="-"] '
         if "message" in generated_message_parts:
             message += "%s" % (generated_message_parts["message"])
-        if add_newline and not generated_message_parts["message"].endswith("\n"):
+        if not generated_message_parts["message"].endswith("\n"):
             message += "\n"
         message_length = len(message.encode('utf-8'))
         message = "%d %s" % (message_length, message)

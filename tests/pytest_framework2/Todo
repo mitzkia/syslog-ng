@@ -1,0 +1,48 @@
+Logger:
+    - support for disabling colorlog on console
+    - support foreground/background in colorlog
+
+SyslogNgCtl:
+    - in wait_and_assert_for_query_counters() and in wait_and_assert_for_stats_counters()
+when we use wait_until_true() the self.query_get()[1] and self.stats()[1] should be function
+pointer.
+    - wait_and_assert_for_stats_counters() and wait_and_assert_for_query_counters() are similar
+it can be refactorized, hints: new name: fill_cache(), inputs: line + self.query_get / self.stats, aquery_type
+    - refactor command executions in classes, something similar?
+class CtlExecutor(object):
+    def __init__(self, ctl_command, query_pattern):
+        ctl_commands = {
+            "stats": "{} stats --control={}",
+            "stats_reset": "{} stats --reset --control={}",
+            "query_get": "{} query get '{}' --control={}",
+            "query_get_sum": "{} query get --sum '{}' --control={}",
+            "query_list": "{} query list '{}' --control={}",
+            "query_reset": "{} query get --reset '{}' --control={}",
+            "stop": "{} stop --control={}",
+            "reload": "{} reload --control={}",
+            "reopen": "{} reopen --control={}"
+        }
+ctl_executor(cmd_name="query_get", args=pattern)
+ctl_executor(cmd_name="query_get_sum", args=pattern)
+ctl_executor(cmd_name="reload")
+ctl_executor(cmd_name="stop")
+ctl_executor(cmd_name="stats")
+
+
+slng_executor(cmd_name="syntax_check").get_exit_code()
+slng_executor(cmd_name="gdb").get_stdout()
+slng_process_runner(process_name="start")
+slng_process_runner(process_name="stop")
+slng_process_runner(process_name="reload")
+
+ConfigStatements:
+    - put MessageInterface into class where it needed
+
+File:
+    - use bufferio for file/socket drivers
+
+syslog-ng:
+    - define a possible list of core patterns, or just use core*
+
+individual:
+    - define commands in similar way in classes

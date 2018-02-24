@@ -31,27 +31,27 @@ class MessageInterface(object):
         self.ietf_syslog = IETF(logger_factory=logger_factory)
 
 # Interface for BSDSyslog
-    def create_bsd_message(self, defined_bsd_message_parts=None, add_newline=True, counter=1, use_message_counter=True):
+    def create_bsd_message(self, defined_bsd_message_parts=None, counter=1):
         self.validate_defined_message_parts(defined_message_parts=defined_bsd_message_parts, default_message_parts=self.default_bsd_message_parts)
-        generated_bsd_message_parts = self.set_message_parts(defined_message_parts=defined_bsd_message_parts, default_message_parts=self.default_bsd_message_parts, counter=counter, use_message_counter=use_message_counter)
-        return self.bsd_syslog.create_bsd_message(generated_message_parts=generated_bsd_message_parts, add_newline=add_newline)
+        generated_bsd_message_parts = self.set_message_parts(defined_message_parts=defined_bsd_message_parts, default_message_parts=self.default_bsd_message_parts, counter=counter)
+        return self.bsd_syslog.create_bsd_message(generated_message_parts=generated_bsd_message_parts)
 
-    def create_multiple_bsd_messages(self, defined_bsd_message_parts=None, message_counter=2, add_newline=True, use_message_counter=True):
+    def create_multiple_bsd_messages(self, defined_bsd_message_parts=None, message_counter=2):
         messages = ""
         for actual_counter in range(1, message_counter + 1):
-            messages += self.create_bsd_message(defined_bsd_message_parts=defined_bsd_message_parts, add_newline=add_newline, counter=actual_counter, use_message_counter=use_message_counter)
+            messages += self.create_bsd_message(defined_bsd_message_parts=defined_bsd_message_parts, counter=actual_counter)
         return messages
 
 # Interface for IETFSyslog
-    def create_ietf_message(self, defined_ietf_message_parts=None, add_newline=True, counter=1, use_message_counter=True):
+    def create_ietf_message(self, defined_ietf_message_parts=None, counter=1):
         self.validate_defined_message_parts(defined_message_parts=defined_ietf_message_parts, default_message_parts=self.default_ietf_message_parts)
-        generated_ietf_message_parts = self.set_message_parts(defined_message_parts=defined_ietf_message_parts, default_message_parts=self.default_ietf_message_parts, counter=counter, use_message_counter=use_message_counter)
-        return self.ietf_syslog.create_ietf_message(generated_message_parts=generated_ietf_message_parts, add_newline=add_newline)
+        generated_ietf_message_parts = self.set_message_parts(defined_message_parts=defined_ietf_message_parts, default_message_parts=self.default_ietf_message_parts, counter=counter)
+        return self.ietf_syslog.create_ietf_message(generated_message_parts=generated_ietf_message_parts)
 
-    def create_multiple_ietf_messages(self, defined_ietf_message_parts=None, message_counter=2, add_newline=True, use_message_counter=True):
+    def create_multiple_ietf_messages(self, defined_ietf_message_parts=None, message_counter=2):
         messages = ""
         for actual_counter in range(1, message_counter + 1):
-            messages += self.create_ietf_message(defined_ietf_message_parts=defined_ietf_message_parts, add_newline=add_newline, counter=actual_counter, use_message_counter=use_message_counter)
+            messages += self.create_ietf_message(defined_ietf_message_parts=defined_ietf_message_parts, counter=actual_counter)
         return messages
 
 # Other
@@ -60,20 +60,33 @@ class MessageInterface(object):
         if defined_message_parts and (set(defined_message_parts) - set(default_message_parts.keys())):
             raise Exception("Found unknown log message part: %s" % defined_message_parts)
 
-    @staticmethod
-    def set_message_parts(defined_message_parts, default_message_parts, counter=1, use_message_counter=True):
+    def set_message_parts(self, defined_message_parts, default_message_parts, counter=1):
         generated_message_parts = copy.deepcopy(default_message_parts)
         for message_part in default_message_parts.keys():
             if defined_message_parts:
-                if (message_part == "bsd_timestamp") and (message_part in defined_message_parts.keys()) and (defined_message_parts[message_part] == "current"):
-                    generated_message_parts[message_part] = time.strftime("%b %-d %H:%M:%S")
-                elif (message_part == "bsd_timestamp") and (message_part in defined_message_parts.keys()) and (defined_message_parts[message_part] == "regexp"):
-                    generated_message_parts[message_part] = '[a-zA-Z]{3} ([0-9]{2}| [0-9]{1}) [0-9]{2}:[0-9]{2}:[0-9]{2}'
-                    generated_message_parts['regexp'] = 'regexp'
-                elif (message_part in defined_message_parts.keys()) and (defined_message_parts[message_part] != "skip"):
-                    generated_message_parts[message_part] = defined_message_parts[message_part]
-                elif (message_part in defined_message_parts.keys()) and (defined_message_parts[message_part] == "skip"):
-                    generated_message_parts.pop(message_part)
-        if use_message_counter:
-            generated_message_parts['message'] += " - %s" % counter
+                generated_message_parts = self.use_regexp_date_if_needed(message_part, defined_message_parts[message_part], generated_message_parts)
+                generated_message_parts = self.use_current_date_if_needed(message_part, defined_message_parts[message_part], generated_message_parts)
+                generated_message_parts = self.skip_message_part_if_needed(message_part, defined_message_parts[message_part], generated_message_parts)
+
+                generated_message_parts = self.use_default_message_part(message_part, defined_message_parts[message_part], generated_message_parts)
+        return generated_message_parts
+
+    def use_regexp_date_if_needed(self, message_part, defined_message_part, generated_message_parts):
+        if (message_part == "bsd_timestamp") and (defined_message_part == "regexp"):
+            generated_message_parts[message_part] == "[a-zA-Z]{3} ([0-9]{2}| [0-9]{1}) [0-9]{2}:[0-9]{2}:[0-9]{2}"
+        return generated_message_parts
+
+    def use_current_date_if_needed(self, message_part, defined_message_part, generated_message_parts):
+        if (message_part == "bsd_timestamp") and (defined_message_part == "current"):
+            generated_message_parts[message_part] == time.strftime("%b %-d %H:%M:%S")
+        return generated_message_parts
+
+    def skip_message_part_if_needed(self, message_part, defined_message_part, generated_message_parts):
+        if (defined_message_part == "skip"):
+            generated_message_parts.pop(message_part)
+        return generated_message_parts
+
+    def use_default_message_part(self, message_part, defined_message_part, generated_message_parts):
+        if (defined_message_part != "skip"):
+            generated_message_parts[message_part] = defined_message_part
         return generated_message_parts
