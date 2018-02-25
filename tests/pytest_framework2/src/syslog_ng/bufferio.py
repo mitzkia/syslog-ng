@@ -85,6 +85,9 @@ class BufferIO(object):
     def peek_msg(self, message):
         pass
 
+    def peek_msgs(self, message):
+        pass
+
 d_io = DriverIO("b.txt")
 d_io.write("message 1\n")
 d_io.write("message 2\n")

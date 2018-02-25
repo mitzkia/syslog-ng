@@ -8,9 +8,9 @@ class CmdExecutor(object):
         self.exit_code = None
         self.stdout = None
         self.stderr = None
-        self.execute_command(command)
+        self.execute_command()
 
-    def execute_command(self, command):
+    def execute_command(self):
         self.exit_code = "62"
 
     def get_stdout(self):
@@ -43,6 +43,12 @@ class ProcessExecutor(ProcessCommon):
         self.exit_code = None
         self.pid = None
         self.process_object = None
+        if command_of_process == "reload":
+            self.reload()
+        elif command_of_process == "stop":
+            self.stop()
+        else:
+            self.start()
 
     def start(self):
         self.process_object = "EEE"
@@ -75,7 +81,7 @@ class ProcessExecutor(ProcessCommon):
 
 class SlngCtlExecutor(object):
     def __init__(self):
-        self.commands = {
+        self.ctl_commands = {
             "stats": ["ls", "-la"]
         }
 
@@ -86,14 +92,14 @@ class SlngCmdExecutor(object):
     def __init__(self, instance_parameters):
         syslog_ng_binary_path = instance_parameters['binary_file_paths']['syslog_ng_binary']
         config_path = instance_parameters['file_paths']['config_path']
-        self.commands = {
+        self.slng_commands = {
             "version": [syslog_ng_binary_path, "--version"],
             "syntax_check": [syslog_ng_binary_path, "-Fedtv --no-caps --enable-core --syntax-check", "-f", config_path],
             "gdb_bt_full": ["gdb", "--core", os.path.join(os.getcwd(), "core*"), syslog_ng_binary_path, '-ex', 'bt full', '--batch']
         }
 
     def slng_executor(self, cmd_name):
-        return CmdExecutor(self.commands[cmd_name])
+        return CmdExecutor(self.slng_commands[cmd_name])
 
 class SlngProcessRunner(object):
     def __init__(self, instance_parameters):
@@ -121,15 +127,36 @@ class SlngProcessRunner(object):
 class SlngConsoleHandler(object):
     def __init__(self, instance_parameters):
         stderr_path = ""
-        stderr_fd = ""
+        self.stderr_fd = ""
+        self.syslog_ng_start_message = ["syslog-ng starting up;"]
+        self.syslog_ng_stop_message = ["syslog-ng shutting down"]
+        self.syslog_ng_reload_messages = [
+            "New configuration initialized",
+            "Configuration reload request received, reloading configuration",
+            "Configuration reload finished"
+        ]
 
     def wait_for_start_message(self):
-        pass
+        return self.wait_for_console_message(messages=self.syslog_ng_start_message)
+
+    def wait_for_reload_message(self):
+        return self.wait_for_console_message(messages=self.syslog_ng_reload_messages)
+
+    def wait_for_stop_message(self):
+        return self.wait_for_console_message(messages=self.syslog_ng_stop_message)
+
+    def wait_for_console_message(self, messages, expected_occurance=1):
+        result = []
+        for message in messages:
+            result.append(self.stderr_fd.wait_for_message(expected_message=message, expected_occurance=expected_occurance))
+        return all(result)
 
 class SyslogNgCtl(SlngCtlExecutor):
     def __init__(self):
         SlngCmdExecutor.__init__(self)
 
+    def wait_for_control_socket_start(self):
+        pass
 
 class SyslogNg(SlngCmdExecutor, SlngProcessRunner, SlngConsoleHandler):
     def __init__(self):
@@ -168,7 +195,8 @@ class SyslogNg(SlngCmdExecutor, SlngProcessRunner, SlngConsoleHandler):
 
         if external_tool:
             process = self.slng_start_behind(parent_cmd_name=external_tool).get_process()
-        process = self.slng_process_runner(cmd_name="start").get_process()
+        else:
+            process = self.slng_process_runner(cmd_name="start").get_process()
 
         # self.wait_for_console_message(self.start_message)
         # self.wait_for_start_message()
