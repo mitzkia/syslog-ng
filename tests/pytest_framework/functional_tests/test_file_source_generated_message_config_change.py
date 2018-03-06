@@ -14,14 +14,14 @@ def test_file_source_generated_message_config_change(tc):
     # start syslog-ng with config-1
     slng = tc.new_syslog_ng()
     slng.start(cfg)
-    slng.dump_config()
+    # slng.dump_config()
 
     # change config-1 to config-2
     cfg_fs.update_driver_options({"file_path": "input2", "follow-freq": "2"})
 
     # reload syslog-ng
     slng.reload(cfg)
-    slng.dump_config()
+    # slng.dump_config()
 
     test_message2 = tc.new_bsd_message(message_parts={"program": "MYPROGRAM2"}, message_counter=message_counter)
     cfg_fs.write(test_message2)

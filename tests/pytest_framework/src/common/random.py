@@ -10,4 +10,4 @@ class Random(random.Random):
             self.seed(0xDEADBEEF)
 
     def get_unique_id(self, length=UNIQUE_LENGTH):
-        return str(self.getrandbits(16*8))[0:length]
+        return str(self.getrandbits(16 * 8))[0:length]

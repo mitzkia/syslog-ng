@@ -1,6 +1,6 @@
 import logging
 import sys
-from colorlog import ColoredFormatter # kikapcsolhato legyene console esetben
+from colorlog import ColoredFormatter
 
 
 class Logger(logging.Logger):
@@ -20,6 +20,7 @@ class Logger(logging.Logger):
 
     def __set_consolehandler(self):
         console_handler = logging.StreamHandler(sys.stdout)
+        logging.captureWarnings(capture=True)
         formatter = ColoredFormatter(
             "\n%(log_color)s%(asctime)s - %(name)s - %(levelname)-5s%(reset)s- %(message_log_color)s%(message)s",
             datefmt=None,

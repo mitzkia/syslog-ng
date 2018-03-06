@@ -1,11 +1,11 @@
 import pytest
 
 
-@pytest.mark.parametrize("stats_level,expected_run", [
-    (-1, False, {"expected_stats_ami a statsbol kijon"}),
-    (0, True),
-    (1, True),
-])
+# @pytest.mark.parametrize("stats_level,expected_run", [
+#     (-1, False, {"expected_stats_ami a statsbol kijon"}),
+#     (0, True),
+#     (1, True),
+# ])
 @pytest.mark.parametrize("stats_value", [0,1,2,3, -1])
 def test_file_source_generated_message(tc, stats_value):
     # syslog-ng-1 config
