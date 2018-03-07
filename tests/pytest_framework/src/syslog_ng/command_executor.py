@@ -16,7 +16,7 @@ class SlngCommandExecutor(object):
                 "stdout": os.path.join(self.working_dir, "slng_version_stdout"),
                 "stderr": os.path.join(self.working_dir, "slng_version_stderr")
             },
-            "syntax_check": {
+            "syntax_only": {
                 "cmd": [syslog_ng_binary_path, "--enable-core", "--syntax-only", "--cfgfile={}".format(config_path)],
                 "stdout": os.path.join(self.working_dir, "slng_syntax_check_stdout"),
                 "stderr": os.path.join(self.working_dir, "slng_syntax_check_stderr"),

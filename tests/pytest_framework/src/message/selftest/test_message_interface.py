@@ -63,16 +63,15 @@ def test_set_message_parts(tc_unittest, message_parts, default_message_parts, ex
         2,  # create 2 messages
         [
             re.compile(
-                '<38>[a-zA-Z]{3} ([0-9]{2}| [0-9]{1}) [0-9]{2}:[0-9]{2}:[0-9]{2} tristram testprogram[9999]: test message - árvíztűrő tükörfúrógép\n'),
+                '<38>[a-zA-Z]{3} ([0-9]{2}| [0-9]{1}) [0-9]{2}:[0-9]{2}:[0-9]{2} %s testprogram[9999]: test message - árvíztűrő tükörfúrógép\n' % socket.gethostname()),
             re.compile(
-                '<38>[a-zA-Z]{3} ([0-9]{2}| [0-9]{1}) [0-9]{2}:[0-9]{2}:[0-9]{2} tristram testprogram[9999]: test message - árvíztűrő tükörfúrógép\n')
+                '<38>[a-zA-Z]{3} ([0-9]{2}| [0-9]{1}) [0-9]{2}:[0-9]{2}:[0-9]{2} %s testprogram[9999]: test message - árvíztűrő tükörfúrógép\n' % socket.gethostname())
         ]
     ),
 ])
 def test_construct_bsd_messages(tc_unittest, message_parts, message_counter, expected_result):
     message_interface = MessageInterface(tc_unittest.logger_factory)
-    aaa = message_interface.construct_bsd_messages(message_parts, message_counter)
-    assert aaa == expected_result
+    assert message_interface.construct_bsd_messages(message_parts, message_counter) == expected_result
 
 
 @pytest.mark.parametrize("message_part, message_part_counter, expected_result", [
@@ -87,6 +86,5 @@ def test_construct_bsd_messages(tc_unittest, message_parts, message_counter, exp
 ])
 def test_construct_messages_with_random_message_parts(tc_unittest, message_part, message_part_counter, expected_result):
     message_interface = MessageInterface(tc_unittest.logger_factory)
-    aaa = message_interface.construct_messages_with_various_message_parts(message_part=message_part,
-                                                                           message_part_counter=message_part_counter)
-    assert aaa == expected_result
+    assert message_interface.construct_messages_with_various_message_parts(message_part=message_part,
+                                                                           message_part_counter=message_part_counter) == expected_result
