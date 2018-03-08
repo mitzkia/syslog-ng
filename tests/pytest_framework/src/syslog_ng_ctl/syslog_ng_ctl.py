@@ -65,7 +65,7 @@ class SyslogNgCtl(CtlCommandExecutor):
         statement_properties = syslog_ng_config[root_statement]
         if statement_properties != {}:
             for statement_id, driver in statement_properties.items():
-                for _driver_id, driver_properties in driver.items():
+                for dummy_driver_id, driver_properties in driver.items():
                     driver_name = driver_properties['driver_name']
                     mandatory_option_value = driver_properties['mandatory_option_value']
                     yield driver_name, statement_id, mandatory_option_value
@@ -134,5 +134,4 @@ class SyslogNgCtl(CtlCommandExecutor):
             return ["processed"]
         elif component.startswith("dst"):
             return ["processed", "written", "dropped", "queued", "memory_usage"]
-        else:
-            return None
+        return None

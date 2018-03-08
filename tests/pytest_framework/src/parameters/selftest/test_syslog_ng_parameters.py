@@ -11,7 +11,7 @@ def stub_dependencies_for_syslog_ng_parameters(syslog_ng_parameters_object):
 def check_keys_for_instance_name_in_syslog_ng_parameters(instance_parameters):
     assert set(list(instance_parameters)) == {'binary_file_paths', 'dir_paths', 'file_paths'}
     assert set(list(instance_parameters['dir_paths'])) == {'install_dir', 'libjvm_dir', 'working_dir'}
-    assert set(list(instance_parameters['file_paths'])) == {'config_path','persist_path', 'pid_path', 'control_socket_path'}
+    assert set(list(instance_parameters['file_paths'])) == {'config_path', 'persist_path', 'pid_path', 'control_socket_path'}
 
 
 def test_set_instance_parameters(request):

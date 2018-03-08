@@ -8,6 +8,16 @@ class FileBasedFactory(Drivers):
         driver_io = FileInterface(logger_factory)
         Drivers.__init__(self, logger_factory, syslog_ng_config, file_register, driver_io, syslog_ng_ctl)
         self.logger = logger_factory.create_logger("FileBasedFactory")
+        self.statement_name = None
+        self.statement_short_name = None
+        self.driver_name = None
+        self.mandatory_option_name = None
+        self.root_statement = None
+        self.driver_type = None
+        self.statement_id = None
+        self.driver_id = None
+        self.mandatory_option = None
+        self.driver_connection_path = None
 
     def initialize_driver(self, statement_name, statement_short_name, driver_name, mandatory_option_name):
         self.statement_name = statement_name

@@ -43,18 +43,22 @@ def test_set_message_parts(tc_unittest, message_parts, default_message_parts, ex
         2,  # create 2 messages
         "<38>Jun  1 08:05:04 {} testprogram[9999]: test message - árvíztűrő tükörfúrógép\n\
 <38>Jun  1 08:05:04 {} testprogram[9999]: test message - árvíztűrő tükörfúrógép\n".format(
-                socket.gethostname(), socket.gethostname()),
+    socket.gethostname(), socket.gethostname()),
     ),
     (
-        {"priority": "42", "bsd_timestamp": "Dec  1 09:06:32", "hostname": "randomhost", "program": "randomprogram",
-            "pid": "9999", "message": "test message"},  # overwrite very values
+        {
+            "priority": "42", "bsd_timestamp": "Dec  1 09:06:32", "hostname": "randomhost", "program": "randomprogram",
+            "pid": "9999", "message": "test message"
+        },  # overwrite very values
         2,  # create 2 messages
         "<42>Dec  1 09:06:32 randomhost randomprogram[9999]: test message\n\
 <42>Dec  1 09:06:32 randomhost randomprogram[9999]: test message\n"
     ),
     (
-        {"priority": "skip", "bsd_timestamp": "skip", "hostname": "skip", "program": "skip", "pid": "skip",
-            "message": "test message"},  # skipping some message parts
+        {
+            "priority": "skip", "bsd_timestamp": "skip", "hostname": "skip", "program": "skip", "pid": "skip",
+            "message": "test message"
+        },  # skipping some message parts
         1,  # create 1 message
         "test message\n"
     ),

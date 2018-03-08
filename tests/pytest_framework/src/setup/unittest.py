@@ -1,4 +1,4 @@
-from mockito import when, args, unstub
+from mockito import when, unstub
 from src.parameters.test_case import TestCaseParameters
 from src.parameters.syslog_ng import SyslogNgParameters
 from src.logger.logger_factory import LoggerFactory
@@ -29,7 +29,7 @@ class SetupUnitTestCase(object):
         testcase_context.addfinalizer(self.teardown)
 
     def teardown(self):
-        for _registered_file_path_key, registered_file_path in self.file_register.registered_files.items():
+        for dummy_registered_file_path_key, registered_file_path in self.file_register.registered_files.items():
             file_object = File(self.logger_factory, registered_file_path)
             if file_object.is_file_exist():
                 file_object.delete_file()

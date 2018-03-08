@@ -10,8 +10,10 @@ def test_default_bsd_message_parts():
 
 @pytest.mark.parametrize("message_parts, expected_result", [
     (
-        {"priority": "42", "bsd_timestamp": "Jun  1 08:05:42", "hostname": "testhost", "program": "testprogram",
-            "pid": "9999", "message": "test message"},
+        {
+            "priority": "42", "bsd_timestamp": "Jun  1 08:05:42", "hostname": "testhost", "program": "testprogram",
+            "pid": "9999", "message": "test message"
+        },
         "<42>Jun  1 08:05:42 testhost testprogram[9999]: test message\n"
     ),
     (

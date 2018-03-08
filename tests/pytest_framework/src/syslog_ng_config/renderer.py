@@ -59,7 +59,7 @@ class ConfigRenderer(Statements):
         for statement_id, driver in self.syslog_ng_config["{}_statements".format(statement_name)].items():
             # statement header
             self.syslog_ng_config_content += "\n{} {} {{\n".format(statement_name, statement_id)
-            for _driver_id, driver_properties in driver.items():
+            for dummy_driver_id, driver_properties in driver.items():
                 driver_name = driver_properties['driver_name']
                 driver_options = driver_properties['driver_options']
                 # driver header

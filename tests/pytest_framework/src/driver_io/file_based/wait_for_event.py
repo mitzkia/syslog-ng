@@ -15,8 +15,7 @@ class FileWaitForEvent(File):
             result_file_has_size = wait_until_true(self.get_size, monitoring_time=10)
             self.logger.write_message_based_on_value("File created, file_path: [{}]".format(self.file_path), result_file_has_created)
             return result_file_has_created and result_file_has_size
-        else:
-            return True
+        return True
 
     def is_expected_line_in_buffer(self, expected_lines):
         self.bufferio.buffering_messages(self.read)

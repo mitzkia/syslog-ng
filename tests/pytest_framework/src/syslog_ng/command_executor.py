@@ -18,8 +18,8 @@ class SlngCommandExecutor(object):
             },
             "syntax_only": {
                 "cmd": [syslog_ng_binary_path, "--enable-core", "--syntax-only", "--cfgfile={}".format(config_path)],
-                "stdout": os.path.join(self.working_dir, "slng_syntax_check_stdout"),
-                "stderr": os.path.join(self.working_dir, "slng_syntax_check_stderr"),
+                "stdout": os.path.join(self.working_dir, "slng_syntax_only_stdout"),
+                "stderr": os.path.join(self.working_dir, "slng_syntax_only_stderr"),
             },
             "gdb_bt_full": {
                 "cmd": ["gdb", "-ex", "bt full", "--batch", syslog_ng_binary_path, "--core"],

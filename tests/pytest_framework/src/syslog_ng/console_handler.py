@@ -39,5 +39,5 @@ class SlngConsoleHandler(object):
         return all(result)
 
     def dump_console_log(self):
-        File(self.logger_factory, self.slng_commands['syntax_check']['stderr']).dump_content()
+        File(self.logger_factory, self.slng_commands['syntax_only']['stderr']).dump_content()
         # File(self.logger_factory, self.process_commands['start']['stderr']).dump_content()

@@ -20,8 +20,8 @@ class SyslogNg(SlngCommandExecutor, SlngProcessExecutor, SlngConsoleHandler):
         self.external_tool = external_tool
         syslog_ng_config.write_config_content()
 
-        exit_code = self.slng_executor(cmd_name="syntax_check").get_exit_code()
-        if not self.evaluate_syntax_check(expected_run, exit_code):
+        exit_code = self.slng_executor(cmd_name="syntax_only").get_exit_code()
+        if not self.evaluate_syntax_only(expected_run, exit_code):
             return None
 
         if external_tool:
@@ -46,7 +46,7 @@ class SyslogNg(SlngCommandExecutor, SlngProcessExecutor, SlngConsoleHandler):
             self.evaluate_process_stop()
             self.logger.info(">>> End of syslog-ng stop")
 
-    def evaluate_syntax_check(self, expected_run, exit_code):
+    def evaluate_syntax_only(self, expected_run, exit_code):
         if expected_run and (exit_code != 0):
             self.dump_console_log()
             raise Exception("syslog-ng can not start with config")

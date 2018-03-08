@@ -23,15 +23,14 @@ class MessageInterface(object):
         self.validate_message_parts(message_parts, message_format.default_message_parts)
         merged_message_parts = self.set_message_parts(message_parts, message_format.default_message_parts)
         messages = []
-        for _actual_counter in range(1, message_counter + 1):
+        for dummy_actual_counter in range(1, message_counter + 1):
             if ("meta" in merged_message_parts.keys()) and (merged_message_parts['meta'] == "regexp"):
                 messages.append(message_format.construct_regexp_message(merged_message_parts))
             else:
                 messages.append(message_format.construct_message(merged_message_parts))
         if ("meta" in merged_message_parts.keys()) and (merged_message_parts['meta'] == "regexp"):
             return messages
-        else:
-            return "".join(messages)
+        return "".join(messages)
 
     def construct_messages_with_various_message_parts(self, message_part, message_part_counter):
         various_message_parts = []

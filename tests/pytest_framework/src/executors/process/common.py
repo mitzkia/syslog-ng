@@ -11,6 +11,7 @@ class ProcessCommon(object):
     def is_process_running(self):
         if self.process_object:
             return self.process_object.is_running()
+        return False
 
     def is_pid_in_process_list(self):
         return psutil.pid_exists(self.pid)
