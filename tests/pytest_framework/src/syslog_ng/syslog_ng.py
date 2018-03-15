@@ -71,6 +71,6 @@ class SyslogNg(SlngCommandExecutor, SlngProcessExecutor, SlngConsoleHandler):
 
     # def dump_config(self):
     #     File(self.logger_factory, self.instance_parameters['file_paths']['config_path']).dump_content()
-
+    #
     # def dump_console_log(self):
-    #     File(self.logger_factory, self.instance_parameters['file_paths']['stderr_path']).dump_content()
+    #     return File(self.logger_factory, self.instance_parameters['file_paths']['stderr_path']).dump_content()

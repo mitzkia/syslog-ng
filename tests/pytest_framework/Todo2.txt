@@ -1,0 +1,74 @@
+<Issue:>
+
+<Todo:>
+Context.py:
+    - syslog_ng_version -> syslog-ng --version -> Done
+
+Testcase.py:
+    - display_testcase_message("start") / display_testcase_message("finish")
+
+FileBasedIO.py:
+    - a file_path-ok self-ek legyenek
+
+Messages: 
+    - mindig regexp-el terjunk vissza
+    - visszarakni a counter-t a legeneralt uznetekbe, ha van mar benne/ha nincs
+
+Syslogng:
+    - hasznaljuk a Random-ot a runtime fileokhoz -> Done
+
+Logger:
+    - az assertek logolodjanak fajlba is -> Done, testcase.py -> teardown -> terminalreporter
+
+
+atnevezesek
+    - message <-> content
+    - content <-> file_content
+    - counter <-> message_counter -> Done
+    - get_content_from_regular_file <-> get_file_content
+
+Az src/ alatt ne legyenek assert-ek ha lehet, helyette raise Exception()
+
+
+Funkcio teszteset:
+    - 1 db bejovo -> kimeno uzenetre tesztelunk
+    - n db bejovo -> kimeno uzenetre tesztelunk
+
+Felepites - Diagramm - abra
+
+
+UnitTestek:
+    - hozzuk vissza oket
+
+Atemelni elozo verziobol:
+    - Threading drivers
+    - reporter
+
+
+
+
+<Kerdes:>
+1, Lehet-e konfigot modositani teszt futas kozben?
+
+
+2, Hasznaljunk sorszamozott uzeneteket?
+"<38>Jun  1 08:05:04 tristram MYPROGRAM[9999]: test ÁÉŐÚŰÓÜ-ááéúóö message - 1"
+Mikor: custom/generalt uzenetek eseten
+Mire kellenek a sorszamozott uzenetek?
+    - darabszamot mondanak meg
+    - jo lehet tudni, hogy hanyadik uzenet veszik el/tobbszorozodik, az elso vagy az utolso
+Ki lehet valtani vmivel?
+    - Igen, ha az uzeneteket listaba tesszuk
+Meg lehet ugy oldani, hogy csak a framework altal generalt uzeneteknel legyen?
+
+
+
+<Test framework terminology:>
+message:
+content:
+output_format: 'string', 'list'
+message_counter:
+expected_message_counter:
+input_message:
+expected_output_message:
+output_message:

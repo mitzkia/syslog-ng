@@ -110,8 +110,8 @@ from src.driver_io.file_based.wait_for_event import FileWaitForEvent
 @pytest.mark.parametrize("file_content, expected_content, expected_result", [
     (
         "aaa\nbbb\nccc\n",
-        "bbb\n",
-        True
+        "bbbb\n",
+        False
     ),
 ])
 def test_is_expected_message_in_buffer(tc_unittest, file_content, expected_content, expected_result):
@@ -123,3 +123,6 @@ def test_is_expected_message_in_buffer(tc_unittest, file_content, expected_conte
     file_interface.write_content(temp_file, file_content, normalize_line_endings=False)
     assert file_wait_for_event.wait_for_message(expected_content) is expected_result
     file_object.delete_file()
+
+
+    

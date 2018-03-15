@@ -8,12 +8,13 @@ class SlngConsoleHandler(object):
         self.process_commands = process_commands
         self.slng_commands = slng_commands
         self.logger = logger_factory.create_logger("SlngConsoleHandler")
-        self.syslog_ng_start_message = ["syslog-ng starting up;"]
-        self.syslog_ng_stop_message = ["syslog-ng shutting down"]
+        self.syslog_ng_start_message = [".*syslog-ng starting upp;"]
+        # self.syslog_ng_start_message = [".*Unable to detect fully qualified"]
+        self.syslog_ng_stop_message = [".*syslog-ng shutting down"]
         self.syslog_ng_reload_messages = [
-            "New configuration initialized",
-            "Configuration reload request received, reloading configuration",
-            "Configuration reload finished"
+            ".*New configuration initialized",
+            ".*Configuration reload request received, reloading configuration",
+            ".*Configuration reload finished"
         ]
         self.stderr_file = None
 
