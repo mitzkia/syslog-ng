@@ -45,3 +45,9 @@ dbld/install/
 debian/build-tree/
 debian/*.log
 debian/autoreconf.*
+build/
+install/
+reports/
+.idea/
+.pytest_cache/
+.tags*
