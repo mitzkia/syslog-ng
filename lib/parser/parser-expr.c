@@ -82,19 +82,24 @@ log_parser_queue(LogPipe *s, LogMessage *msg, const LogPathOptions *path_options
   LogParser *self = (LogParser *) s;
   gboolean success;
 
+  msg_debug(">>>>>> parser rule evaluation begin",
+            evt_tag_str("rule", self->name),
+            log_pipe_location_tag(s),
+            evt_tag_printf("msg", "%p", msg));
+
   success = log_parser_process_message(self, &msg, path_options);
+  msg_debug("<<<<<< parser rule evaluation result",
+            parser_result_tag(success),
+            evt_tag_str("rule", self->name),
+            log_pipe_location_tag(s),
+            evt_tag_printf("msg", "%p", msg));
+
   if (success)
     {
-      msg_debug("Message parsing successful",
-                evt_tag_str("rule", self->name),
-                log_pipe_location_tag(s));
       log_pipe_forward_msg(s, msg, path_options);
     }
   else
     {
-      msg_debug("Message parsing failed, dropping message",
-                evt_tag_str("rule", self->name),
-                log_pipe_location_tag(s));
       if (path_options->matched)
         (*path_options->matched) = FALSE;
       log_msg_drop(msg, path_options, AT_PROCESSED);
@@ -134,6 +139,12 @@ log_parser_free_method(LogPipe *s)
   log_template_unref(self->template);
   log_pipe_free_method(s);
 
+}
+
+EVTTAG *
+parser_result_tag(gboolean res)
+{
+  return evt_tag_str("result", res ? "MATCH - Forwarding message" : "UNMATCHED - Dropping message");
 }
 
 void

@@ -97,5 +97,5 @@ filter_expr_unref(FilterExprNode *self)
 EVTTAG *
 filter_result_tag(gboolean res)
 {
-  return evt_tag_str("result", res ? "MATCH" : "UNMATCHED");
+  return evt_tag_str("result", res ? "MATCH - Forwarding message" : "UNMATCHED - Dropping message");
 }

@@ -39,6 +39,8 @@ struct _LogRewrite
   gchar *name;
 };
 
+EVTTAG *rewrite_result_tag(gboolean res);
+
 /* LogRewrite, abstract class */
 gboolean log_rewrite_init_method(LogPipe *s);
 

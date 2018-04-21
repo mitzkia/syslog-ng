@@ -52,6 +52,8 @@ log_parser_deinit_method(LogPipe *s)
   return TRUE;
 }
 
+EVTTAG *parser_result_tag(gboolean res);
+
 gboolean log_parser_init_method(LogPipe *s);
 void log_parser_set_template(LogParser *self, LogTemplate *template);
 void log_parser_init_instance(LogParser *self, GlobalConfig *cfg);
