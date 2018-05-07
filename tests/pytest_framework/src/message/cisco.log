@@ -1,0 +1,39 @@
+https://www.cisco.com/c/en/us/td/docs/wireless/access_point/12-3_7_JA/configuration/guide/i1237sc/s37sml.html
+ This example shows a partial access point system message:
+
+00:00:46: %LINK-3-UPDOWN: Interface Port-channel1, changed state to up
+
+00:00:47: %LINK-3-UPDOWN: Interface GigabitEthernet0/1, changed state to up
+
+00:00:47: %LINK-3-UPDOWN: Interface GigabitEthernet0/2, changed state to up
+
+00:00:48: %LINEPROTO-5-UPDOWN: Line protocol on Interface Vlan1, changed state to down
+
+00:00:48: %LINEPROTO-5-UPDOWN: Line protocol on Interface GigabitEthernet0/1, changed 
+state to down 2
+
+*Mar  1 18:46:11: %SYS-5-CONFIG_I: Configured from console by vty2 (10.34.195.36)
+
+18:47:02: %SYS-5-CONFIG_I: Configured from console by vty2 (10.34.195.36)
+
+*Mar  1 18:48:50.483 UTC: %SYS-5-CONFIG_I: Configured from console by vty2 (10.34.195.36) 
+
+
+
+This example shows part of a logging display with the service timestamps log datetime global configuration command enabled:
+
+*Mar  1 18:46:11: %SYS-5-CONFIG_I: Configured from console by vty2 (10.34.195.36)
+
+This example shows part of a logging display with the service timestamps log uptime global configuration command enabled:
+
+00:00:46: %LINK-3-UPDOWN: Interface Port-channel1, changed state to up
+
+ This example shows part of a logging display with sequence numbers enabled:
+
+000019: %SYS-5-CONFIG_I: Configured from console by vty2 (10.34.195.36)
+
+From syslog-ng scl
+# <pri>(sequence: )?(origin: )?(timestamp? timezone?: )?%msg
+#<189>29: foo: *Apr 29 13:58:40.411: %SYS-5-CONFIG_I: Configured from console by console
+#<190>30: foo: *Apr 29 13:58:46.411: %SYS-6-LOGGINGHOST_STARTSTOP: Logging to host 192.168.1.239 stopped - CLI initiated
+#<190>31: foo: *Apr 29 13:58:46.411: %SYS-6-LOGGINGHOST_STARTSTOP: Logging to host 192.168.1.239 started - CLI initiated<189>32: 0.0.0.0: *Apr 29 13:59:12.491: %SYS-5-CONFIG_I: Configured from console by console<189>33: 0.0.0.0: *Apr 29 13:59:26.415: %SYS-5-CONFIG_I: Configured from console by console<189>34: 0.0.0.0: *Apr 29 13:59:56.603: %SYS-5-CONFIG_I: Configured from console by console^[[<189>35: *Apr 29 14:00:16.059: %SYS-5-CONFIG_I: Configured from console by console

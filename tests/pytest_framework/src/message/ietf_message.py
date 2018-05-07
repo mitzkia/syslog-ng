@@ -26,17 +26,17 @@ import socket
 
 
 class IETFMessage(object):
-    def __init__(self):
+    def __init__(self, default_message_parts):
         self.default_message_parts = {
-            "priority": "38",
-            "syslog_protocol_version": "1",
-            "iso_timestamp": "2017-06-01T08:05:04+02:00",
-            "hostname": socket.gethostname(),
-            "program": "testprogram",
-            "pid": "9999",
-            "message_id": "-",
-            "sdata": '[meta sequenceId="1"]',
-            "message": "test message - árvíztűrő tükörfúrógép"
+            "priority": default_message_parts.priority,
+            "syslog_protocol_version": default_message_parts.syslog_protocol_version,
+            "iso_timestamp": default_message_parts.iso_timestamp,
+            "hostname": default_message_parts.hostname,
+            "program": default_message_parts.program,
+            "pid": default_message_parts.pid,
+            "message_id": default_message_parts.message_id,
+            "sdata": default_message_parts.sdata,
+            "message": default_message_parts.message
         }
         self.iso_timestamp_regexp_pattern = "[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}+[0-9]{2}:[0-9]{2}"
         self.bom_pattern = '\ufeff'

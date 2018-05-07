@@ -86,19 +86,24 @@ class SetupTestCase(object):
                     self.logger = self.logger_factory.create_logger("Teardown", use_console_handler=False, use_file_handler=True)
                     self.logger.error(str(failed_report.longrepr))
 
-    def new_bsd_message(self, message="test message - árvíztűrő tükörfúrógép", message_header_fields=None, message_counter=1):
-        message_field = {"message": message}
-        if not message_header_fields:
-            message_header_fields = {}
-        message_parts = {**message_field, **message_header_fields}
-        return self.message.construct_bsd_messages(message_parts=message_parts, message_counter=message_counter)
+    def new_bsd_message(self, message=None, message_header_fields=None, message_counter=1):
+        # message_parts = {}
+        # if message:
+        #     message_parts = {**message}
+        # if message_header_fields:
+        #     message_parts = {**message_header_fields}
+        # message_field = {"message": message}
+        # if not message_header_fields:
+            # message_header_fields = {}
+        # message_parts = {**message_field, **message_header_fields}
+        return self.message.construct_bsd_messages(message, message_header_fields, message_counter=message_counter)
 
-    def new_syslog_message(self, message="test message - árvíztűrő tükörfúrógép", message_header_fields=None, message_counter=1, skip_msg_length=False):
-        message_field = {"message": message}
-        if not message_header_fields:
-            message_header_fields = {}
-        message_parts = {**message_field, **message_header_fields}
-        return self.message.construct_ietf_messages(message_parts=message_parts, message_counter=message_counter, skip_msg_length=skip_msg_length)
+    def new_syslog_message(self, message=None, message_header_fields=None, message_counter=1, skip_msg_length=False):
+        # message_field = {"message": message}
+        # if not message_header_fields:
+        #     message_header_fields = {}
+        # message_parts = {**message_field, **message_header_fields}
+        return self.message.construct_ietf_messages(message, message_header_fields, skip_msg_length=skip_msg_length)
 
     def new_file_path(self, prefix, extension="log"):
         return self.file_register.get_registered_file_path(prefix=prefix, extension=extension)

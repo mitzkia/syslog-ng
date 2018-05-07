@@ -1,0 +1,59 @@
+InternalParsers:
+    - add-contextual-data
+    - appmodel
+    - csvparser
+    - date
+    - dbparser
+    - geoip
+    - geoip2
+    - json
+    - kvformat
+    - map-value-pairs
+    - native
+    - python
+    - snmptrapd-parser
+    - syslogformat
+    - tagsparser
+    - xml
+
+
+SCL source:
+    - default-network-drivers
+    - mbox
+    - nodejs # https://nodejs.org/en/docs/guides/nodejs-docker-webapp/
+    - osquery
+    - pacct
+    - snmptrap
+    - system
+
+SCL rewrite:
+    - credit-card-hash
+    - credit-card-mask
+
+SCL parser:
+    - apache-accesslog-parser
+    - cisco-parser
+    - cisco-timestamp-parser
+    - ewmm-parser
+    - extract-solaris-msgid
+    - iptables-parser
+    - sudo-parser
+    - windows-eventlog-parser
+
+SCL destination: 
+    - elasticsearch
+    - elasticsearch2
+    - graphite
+    - graylog2
+    - hdfs
+    - kaffka
+    - loggly
+    - logmatic
+    - network-load-balancer
+    - osquery
+    - syslog-ng
+
+SCL template-functions
+    - format-cim
+    - format-ewmm
+    - format-gelf

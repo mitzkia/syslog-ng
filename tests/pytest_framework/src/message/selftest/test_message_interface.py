@@ -54,7 +54,7 @@ def test_set_message_parts(tc_unittest, message_parts, default_message_parts, ex
     assert message_interface.set_message_parts(message_parts, default_message_parts) == expected_result
 
 
-@pytest.mark.parametrize("message_parts, message_counter, expected_result", [
+@pytest.mark.parametrize("message_header_fields, message_counter, expected_result", [
     (
         {},  # use all default values
         1,  # create 1 message
@@ -97,9 +97,9 @@ def test_set_message_parts(tc_unittest, message_parts, default_message_parts, ex
         ]
     ),
 ])
-def test_construct_bsd_messages(tc_unittest, message_parts, message_counter, expected_result):
+def test_construct_bsd_messages(tc_unittest, message_header_fields, message_counter, expected_result):
     message_interface = MessageInterface(tc_unittest.fake_logger_factory())
-    assert message_interface.construct_bsd_messages(message_parts, message_counter) == expected_result
+    assert message_interface.construct_bsd_messages(message_header_fields, message_counter) == expected_result
 
 
 @pytest.mark.parametrize("message_part, message_part_counter, expected_result", [

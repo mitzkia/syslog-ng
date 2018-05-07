@@ -22,24 +22,69 @@
 #############################################################################
 
 import copy
+import socket
 from src.message.bsd_message import BSDMessage
 from src.message.ietf_message import IETFMessage
 
 
+class DefaultMessageParts(object):
+    @property
+    def priority(self):
+        return "38"
+
+    @property
+    def syslog_protocol_version(self):
+        return "1"
+
+    @property
+    def bsd_timestamp(self):
+        return "Jun  1 08:05:04"
+
+    @property
+    def iso_timestamp(self):
+        return "2017-06-01T08:05:04+02:00"
+
+    @property
+    def hostname(self):
+        return socket.gethostname()
+
+    @property
+    def program(self):
+        return "testprogram"
+
+    @property
+    def pid(self):
+        return "9999"
+
+    @property
+    def message_id(self):
+        return "-"
+
+    @property
+    def sdata(self):
+        return '[meta sequenceId="1"]'
+
+    @property
+    def message(self):
+        return "test message - árvíztűrő tükörfúrógép"
+
 class MessageInterface(object):
     def __init__(self, logger_factory):
         self.logger = logger_factory.create_logger("MessageInterface")
-        self.bsd_message = BSDMessage()
-        self.ietf_message = IETFMessage()
+        self.default_message_parts = DefaultMessageParts()
+        self.bsd_message = BSDMessage(self.default_message_parts)
+        self.ietf_message = IETFMessage(self.default_message_parts)
         self.custom_message_pattern = {
             "hostname": "random_hostname",
             "program": "random_program",
         }
 
-    def construct_bsd_messages(self, message_parts, message_counter=1, skip_msg_length=None):
+    def construct_bsd_messages(self, message, message_header_fields, message_counter=1, skip_msg_length=None):
+        message_parts = self.merge_message_parts(message, message_header_fields)
         return self.construct_messages(self.bsd_message, message_parts, message_counter, skip_msg_length)
 
-    def construct_ietf_messages(self, message_parts, message_counter=1, skip_msg_length=False):
+    def construct_ietf_messages(self, message, message_header_fields, message_counter=1, skip_msg_length=False):
+        message_parts = self.merge_message_parts(message, message_header_fields)
         return self.construct_messages(self.ietf_message, message_parts, message_counter, skip_msg_length)
 
     def construct_messages(self, message_format, message_parts, message_counter, skip_msg_length):
@@ -83,3 +128,11 @@ class MessageInterface(object):
             else:
                 merged_message_parts[message_part_name] = message_part_value
         return merged_message_parts
+
+    def merge_message_parts(self, message, message_header_fields):
+        message_parts = {}
+        if message:
+            message_parts = {**message}
+        if message_header_fields:
+            message_parts = {**message_header_fields}
+        return message_parts

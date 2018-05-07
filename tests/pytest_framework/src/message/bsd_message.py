@@ -26,14 +26,14 @@ import socket
 
 
 class BSDMessage(object):
-    def __init__(self):
+    def __init__(self, default_message_parts):
         self.default_message_parts = {
-            "priority": "38",
-            "bsd_timestamp": "Jun  1 08:05:04",
-            "hostname": socket.gethostname(),
-            "program": "testprogram",
-            "pid": "9999",
-            "message": "test message - árvíztűrő tükörfúrógép"
+            "priority": default_message_parts.priority,
+            "bsd_timestamp": default_message_parts.bsd_timestamp,
+            "hostname": default_message_parts.hostname,
+            "program": default_message_parts.program,
+            "pid": default_message_parts.pid,
+            "message": default_message_parts.message
         }
         self.bsd_timestamp_regexp_pattern = "[a-zA-Z]{3} ([0-9]{2}| [0-9]{1}) [0-9]{2}:[0-9]{2}:[0-9]{2}"
 
