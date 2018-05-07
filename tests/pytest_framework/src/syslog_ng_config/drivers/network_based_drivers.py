@@ -29,7 +29,7 @@ class NetworkBasedDrivers(DriverBase):
         self.syslog_ng_ctl = SyslogNgCtl(logger_factory, instance_parameters)
         DriverBase.__init__(self, statement, driver, option_setter)
         if self.driver.node_name == "default_network_drivers":
-            self.driver.created_node['mandatory_option_names'] = ["udp_port", "tcp_port", "rfc5424_tls_port", "rfc5424_tcp_port"]
+            self.driver.created_node['mandatory_option_names'] = ["udp_port", "tcp_port", "rfc5424_tcp_port"]
         else:
             print("Unknown driver: %s" % self.driver.node_name)
 
