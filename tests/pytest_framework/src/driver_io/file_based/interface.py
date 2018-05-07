@@ -42,7 +42,7 @@ class FileInterface(object):
         )
         return "".join(file_content)
 
-    def write_content(self, file_path, content, open_mode="a+", normalize_line_endings=True):
+    def write_content(self, file_path, content, open_mode="ab+", normalize_line_endings=True):
         file_manager = File(self.logger_factory, file_path)
         self.logger.info(
             "Content written:" +

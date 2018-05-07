@@ -31,7 +31,7 @@ def test_wait_for_creation_file_created_with_content(tc_unittest):
     temp_file = tc_unittest.fake_file_register().get_registered_file_path("unittest_test_write_content")
     file_object = File(tc_unittest.fake_logger_factory(), temp_file)
     file_manager = FileWaitForEvent(tc_unittest.fake_logger_factory(), temp_file)
-    file_object.write("new message 1\n", open_mode="a+", normalize_line_endings=True)
+    file_object.write("new message 1\n", open_mode="ab+", normalize_line_endings=True)
 
     assert file_manager.wait_for_creation() is True
     file_object.delete_file()
@@ -40,7 +40,7 @@ def test_wait_for_creation_file_created_with_empty_content(tc_unittest):
     temp_file = tc_unittest.fake_file_register().get_registered_file_path("unittest_test_write_content")
     file_object = File(tc_unittest.fake_logger_factory(), temp_file)
     file_manager = FileWaitForEvent(tc_unittest.fake_logger_factory(), temp_file)
-    file_object.write("", open_mode="a+", normalize_line_endings=False)
+    file_object.write("", open_mode="ab+", normalize_line_endings=False)
 
     assert file_manager.wait_for_creation() is False
     file_object.delete_file()
@@ -73,7 +73,7 @@ def test_wait_for_number_of_lines(tc_unittest, file_content, expected_lines, exp
     temp_file = tc_unittest.fake_file_register().get_registered_file_path("unittest_test_write_content")
     file_object = File(tc_unittest.fake_logger_factory(), temp_file)
     file_manager = FileWaitForEvent(tc_unittest.fake_logger_factory(), temp_file)
-    file_object.write(file_content, open_mode="a+", normalize_line_endings=True)
+    file_object.write(file_content, open_mode="ab+", normalize_line_endings=True)
 
     assert file_manager.wait_for_number_of_lines(expected_lines) == expected_result
     file_object.delete_file()
@@ -95,7 +95,7 @@ def test_wait_for_message(tc_unittest, file_content, expected_content, expected_
     file_object = File(tc_unittest.fake_logger_factory(), temp_file)
     file_wait_for_event = FileWaitForEvent(tc_unittest.fake_logger_factory(), temp_file)
 
-    file_object.write(file_content, open_mode="a+", normalize_line_endings=True)
+    file_object.write(file_content, open_mode="ab+", normalize_line_endings=True)
     assert file_wait_for_event.wait_for_message(expected_content) is expected_result
     file_object.delete_file()
 

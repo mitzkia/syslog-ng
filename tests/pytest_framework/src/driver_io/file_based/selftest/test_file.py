@@ -33,7 +33,7 @@ def instantiate_file_object_with_content(tc_unittest, file_content=None):
     file_object = File(tc_unittest.fake_logger_factory(), temp_file)
     if file_content is None:
         file_content = get_test_message()
-    file_object.write(file_content, open_mode='a', normalize_line_endings=False)
+    file_object.write(file_content, open_mode='ab', normalize_line_endings=False)
     return file_object
 
 def test_read(tc_unittest):
@@ -92,7 +92,7 @@ def test_get_size(tc_unittest):
 def test_write_content_normalize_endings_true(tc_unittest, input_content, read_content):
     temp_file = tc_unittest.fake_file_register().get_registered_file_path("unittest_test_write_content")
     file_object = File(tc_unittest.fake_logger_factory(), temp_file)
-    file_object.write(input_content, open_mode='a', normalize_line_endings=True)
+    file_object.write(input_content, open_mode='ab', normalize_line_endings=True)
     assert file_object.read() == read_content
     file_object.delete_file()
 
@@ -109,6 +109,6 @@ def test_write_content_normalize_endings_true(tc_unittest, input_content, read_c
 def test_write_content_normalize_endings_false(tc_unittest, input_content, read_content):
     temp_file = tc_unittest.fake_file_register().get_registered_file_path("unittest_test_write_content")
     file_object = File(tc_unittest.fake_logger_factory(), temp_file)
-    file_object.write(input_content, open_mode='a', normalize_line_endings=False)
+    file_object.write(input_content, open_mode='ab', normalize_line_endings=False)
     assert file_object.read() == read_content
     file_object.delete_file()

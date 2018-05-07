@@ -62,21 +62,21 @@ class File(object):
 
     def read(self):
         if not self.file_object:
-            self.file_object = open(self.file_path, 'r')
+            self.file_object = open(self.file_path, 'r', encoding="utf-8")
         return self.file_object.read()
 
     def write(self, content, open_mode, normalize_line_endings):
         with open(self.file_path, open_mode) as file_object:
             if normalize_line_endings:
-                file_object.write(self.normalize_line_endings(content))
+                file_object.write(self.normalize_line_endings(content.encode('utf-8')))
             else:
-                file_object.write(content)
+                file_object.write(content.encode('utf-8'))
 
     def dump_content(self):
         self.logger.info(self.read())
 
     @staticmethod
     def normalize_line_endings(line):
-        if not line.endswith("\n"):
-            line += "\n"
+        if not line.endswith(b"\n"):
+            line += b"\n"
         return line
