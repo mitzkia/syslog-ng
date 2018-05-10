@@ -85,7 +85,7 @@ fop_cmp_eval(FilterExprNode *s, LogMessage **msgs, gint num_msg)
       result = self->cmp_op & FCMP_GT || self->cmp_op == 0;
     }
 
-  msg_debug("  cmp() evaluation result",
+  msg_debug("cmp() evaluation result",
             filter_result_tag(result),
             evt_tag_str("left", left_buf->str),
             evt_tag_str("operator", self->super.type),
