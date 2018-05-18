@@ -22,17 +22,26 @@
 #############################################################################
 from src.syslog_ng_config.option_setter import OptionSetter
 
+
 def test_add_options():
     option_setter = OptionSetter()
     syslog_ng_config = {"sources": {"src_stmt_id_1234": {"driver_id_1234": {"driver_options": {}}}}}
     options = {"option_name": "option_value"}
-    option_setter.add_options(root_node=syslog_ng_config["sources"]["src_stmt_id_1234"]["driver_id_1234"]["driver_options"], options=options)
-    assert syslog_ng_config == {"sources": {"src_stmt_id_1234": {"driver_id_1234": {"driver_options": {"option_name": "option_value"}}}}}
+    option_setter.add_options(
+        root_node=syslog_ng_config["sources"]["src_stmt_id_1234"]["driver_id_1234"]["driver_options"], options=options
+    )
+    assert (
+        syslog_ng_config
+        == {"sources": {"src_stmt_id_1234": {"driver_id_1234": {"driver_options": {"option_name": "option_value"}}}}}
+    )
+
 
 def test_remove_options():
     option_setter = OptionSetter()
     syslog_ng_config = {"sources": {"src_stmt_id_1234": {"driver_id_1234": {"driver_options": {}}}}}
     options = {"option_name": "option_value"}
-    option_setter.add_options(root_node=syslog_ng_config["sources"]["src_stmt_id_1234"]["driver_id_1234"]["driver_options"], options=options)
+    option_setter.add_options(
+        root_node=syslog_ng_config["sources"]["src_stmt_id_1234"]["driver_id_1234"]["driver_options"], options=options
+    )
     option_setter.remove_options(options=["option_name"])
     assert syslog_ng_config == {"sources": {"src_stmt_id_1234": {"driver_id_1234": {"driver_options": {}}}}}

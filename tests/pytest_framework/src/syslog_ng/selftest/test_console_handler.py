@@ -24,6 +24,7 @@
 import pytest
 from src.syslog_ng.console_handler import SlngConsoleHandler
 from src.common import blocking
+
 blocking.MONITORING_TIME = 0.5
 
 
@@ -32,10 +33,9 @@ def get_dependencies(tc_unittest):
     return slng_console_handler, tc_unittest.fake_path()
 
 
-@pytest.mark.parametrize("console_message, expected_result", [
-    (b"syslog-ng starting up;\n", True),
-    (b"fake message\n", False),
-])
+@pytest.mark.parametrize(
+    "console_message, expected_result", [(b"syslog-ng starting up;\n", True), (b"fake message\n", False)]
+)
 def test_wait_for_start_message(tc_unittest, console_message, expected_result):
     slng_console_handler, fake_path = get_dependencies(tc_unittest)
     fake_path.write(console_message)
@@ -44,10 +44,9 @@ def test_wait_for_start_message(tc_unittest, console_message, expected_result):
     fake_path.close()
 
 
-@pytest.mark.parametrize("console_message, expected_result", [
-    (b"syslog-ng shutting down;\n", True),
-    (b"fake message\n", False),
-])
+@pytest.mark.parametrize(
+    "console_message, expected_result", [(b"syslog-ng shutting down;\n", True), (b"fake message\n", False)]
+)
 def test_wait_for_stop_message(tc_unittest, console_message, expected_result):
     slng_console_handler, fake_path = get_dependencies(tc_unittest)
     fake_path.write(console_message)
@@ -56,12 +55,18 @@ def test_wait_for_stop_message(tc_unittest, console_message, expected_result):
     fake_path.close()
 
 
-@pytest.mark.parametrize("console_message, expected_result", [
-    (b"New configuration initialized\n"
-     b"Configuration reload request received, reloading configuration\n"
-     b"Configuration reload finished\n", True),
-    (b"fake message\n", False),
-])
+@pytest.mark.parametrize(
+    "console_message, expected_result",
+    [
+        (
+            b"New configuration initialized\n"
+            b"Configuration reload request received, reloading configuration\n"
+            b"Configuration reload finished\n",
+            True,
+        ),
+        (b"fake message\n", False),
+    ],
+)
 def test_wait_for_reload_message(tc_unittest, console_message, expected_result):
     slng_console_handler, fake_path = get_dependencies(tc_unittest)
     fake_path.write(console_message)

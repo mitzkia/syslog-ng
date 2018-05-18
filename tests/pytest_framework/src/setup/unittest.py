@@ -32,6 +32,7 @@ from src.registers.file import FileRegister
 
 
 class SetupUnitTestCase(object):
+
     def __init__(self, testcase_context):
         self.testcase_context = testcase_context
 
@@ -53,7 +54,7 @@ class SetupUnitTestCase(object):
 
     def fake_syslog_ng_parameters(self):
         slng_parameters = SyslogNgParameters(self.testcase_context, self.fake_testcase_parameters())
-        self.prepare_testcase_working_dir(self.fake_testcase_parameters()['dir_paths']["working_dir"])
+        self.prepare_testcase_working_dir(self.fake_testcase_parameters()["dir_paths"]["working_dir"])
         return slng_parameters
 
     def fake_syslog_ng_instance_parameters(self, instance_name="server"):
@@ -65,7 +66,8 @@ class SetupUnitTestCase(object):
             report_file_path=tempfile.TemporaryFile().name,
             loglevel="info",
             use_console_handler=True,
-            use_file_handler=False)
+            use_file_handler=False,
+        )
 
     def fake_file_register(self):
         self.temp_dir = tempfile.TemporaryDirectory().name

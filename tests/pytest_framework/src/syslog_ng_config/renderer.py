@@ -21,7 +21,9 @@
 #
 #############################################################################
 
+
 class ConfigRenderer(object):
+
     def __init__(self, syslog_ng_config):
         self.syslog_ng_config = syslog_ng_config
         self.syslog_ng_config_content = ""
@@ -83,14 +85,14 @@ class ConfigRenderer(object):
             # statement header
             self.syslog_ng_config_content += "\n{} {} {{\n".format(statement_name, statement_id)
             for dummy_driver_id, driver_properties in driver.items():
-                driver_name = driver_properties['driver_name']
-                driver_options = driver_properties['driver_options']
+                driver_name = driver_properties["driver_name"]
+                driver_options = driver_properties["driver_options"]
                 # driver header
                 self.syslog_ng_config_content += "    {} (\n".format(driver_name)
 
                 # driver options
-                self.render_first_place_driver_options(driver_options, driver_properties['mandatory_option_names'])
-                self.render_driver_options(driver_options, driver_properties['mandatory_option_names'])
+                self.render_first_place_driver_options(driver_options, driver_properties["mandatory_option_names"])
+                self.render_driver_options(driver_options, driver_properties["mandatory_option_names"])
 
                 # driver footer
                 self.syslog_ng_config_content += "    );\n"

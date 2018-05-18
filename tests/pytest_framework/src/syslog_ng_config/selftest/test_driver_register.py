@@ -22,15 +22,17 @@
 #############################################################################
 from src.syslog_ng_config.driver_register import DriverRegister
 
+
 def test_register_driver_node():
     driver_register = DriverRegister()
-    syslog_ng_config = {"sources":{"src_stmt_id_1234": {}}}
+    syslog_ng_config = {"sources": {"src_stmt_id_1234": {}}}
     driver_name = "file"
-    created_node = driver_register.register_driver_node(root_node=syslog_ng_config["sources"]["src_stmt_id_1234"], driver_name=driver_name)
-    assert created_node == {
-        'driver_name': driver_name,
-        'mandatory_option_names': '',
-        'driver_options': {}
-    }
+    created_node = driver_register.register_driver_node(
+        root_node=syslog_ng_config["sources"]["src_stmt_id_1234"], driver_name=driver_name
+    )
+    assert created_node == {"driver_name": driver_name, "mandatory_option_names": "", "driver_options": {}}
     generated_random_id = driver_register.node_id.split("_")[1]
-    assert syslog_ng_config == {"sources": {"src_stmt_id_1234": {"{}_{}".format(driver_name, generated_random_id): created_node}}}
+    assert (
+        syslog_ng_config
+        == {"sources": {"src_stmt_id_1234": {"{}_{}".format(driver_name, generated_random_id): created_node}}}
+    )

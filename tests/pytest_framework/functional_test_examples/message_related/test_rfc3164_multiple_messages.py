@@ -21,6 +21,7 @@
 #
 #############################################################################
 
+
 def test_rfc3164_multiple_messages(tc):
     config = tc.new_config()
     config.add_global_options({"stats_level": 3})
@@ -40,10 +41,7 @@ def test_rfc3164_multiple_messages(tc):
     assert output_message == expected_output_message
 
     fd_stats_counters = file_destination.get_stats_counters()
-    assert fd_stats_counters == {
-        "processed": message_counter,
-        "written": message_counter,
-        "queued": 0,
-        "dropped": 0,
-        "memory_usage": 0
-    }
+    assert (
+        fd_stats_counters
+        == {"processed": message_counter, "written": message_counter, "queued": 0, "dropped": 0, "memory_usage": 0}
+    )

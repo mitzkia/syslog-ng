@@ -47,7 +47,9 @@ def test_raw_config(tc):
         } else {
                 destination { file("%s" persist-name('xxx') template(">>>>XXXX<<<< $ISODATE $HOST $MSGHDR$MSG\n")); };
         };
-    };""" % (config.syslog_ng_version, src_file, dst_file, dst_file, dst_file, dst_file, dst_file, dst_file)
+    };""" % (
+        config.syslog_ng_version, src_file, dst_file, dst_file, dst_file, dst_file, dst_file, dst_file
+    )
     config.set_raw_config(raw_config)
 
     fileio.write_content(file_path=src_file, content="almafa")

@@ -26,23 +26,22 @@ from src.executors.command import CommandExecutor
 from src.driver_io.file_based.file import File
 
 
-@pytest.mark.parametrize("command, expected_stdout, expected_stderr, expected_exit_code, expected_all_output", [
-    (
-        ["grep", "a", "a"],
-        "",
-        "grep: a: No such file or directory\n",
-        2,
-        (2, '', 'grep: a: No such file or directory\n')
-    ),
-    (
-        ["echo", "a"],
-        "a\n",
-        "",
-        0,
-        (0, 'a\n', '')
-    ),
-])
-def test_execute_command(tc_unittest, command, expected_stdout, expected_stderr, expected_exit_code, expected_all_output):
+@pytest.mark.parametrize(
+    "command, expected_stdout, expected_stderr, expected_exit_code, expected_all_output",
+    [
+        (
+            ["grep", "a", "a"],
+            "",
+            "grep: a: No such file or directory\n",
+            2,
+            (2, "", "grep: a: No such file or directory\n"),
+        ),
+        (["echo", "a"], "a\n", "", 0, (0, "a\n", "")),
+    ],
+)
+def test_execute_command(
+    tc_unittest, command, expected_stdout, expected_stderr, expected_exit_code, expected_all_output
+):
     stdout_file = tc_unittest.fake_file_register().get_registered_file_path("stdout")
     stderr_file = tc_unittest.fake_file_register().get_registered_file_path("stderr")
     command_executor = CommandExecutor(tc_unittest.fake_logger_factory(), command, stdout_file, stderr_file)

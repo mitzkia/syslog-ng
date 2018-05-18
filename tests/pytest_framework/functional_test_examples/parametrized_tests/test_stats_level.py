@@ -23,15 +23,18 @@
 import pytest
 
 
-@pytest.mark.parametrize("stats_level, expected_run, expected_stats", [
-    [-1, False, {}],
-    [0, True, {}],
-    [1, True, {'dropped': 0, 'memory_usage': 0, 'processed': 1, 'queued': 0, 'written': 1}],
-    [2, True, {'dropped': 0, 'memory_usage': 0, 'processed': 1, 'queued': 0, 'written': 1}],
-    [3, True, {'dropped': 0, 'memory_usage': 0, 'processed': 1, 'queued': 0, 'written': 1}],
-    [4, True, {'dropped': 0, 'memory_usage': 0, 'processed': 1, 'queued': 0, 'written': 1}],
-    ["randomstring", False, {}],
-])
+@pytest.mark.parametrize(
+    "stats_level, expected_run, expected_stats",
+    [
+        [-1, False, {}],
+        [0, True, {}],
+        [1, True, {"dropped": 0, "memory_usage": 0, "processed": 1, "queued": 0, "written": 1}],
+        [2, True, {"dropped": 0, "memory_usage": 0, "processed": 1, "queued": 0, "written": 1}],
+        [3, True, {"dropped": 0, "memory_usage": 0, "processed": 1, "queued": 0, "written": 1}],
+        [4, True, {"dropped": 0, "memory_usage": 0, "processed": 1, "queued": 0, "written": 1}],
+        ["randomstring", False, {}],
+    ],
+)
 def test_stats_level(tc, stats_level, expected_run, expected_stats):
     config = tc.new_config()
     config.add_global_options({"stats_level": stats_level})

@@ -22,56 +22,72 @@
 #############################################################################
 from src.syslog_ng_config.logpath import LogPaths
 
+
 class FakeSrc:
+
     def get_statement_id(self):
         return "src_123"
 
+
 class FakeSrc2:
+
     def get_statement_id(self):
         return "src_456"
 
+
 class FakeDst:
+
     def get_statement_id(self):
         return "dst_123"
 
+
 class FakeDst2:
+
     def get_statement_id(self):
         return "dst_456"
+
 
 def test_register_logpath_node():
     logpath = LogPaths()
     syslog_ng_config = {"logpaths": {}}
     logpath.register_logpath_node(root_node=syslog_ng_config["logpaths"], sources=[FakeSrc()], destinations=[FakeDst()])
-    assert syslog_ng_config == {
-        'logpaths': {
-            logpath.node_id: {
-                'flags': [],
-                'sources': ['src_123'],
-                'destinations': ['dst_123'],
-                'filters': [],
-                'templates': [],
-                'rewrites': []
+    assert (
+        syslog_ng_config
+        == {
+            "logpaths": {
+                logpath.node_id: {
+                    "flags": [],
+                    "sources": ["src_123"],
+                    "destinations": ["dst_123"],
+                    "filters": [],
+                    "templates": [],
+                    "rewrites": [],
+                }
             }
         }
-    }
+    )
+
 
 def test_add_sources():
     logpath = LogPaths()
     syslog_ng_config = {"logpaths": {}}
     logpath.register_logpath_node(root_node=syslog_ng_config["logpaths"], sources=[FakeSrc()], destinations=[FakeDst()])
     logpath.add_sources(sources=[FakeSrc2()])
-    assert syslog_ng_config == {
-        'logpaths': {
-            logpath.node_id: {
-                'flags': [],
-                'sources': ['src_123', 'src_456'],
-                'destinations': ['dst_123'],
-                'filters': [],
-                'templates': [],
-                'rewrites': []
+    assert (
+        syslog_ng_config
+        == {
+            "logpaths": {
+                logpath.node_id: {
+                    "flags": [],
+                    "sources": ["src_123", "src_456"],
+                    "destinations": ["dst_123"],
+                    "filters": [],
+                    "templates": [],
+                    "rewrites": [],
+                }
             }
         }
-    }
+    )
 
 
 def test_add_destinations():
@@ -79,18 +95,22 @@ def test_add_destinations():
     syslog_ng_config = {"logpaths": {}}
     logpath.register_logpath_node(root_node=syslog_ng_config["logpaths"], sources=[FakeSrc()], destinations=[FakeDst()])
     logpath.add_destinations(destinations=[FakeDst2()])
-    assert syslog_ng_config == {
-        'logpaths': {
-            logpath.node_id: {
-                'flags': [],
-                'sources': ['src_123'],
-                'destinations': ['dst_123', 'dst_456'],
-                'filters': [],
-                'templates': [],
-                'rewrites': []
+    assert (
+        syslog_ng_config
+        == {
+            "logpaths": {
+                logpath.node_id: {
+                    "flags": [],
+                    "sources": ["src_123"],
+                    "destinations": ["dst_123", "dst_456"],
+                    "filters": [],
+                    "templates": [],
+                    "rewrites": [],
+                }
             }
         }
-    }
+    )
+
 
 # def test_add_flags():
 #     logpath = LogPaths()

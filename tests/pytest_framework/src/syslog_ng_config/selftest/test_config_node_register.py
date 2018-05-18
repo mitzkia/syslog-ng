@@ -22,18 +22,19 @@
 #############################################################################
 from src.syslog_ng_config.config_node_register import ConfigNodeRegister
 
+
 def test_register_empty_node():
     config_node_register = ConfigNodeRegister()
-    syslog_ng_config = {"sources":{}}
+    syslog_ng_config = {"sources": {}}
     created_node = config_node_register.register_empty_node(root_node=syslog_ng_config["sources"], node_name="src")
     generated_random_id = config_node_register.node_id.split("_")[1]
-    assert syslog_ng_config == {"sources": {'src_{}'.format(generated_random_id): {}}}
+    assert syslog_ng_config == {"sources": {"src_{}".format(generated_random_id): {}}}
     assert created_node == {}
 
 
 def test_delete_node():
     config_node_register = ConfigNodeRegister()
-    syslog_ng_config = {"sources":{"src_stmt_id_1234": {}}}
+    syslog_ng_config = {"sources": {"src_stmt_id_1234": {}}}
     config_node_register.root_node = syslog_ng_config["sources"]
     config_node_register.created_node = syslog_ng_config
     config_node_register.node_id = "src_stmt_id_1234"

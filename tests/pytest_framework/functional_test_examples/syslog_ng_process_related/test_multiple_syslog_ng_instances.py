@@ -21,6 +21,7 @@
 #
 #############################################################################
 
+
 def test_multiple_syslog_ng_instances(tc):
     config = tc.new_config(instance_name="server")
     file_source = config.get_file_source({"file_path": "input"})

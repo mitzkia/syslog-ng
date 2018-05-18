@@ -23,6 +23,7 @@
 
 from src.executors.process import ProcessExecutor
 
+
 def test_start_stop_process(tc_unittest):
     process_executor = ProcessExecutor(tc_unittest.fake_logger_factory())
     process_command = ["python3", "-c", "import time; time.sleep(3)"]

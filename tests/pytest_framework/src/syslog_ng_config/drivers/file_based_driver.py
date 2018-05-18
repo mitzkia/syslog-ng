@@ -28,27 +28,31 @@ from src.driver_io.file_based.file_interface import FileInterface
 from src.message.message_interface import MessageInterface
 from src.syslog_ng_ctl.syslog_ng_ctl import SyslogNgCtl
 
+
 class FileBasedDriver(DriverBase):
+
     def __init__(self, statement, driver, option_setter, logger_factory, instance_parameters):
         self.syslog_ng_ctl = SyslogNgCtl(logger_factory, instance_parameters)
         DriverBase.__init__(self, statement, driver, option_setter)
         self.logger_factory = logger_factory
-        self.working_dir = instance_parameters['dir_paths']['working_dir']
+        self.working_dir = instance_parameters["dir_paths"]["working_dir"]
         # renderer uses this values
         if self.driver.node_name in ["file", "pipe", "program"]:
-            self.driver.created_node['mandatory_option_names'] = ["file_path"]
+            self.driver.created_node["mandatory_option_names"] = ["file_path"]
         elif self.driver.node_name == "wildcard_file":
-            self.driver.created_node['mandatory_option_names'] = ["base_dir", "file_pattern"]
+            self.driver.created_node["mandatory_option_names"] = ["base_dir", "file_pattern"]
         else:
             print("Unknown driver: %s" % self.driver.node_name)
-        self.mandatory_option_value = None # needed on generating stats values
+        self.mandatory_option_value = None  # needed on generating stats values
         self.random_id = Random(use_static_seed=False).get_unique_id()
 
     # Message, this part is uniq for FileBasedDriver, can not put into DriverBase
     def generate_default_output_message(self, counter=1):
         return MessageInterface(self.logger_factory).construct_bsd_messages({"priority": "skip"}, counter)
 
-    def generate_output_message(self, message="test message - árvíztűrő tükörfúrógép", message_header_fields=None, counter=1):
+    def generate_output_message(
+        self, message="test message - árvíztűrő tükörfúrógép", message_header_fields=None, counter=1
+    ):
         message_field = {"message": message}
         if message_header_fields:
             message_header_fields = {**message_header_fields, **{"priority": "skip"}}
@@ -59,10 +63,14 @@ class FileBasedDriver(DriverBase):
 
     # DriverIO, this part is uses FileBasedDriver specific variables, can not put into DriverBase
     def write(self, message, normalize_line_endings=True):
-        return FileInterface(self.logger_factory).write_content(self.mandatory_option_value, content=message, normalize_line_endings=normalize_line_endings)
+        return FileInterface(self.logger_factory).write_content(
+            self.mandatory_option_value, content=message, normalize_line_endings=normalize_line_endings
+        )
 
     def read(self, counter=1):
-        return FileInterface(self.logger_factory).read_content(self.mandatory_option_value, expected_message_counter=counter)
+        return FileInterface(self.logger_factory).read_content(
+            self.mandatory_option_value, expected_message_counter=counter
+        )
 
     def read_messages(self, expected_message_counter=2):
         return self.read(expected_message_counter)
@@ -72,16 +80,21 @@ class FileBasedDriver(DriverBase):
         if not options:
             options = {}
         options.update(self.set_mandatory_options(options))
-        self.option_setter.add_options(driver_node['driver_options'], options)
+        self.option_setter.add_options(driver_node["driver_options"], options)
 
     def set_mandatory_options(self, options):
         mandatory_options = {}
-        for mandatory_option_name in self.driver.created_node['mandatory_option_names']:
+        for mandatory_option_name in self.driver.created_node["mandatory_option_names"]:
             if mandatory_option_name == "file_path":
                 if mandatory_option_name in options.keys():
-                    option_value = os.path.join(self.working_dir, "{}_{}_{}.log".format(options[mandatory_option_name], self.driver.node_name, self.random_id))
+                    option_value = os.path.join(
+                        self.working_dir,
+                        "{}_{}_{}.log".format(options[mandatory_option_name], self.driver.node_name, self.random_id),
+                    )
                 else:
-                    option_value = os.path.join(self.working_dir, "{}_{}.log".format(self.driver.node_name, self.random_id))
+                    option_value = os.path.join(
+                        self.working_dir, "{}_{}.log".format(self.driver.node_name, self.random_id)
+                    )
             else:
                 raise ValueError("Unknown mandatory option name")
             mandatory_options.update({mandatory_option_name: option_value})
@@ -97,7 +110,7 @@ class FileBasedDriver(DriverBase):
         self.option_setter.remove_options(options)
 
     def is_mandatory_option_exist(self, options):
-        return len(set(options).intersection(self.driver.created_node['mandatory_option_names'])) != 0
+        return len(set(options).intersection(self.driver.created_node["mandatory_option_names"])) != 0
 
     # Stats, this part is uses FileBasedDriver specific variables, can not put into DriverBase
     def get_stats_counters(self):
@@ -105,7 +118,7 @@ class FileBasedDriver(DriverBase):
             config_component="{}.{}".format(self.statement.node_short_name, self.driver.node_name),
             config_item_id=self.statement.node_id,
             config_item_instance=self.mandatory_option_value,
-            stats_type="stats"
+            stats_type="stats",
         )
         return self.syslog_ng_ctl.get_driver_based_stats_counters(stats_line_regexp_without_counter, "stats")
 
@@ -114,6 +127,6 @@ class FileBasedDriver(DriverBase):
             config_component="{}.{}".format(self.statement.node_short_name, self.driver.node_name),
             config_item_id=self.statement.node_id,
             config_item_instance=self.mandatory_option_value,
-            stats_type="query"
+            stats_type="query",
         )
         return self.syslog_ng_ctl.get_driver_based_stats_counters(query_line_regexp_without_counter, "query")

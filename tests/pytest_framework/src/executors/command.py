@@ -25,6 +25,7 @@ import psutil
 
 
 class CommandExecutor(object):
+
     def __init__(self, logger_factory, command, stdout, stderr, recreate_output=False):
         self.logger = logger_factory.create_logger("CommandExecutor")
         self.command = command
@@ -40,11 +41,11 @@ class CommandExecutor(object):
     def execute_command(self, recreate_output):
         self.logger.debug("Following command will be executed: {}".format(" ".join(self.command)))
         if recreate_output:
-            stdout_fd = open(self.stdout, 'w')
-            stderr_fd = open(self.stderr, 'w')
+            stdout_fd = open(self.stdout, "w")
+            stderr_fd = open(self.stderr, "w")
         else:
-            stdout_fd = open(self.stdout, 'a')
-            stderr_fd = open(self.stderr, 'a')
+            stdout_fd = open(self.stdout, "a")
+            stderr_fd = open(self.stderr, "a")
         with psutil.Popen(self.command, stderr=stderr_fd, stdout=stdout_fd) as proc:
             self.exit_code = proc.wait(timeout=10)
         stdout_fd.close()
@@ -66,7 +67,7 @@ class CommandExecutor(object):
         return self.command
 
     def print_std_outputs(self):
-        with open(self.stdout, 'r') as stdout_fd, open(self.stderr, 'r') as stderr_fd:
+        with open(self.stdout, "r") as stdout_fd, open(self.stderr, "r") as stderr_fd:
             self.stdout_content = stdout_fd.read()
             self.stderr_content = stderr_fd.read()
         self.logger.debug("All Stdout for this command: [{}]".format(self.stdout_content))

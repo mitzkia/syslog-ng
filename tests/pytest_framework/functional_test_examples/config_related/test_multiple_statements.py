@@ -56,10 +56,7 @@ def test_multiple_statements(tc):
     message_counter = 1
     for fd in [file_destination, file_destination_2]:
         fd_stats_counters = fd.get_stats_counters()
-        assert fd_stats_counters == {
-            "processed": message_counter,
-            "written": message_counter,
-            "queued": 0,
-            "dropped": 0,
-            "memory_usage": 0
-        }
+        assert (
+            fd_stats_counters
+            == {"processed": message_counter, "written": message_counter, "queued": 0, "dropped": 0, "memory_usage": 0}
+        )

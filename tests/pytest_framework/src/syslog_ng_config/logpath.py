@@ -26,18 +26,13 @@ from src.common.random import Random
 
 
 class LogPaths(ConfigNodeRegister):
+
     def __init__(self):
         ConfigNodeRegister.__init__(self)
         self.syslog_ng_known_statements = ["sources", "destinations", "templates", "filters", "rewrites"]
         self.empty_logpath = {
-            "sources": [],
-            "destinations": [],
-            "templates": [],
-            "filters": [],
-            "rewrites": [],
-            "flags": []
+            "sources": [], "destinations": [], "templates": [], "filters": [], "rewrites": [], "flags": []
         }
-
 
     def register_logpath_node(self, root_node, **kwargs):
         node_name = "logpath"
@@ -51,13 +46,13 @@ class LogPaths(ConfigNodeRegister):
         return self.created_node
 
     def add_sources(self, sources):
-        self.update_logpath_statement_list(self.created_node['sources'], sources)
+        self.update_logpath_statement_list(self.created_node["sources"], sources)
 
     def add_destinations(self, destinations):
-        self.update_logpath_statement_list(self.created_node['destinations'], destinations)
+        self.update_logpath_statement_list(self.created_node["destinations"], destinations)
 
     def add_flags(self, flags):
-        self.update_logpath_statement_list(self.created_node['flags'], flags)
+        self.update_logpath_statement_list(self.created_node["flags"], flags)
 
     @staticmethod
     def update_logpath_statement_list(logpath_node, statements):

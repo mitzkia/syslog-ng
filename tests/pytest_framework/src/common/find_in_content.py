@@ -28,6 +28,7 @@ def find_regexp_in_content(regexp, content, counter=1):
     regexp_pattern = re.compile(regexp)
     return counter == len(list(filter(regexp_pattern.match, content.splitlines(keepends=True))))
 
+
 def grep_pattern_in_content(pattern, content):
     for content_line in content.splitlines(keepends=True):
         if re.search(pattern, content_line) is not None:

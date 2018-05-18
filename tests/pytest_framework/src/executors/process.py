@@ -27,6 +27,7 @@ from src.common.blocking import wait_until_true
 
 
 class ProcessExecutor(object):
+
     def __init__(self, logger_factory):
         self.logger = logger_factory.create_logger("ProcessExecutor")
         self.command_of_process = None
@@ -37,7 +38,7 @@ class ProcessExecutor(object):
     def start(self, command_of_process, stdout, stderr):
         self.command_of_process = command_of_process
         self.logger.info("Following process will be started: [{}]".format(" ".join(command_of_process)))
-        with open(stdout, 'a') as stdout_fd, open(stderr, 'a') as stderr_fd:
+        with open(stdout, "a") as stdout_fd, open(stderr, "a") as stderr_fd:
             self.process_object = psutil.Popen(command_of_process, stderr=stderr_fd, stdout=stdout_fd)
             self.pid = self.process_object.pid
             self.logger.info("Process started with pid [{}]".format(self.pid))
@@ -53,10 +54,11 @@ class ProcessExecutor(object):
             self.exit_code = self.process_object.wait(timeout=2)
 
             if self.exit_code in [0]:
-                self.logger.info(
-                    "Process [{}] stopped gracefully with exit code [{}]".format(self.pid, self.exit_code))
+                self.logger.info("Process [{}] stopped gracefully with exit code [{}]".format(self.pid, self.exit_code))
             else:
-                self.logger.error("Process [{}] stopped with crash with exit code [{}]".format(self.pid, self.exit_code))
+                self.logger.error(
+                    "Process [{}] stopped with crash with exit code [{}]".format(self.pid, self.exit_code)
+                )
 
             self.process_object = None
             self.pid = None

@@ -25,6 +25,7 @@ import socket
 
 
 class IETFFormatter(object):
+
     def __init__(self):
         self.default_message_parts = {
             "priority": "38",
@@ -35,10 +36,10 @@ class IETFFormatter(object):
             "pid": "9999",
             "message_id": "-",
             "sdata": '[meta sequenceId="1"]',
-            "message": "test message - árvíztűrő tükörfúrógép"
+            "message": "test message - árvíztűrő tükörfúrógép",
         }
         self.iso_timestamp_regexp_pattern = "[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}+[0-9]{2}:[0-9]{2}"
-        self.bom_pattern = '\ufeff'
+        self.bom_pattern = "\ufeff"
 
     def construct_message(self, message_parts):
         message = ""
@@ -57,7 +58,7 @@ class IETFFormatter(object):
         if "message_id" in message_parts:
             message += "{} ".format(message_parts["message_id"])
         if "sdata" in message_parts:
-            message += '{} '.format(message_parts["sdata"])
+            message += "{} ".format(message_parts["sdata"])
         if "message" in message_parts:
             message += "{}{}".format(self.bom_pattern, message_parts["message"])
         if not message_parts["message"].endswith("\n"):

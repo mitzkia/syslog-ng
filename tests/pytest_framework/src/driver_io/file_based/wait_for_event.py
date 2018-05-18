@@ -28,6 +28,7 @@ from src.common.bufferio import BufferIO
 
 
 class FileWaitForEvent(File):
+
     def __init__(self, logger_factory, file_path):
         super().__init__(logger_factory, file_path)
         self.bufferio = BufferIO()
@@ -37,7 +38,9 @@ class FileWaitForEvent(File):
         if not self.file_object:
             result_file_has_created = wait_until_true(self.is_file_exist)
             file_size = wait_until_true(self.get_size)
-            self.logger.write_message_based_on_value("File created, file_path: [{}]".format(self.file_path), result_file_has_created)
+            self.logger.write_message_based_on_value(
+                "File created, file_path: [{}]".format(self.file_path), result_file_has_created
+            )
             return result_file_has_created and (file_size > 0)
         return True
 

@@ -22,11 +22,15 @@
 #############################################################################
 import pytest
 
-@pytest.mark.parametrize("external_tool", [
-    "strace",
-#    "perf",
-#    "valgrind"
-    ])
+
+@pytest.mark.parametrize(
+    "external_tool",
+    [
+        "strace",
+        #    "perf",
+        #    "valgrind"
+    ],
+)
 def test_external_tools(tc, external_tool):
     config = tc.new_config()
     file_source = config.get_file_source({"file_path": "input"})

@@ -23,6 +23,7 @@
 
 
 class DriverBase(object):
+
     def __init__(self, statement, driver, option_setter):
         self.statement = statement
         self.driver = driver

@@ -23,7 +23,9 @@
 
 from src.common.random import Random
 
+
 class ConfigNodeRegister(object):
+
     def __init__(self):
         self.root_node = None
         self.created_node = None

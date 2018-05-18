@@ -31,11 +31,12 @@ from src.driver_io.file_based.file_interface import FileInterface
 
 
 class SyslogNgConfig(object):
+
     def __init__(self, logger_factory, file_register, instance_parameters, syslog_ng_version):
         self.logger_factory = logger_factory
         self.file_register = file_register
         self.instance_parameters = instance_parameters
-        self.config_path = instance_parameters['file_paths']['config_path']
+        self.config_path = instance_parameters["file_paths"]["config_path"]
         self.fileinterface = FileInterface(logger_factory)
         self.syslog_ng_version = syslog_ng_version
 
@@ -77,14 +78,14 @@ class SyslogNgConfig(object):
             rendered_config = self.raw_config
         else:
             rendered_config = ConfigRenderer(self.syslog_ng_config).syslog_ng_config_content
-        self.fileinterface.write_content(self.config_path, rendered_config, open_mode='w')
+        self.fileinterface.write_content(self.config_path, rendered_config, open_mode="w")
 
     def set_raw_config(self, raw_config):
         self.raw_config = raw_config
 
     def add_global_options(self, options):
         option_setter = OptionSetter()
-        option_setter.add_options(self.syslog_ng_config['global_options'], options)
+        option_setter.add_options(self.syslog_ng_config["global_options"], options)
 
     def get_file_source(self, options=None):
         driver_object, driver_node = self.driver_init("source", "file", FileBasedDriver)
@@ -98,5 +99,5 @@ class SyslogNgConfig(object):
 
     def create_logpath(self, **kwargs):
         logpath = LogPaths()
-        logpath.register_logpath_node(self.syslog_ng_config['logpaths'], **kwargs)
+        logpath.register_logpath_node(self.syslog_ng_config["logpaths"], **kwargs)
         return logpath

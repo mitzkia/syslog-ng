@@ -24,13 +24,12 @@
 import os
 from src.logger.logger_factory import LoggerFactory
 
+
 def test_logger_file_handler():
     file_path = "/tmp/unittestcase.log"
     logger_factory = LoggerFactory(
-        report_file_path=file_path,
-        loglevel="debug",
-        use_console_handler=False,
-        use_file_handler=True)
+        report_file_path=file_path, loglevel="debug", use_console_handler=False, use_file_handler=True
+    )
     logger_name = "UnitTest"
     test_message = "test message"
     logger = logger_factory.create_logger(logger_name)
@@ -38,7 +37,7 @@ def test_logger_file_handler():
     logger.debug(test_message)
     logger.error(test_message)
 
-    with open(file_path, 'r') as file_object:
+    with open(file_path, "r") as file_object:
         file_content = file_object.read()
     assert "- {} - INFO - {}\n".format(logger_name, test_message) in file_content
     assert "- {} - DEBUG - {}\n".format(logger_name, test_message) in file_content
@@ -47,13 +46,12 @@ def test_logger_file_handler():
 
     os.unlink(file_path)
 
+
 def test_logger_file_handler_is_disabled():
     file_path = "/tmp/unittestcase.log"
     logger_factory = LoggerFactory(
-        report_file_path=file_path,
-        loglevel="debug",
-        use_console_handler=False,
-        use_file_handler=False)
+        report_file_path=file_path, loglevel="debug", use_console_handler=False, use_file_handler=False
+    )
     logger_name = "UnitTest"
     test_message = "test message"
     logger = logger_factory.create_logger(logger_name)
@@ -63,20 +61,19 @@ def test_logger_file_handler_is_disabled():
 
     assert os.path.exists(file_path) is False
 
+
 def test_logger_write_message_based_on_value():
     file_path = "/tmp/unittestcase.log"
     logger_factory = LoggerFactory(
-        report_file_path=file_path,
-        loglevel="debug",
-        use_console_handler=False,
-        use_file_handler=True)
+        report_file_path=file_path, loglevel="debug", use_console_handler=False, use_file_handler=True
+    )
     logger_name = "UnitTest"
     test_message = "test message"
     logger = logger_factory.create_logger(logger_name)
     logger.write_message_based_on_value(test_message, True)
     logger.write_message_based_on_value(test_message, False)
 
-    with open(file_path, 'r') as file_object:
+    with open(file_path, "r") as file_object:
         file_content = file_object.read()
     assert "- {} - DEBUG - {}: [True]\n".format(logger_name, test_message) in file_content
     assert "- {} - ERROR - {}: [False]\n".format(logger_name, test_message) in file_content

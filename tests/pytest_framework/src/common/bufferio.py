@@ -23,7 +23,9 @@
 
 from src.common.blocking import wait_until_true
 
+
 class BufferIO(object):
+
     def __init__(self):
         self.buffer = ""
         self.msg_list = []

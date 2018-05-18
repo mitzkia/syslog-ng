@@ -54,10 +54,4 @@ def test_config_change_after_start(tc):
 
     print(tc.new_syslog_ng_ctl().stats())
     fd_stats_counters = file_destination.get_stats_counters()
-    assert fd_stats_counters == {
-        "processed": 1,
-        "written": 1,
-        "queued": 0,
-        "dropped": 0,
-        "memory_usage": 0
-    }
+    assert fd_stats_counters == {"processed": 1, "written": 1, "queued": 0, "dropped": 0, "memory_usage": 0}

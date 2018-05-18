@@ -28,6 +28,7 @@ from src.syslog_ng_ctl.syslog_ng_ctl import SyslogNgCtl
 
 
 class SyslogNgInterface(object):
+
     def __init__(self, logger_factory, instance_parameters):
         self.slng_command_executor = SlngCommandExecutor(logger_factory, instance_parameters)
         self.slng_process_executor = SlngProcessExecutor(logger_factory, instance_parameters)
@@ -40,7 +41,7 @@ class SyslogNgInterface(object):
         self.stderr_file = stderr_file
 
     def syslog_ng_execute_command(self, cmd_reference):
-        self.save_stderr_file(self.slng_command_executor.slng_commands[cmd_reference]['stderr'])
+        self.save_stderr_file(self.slng_command_executor.slng_commands[cmd_reference]["stderr"])
         return self.slng_command_executor.slng_executor(cmd_reference)
 
     def is_core_file_exist(self):
@@ -48,11 +49,11 @@ class SyslogNgInterface(object):
         return self.found_core_file
 
     def syslog_ng_process_start_behind(self, external_tool):
-        self.save_stderr_file(self.slng_process_executor.process_start_command_args[external_tool]['stderr'])
+        self.save_stderr_file(self.slng_process_executor.process_start_command_args[external_tool]["stderr"])
         return self.slng_process_executor.slng_process_start_behind(external_tool=external_tool)
 
     def syslog_ng_process_start(self):
-        self.save_stderr_file(self.slng_process_executor.process_start_command_args['start']['stderr'])
+        self.save_stderr_file(self.slng_process_executor.process_start_command_args["start"]["stderr"])
         return self.slng_process_executor.slng_process_start()
 
     def syslog_ng_process_reload(self):

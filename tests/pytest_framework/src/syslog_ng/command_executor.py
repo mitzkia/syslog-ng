@@ -28,17 +28,18 @@ from src.driver_io.file_based.file import File
 
 
 class SlngCommandExecutor(object):
+
     def __init__(self, logger_factory, instance_parameters):
         self.logger_factory = logger_factory
         self.logger = logger_factory.create_logger("SlngCommandExecutor")
-        syslog_ng_binary_path = instance_parameters['binary_file_paths']['syslog_ng_binary']
-        self.working_dir = instance_parameters['dir_paths']['working_dir']
-        config_path = instance_parameters['file_paths']['config_path']
+        syslog_ng_binary_path = instance_parameters["binary_file_paths"]["syslog_ng_binary"]
+        self.working_dir = instance_parameters["dir_paths"]["working_dir"]
+        config_path = instance_parameters["file_paths"]["config_path"]
         self.slng_commands = {
             "version": {
                 "cmd": [syslog_ng_binary_path, "--version"],
                 "stdout": os.path.join(self.working_dir, "slng_version_stdout"),
-                "stderr": os.path.join(self.working_dir, "slng_version_stderr")
+                "stderr": os.path.join(self.working_dir, "slng_version_stderr"),
             },
             "syntax_only": {
                 "cmd": [syslog_ng_binary_path, "--enable-core", "--syntax-only", "--cfgfile={}".format(config_path)],
@@ -48,19 +49,19 @@ class SlngCommandExecutor(object):
             "gdb_bt_full": {
                 "cmd": ["gdb", "-ex", "bt full", "--batch", syslog_ng_binary_path, "--core"],
                 "stdout": os.path.join(self.working_dir, "core_stdout.backtrace"),
-                "stderr": os.path.join(self.working_dir, "core_stderr.backtrace")
-            }
+                "stderr": os.path.join(self.working_dir, "core_stderr.backtrace"),
+            },
         }
         self.core_detected = False
 
     def slng_executor(self, cmd_reference, core_file=None):
         if core_file:
-            self.slng_commands[cmd_reference]['cmd'].append(core_file)
+            self.slng_commands[cmd_reference]["cmd"].append(core_file)
         return CommandExecutor(
             self.logger_factory,
-            self.slng_commands[cmd_reference]['cmd'],
-            stdout=self.slng_commands[cmd_reference]['stdout'],
-            stderr=self.slng_commands[cmd_reference]['stderr']
+            self.slng_commands[cmd_reference]["cmd"],
+            stdout=self.slng_commands[cmd_reference]["stdout"],
+            stderr=self.slng_commands[cmd_reference]["stderr"],
         )
 
     def is_core_file_exist(self):

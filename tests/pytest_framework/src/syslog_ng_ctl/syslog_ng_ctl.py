@@ -27,6 +27,7 @@ from src.common.find_in_content import grep_pattern_in_content
 
 
 class SyslogNgCtl(CtlCommandExecutor):
+
     def __init__(self, logger_factory, instance_parameters):
         CtlCommandExecutor.__init__(self, logger_factory, instance_parameters)
         self.logger = logger_factory.create_logger("SyslogNgCtl")
@@ -97,7 +98,7 @@ class SyslogNgCtl(CtlCommandExecutor):
     def get_formatted_stats_line(self, config_component, config_item_id, config_item_instance, stats_type):
         item_delimiter = self.get_stats_item_delimiter_by_type(stats_type)
         stats_line = "{}{}".format(config_component, item_delimiter)
-        stats_line += "{}#[0-9]*{}".format(config_item_id, item_delimiter) # config_id#counter for driver
+        stats_line += "{}#[0-9]*{}".format(config_item_id, item_delimiter)  # config_id#counter for driver
         stats_line += "{}{}".format(config_item_instance, item_delimiter)
         if stats_type == "stats":
             state_type = "a"
@@ -109,7 +110,7 @@ class SyslogNgCtl(CtlCommandExecutor):
         counter_delimiter = self.get_stats_counter_delimiter_by_type(stats_type)
         found_stats_counters = {}
         for counter_type in self.stats_counters:
-            stats_line_regexp_with_counter = stats_line_regexp_without_counter+counter_type
+            stats_line_regexp_with_counter = stats_line_regexp_without_counter + counter_type
             found_pattern = grep_pattern_in_content(pattern=stats_line_regexp_with_counter, content=actual_stats)
             if found_pattern:
                 stats_counter_value = int(found_pattern.split(counter_delimiter)[-1].replace("\n", ""))

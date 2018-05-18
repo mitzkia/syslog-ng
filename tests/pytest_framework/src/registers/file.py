@@ -26,6 +26,7 @@ from src.common.random import Random
 
 
 class FileRegister(object):
+
     def __init__(self, logger_factory, working_dir):
         self.logger = logger_factory.create_logger("FileRegister")
         self.working_dir = working_dir

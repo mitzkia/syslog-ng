@@ -25,7 +25,9 @@ import pytest
 from src.driver_io.file_based.wait_for_event import FileWaitForEvent
 from src.driver_io.file_based.file import File
 from src.common import blocking
+
 blocking.MONITORING_TIME = 0.5
+
 
 def test_wait_for_creation_file_created_with_content(tc_unittest):
     temp_file = tc_unittest.fake_file_register().get_registered_file_path("unittest_test_write_content")
@@ -36,6 +38,7 @@ def test_wait_for_creation_file_created_with_content(tc_unittest):
     assert file_manager.wait_for_creation() is True
     file_object.delete_file()
 
+
 def test_wait_for_creation_file_created_with_empty_content(tc_unittest):
     temp_file = tc_unittest.fake_file_register().get_registered_file_path("unittest_test_write_content")
     file_object = File(tc_unittest.fake_logger_factory(), temp_file)
@@ -45,12 +48,14 @@ def test_wait_for_creation_file_created_with_empty_content(tc_unittest):
     assert file_manager.wait_for_creation() is False
     file_object.delete_file()
 
+
 def test_wait_for_creation_file_not_created(tc_unittest):
     temp_file = tc_unittest.fake_file_register().get_registered_file_path("unittest_test_write_content")
     file_manager = FileWaitForEvent(tc_unittest.fake_logger_factory(), temp_file)
 
     with pytest.raises(FileNotFoundError):
         file_manager.wait_for_creation()
+
 
 # @pytest.mark.parametrize("file_content, expected_lines, expected_result", [
 #     (
@@ -78,18 +83,14 @@ def test_wait_for_creation_file_not_created(tc_unittest):
 #     assert file_manager.wait_for_number_of_lines(expected_lines) == expected_result
 #     file_object.delete_file()
 
-@pytest.mark.parametrize("file_content, expected_content, expected_result", [
-    (
-        "new message 1\nnew message 2\nnew message 3\n",
-        "new message 2\n",
-        True
-    ),
-    (
-        "new message 1\nnew message 2\nnew message 3\n",
-        "not arrived message\n",
-        False
-    ),
-])
+
+@pytest.mark.parametrize(
+    "file_content, expected_content, expected_result",
+    [
+        ("new message 1\nnew message 2\nnew message 3\n", "new message 2\n", True),
+        ("new message 1\nnew message 2\nnew message 3\n", "not arrived message\n", False),
+    ],
+)
 def test_wait_for_message(tc_unittest, file_content, expected_content, expected_result):
     temp_file = tc_unittest.fake_file_register().get_registered_file_path("unittest_test_write_content")
     file_object = File(tc_unittest.fake_logger_factory(), temp_file)

@@ -24,18 +24,16 @@
 from src.syslog_ng_config.config_node_register import ConfigNodeRegister
 from src.common.random import Random
 
+
 class DriverRegister(ConfigNodeRegister):
+
     def __init__(self):
         ConfigNodeRegister.__init__(self)
-        self.empty_driver_node = {
-            "driver_name": "",
-            "mandatory_option_names": "",
-            "driver_options": {}
-        }
+        self.empty_driver_node = {"driver_name": "", "mandatory_option_names": "", "driver_options": {}}
 
     def register_driver_node(self, root_node, driver_name):
         driver_id = "{}_{}".format(driver_name, Random(use_static_seed=False).get_unique_id())
-        self.empty_driver_node['driver_name'] = driver_name
+        self.empty_driver_node["driver_name"] = driver_name
         root_node.update({driver_id: self.empty_driver_node})
         self.save_root_node(root_node)
         self.save_node_id(driver_id)

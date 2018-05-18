@@ -23,7 +23,9 @@
 
 from src.syslog_ng.syslog_ng_interface import SyslogNgInterface
 
+
 class SyslogNg(object):
+
     def __init__(self, logger_factory, syslog_ng_parameters, instance_name):
         self.logger = logger_factory.create_logger("SyslogNg")
         instance_parameters = syslog_ng_parameters.set_instance_parameters(instance_name)
@@ -74,20 +76,17 @@ class SyslogNg(object):
             return True
 
     def evaluate_process_start(self):
-        if not self.slng_interface.wait_for_start_message() \
-                or not self.slng_interface.wait_for_control_socket_start():
+        if not self.slng_interface.wait_for_start_message() or not self.slng_interface.wait_for_control_socket_start():
             self.slng_interface.is_core_file_exist()
             self.slng_interface.dump_console_log()
             raise Exception("syslog-ng can not started, check if core file detected")
 
     def evaluate_process_reload(self):
-        if not self.slng_interface.wait_for_reload_message() \
-                or not self.slng_interface.wait_for_control_socket_start():
+        if not self.slng_interface.wait_for_reload_message() or not self.slng_interface.wait_for_control_socket_start():
             self.slng_interface.is_core_file_exist()
             raise Exception("syslog-ng can not reloaded, check if core file detected")
 
     def evaluate_process_stop(self):
-        if not self.slng_interface.wait_for_stop_message() \
-                or not self.slng_interface.wait_for_control_socket_stop():
+        if not self.slng_interface.wait_for_stop_message() or not self.slng_interface.wait_for_control_socket_stop():
             self.slng_interface.is_core_file_exist()
             raise Exception("syslog-ng can not stopped, check if core file detected")

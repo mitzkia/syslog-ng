@@ -27,6 +27,7 @@ import stat
 
 
 class File(object):
+
     def __init__(self, logger_factory, file_path):
         self.file_path = file_path
         self.logger = logger_factory.create_logger("File")
@@ -51,7 +52,7 @@ class File(object):
         return os.unlink(self.file_path)
 
     def get_number_of_lines(self):
-        with open(self.file_path, 'r') as file_object:
+        with open(self.file_path, "r") as file_object:
             return file_object.read().count("\n")
 
     def get_size(self):
@@ -62,7 +63,7 @@ class File(object):
 
     def read(self):
         if not self.file_object:
-            self.file_object = open(self.file_path, 'r')
+            self.file_object = open(self.file_path, "r")
         return self.file_object.read()
 
     def write(self, content, open_mode, normalize_line_endings):

@@ -26,6 +26,7 @@ from src.driver_io.file_based.file import File
 
 
 class SlngConsoleHandler(object):
+
     def __init__(self, logger_factory):
         self.logger_factory = logger_factory
         self.logger = logger_factory.create_logger("SlngConsoleHandler")
@@ -34,7 +35,7 @@ class SlngConsoleHandler(object):
         self.syslog_ng_reload_messages = [
             ".*New configuration initialized",
             ".*Configuration reload request received, reloading configuration",
-            ".*Configuration reload finished"
+            ".*Configuration reload finished",
         ]
         self.stderr_file = None
 

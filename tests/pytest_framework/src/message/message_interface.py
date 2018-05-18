@@ -27,6 +27,7 @@ from src.message.ietf_formatter import IETFFormatter
 
 
 class MessageInterface(object):
+
     def __init__(self, logger_factory):
         self.logger = logger_factory.create_logger("MessageInterface")
         self.bsd_formatter = BSDFormatter()

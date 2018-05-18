@@ -27,6 +27,7 @@ from colorlog import ColoredFormatter
 
 
 class Logger(logging.Logger):
+
     def __init__(self, logger_name, report_file, loglevel, use_console_handler=True, use_file_handler=True):
         super().__init__(logger_name, loglevel)
         self.handlers = []
@@ -37,7 +38,7 @@ class Logger(logging.Logger):
 
     def __set_filehandler(self, file_name=None):
         file_handler = logging.FileHandler(file_name)
-        formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+        formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
         file_handler.setFormatter(formatter)
         self.addHandler(file_handler)
 
@@ -49,19 +50,10 @@ class Logger(logging.Logger):
             datefmt=None,
             reset=True,
             log_colors={
-                'DEBUG': 'cyan',
-                'INFO': 'green',
-                'WARNING': 'yellow',
-                'ERROR': 'red',
-                'CRITICAL': 'red,bg_white',
+                "DEBUG": "cyan", "INFO": "green", "WARNING": "yellow", "ERROR": "red", "CRITICAL": "red,bg_white"
             },
-            secondary_log_colors={
-                'message': {
-                    'ERROR': 'red',
-                    'CRITICAL': 'red'
-                }
-            },
-            style='%'
+            secondary_log_colors={"message": {"ERROR": "red", "CRITICAL": "red"}},
+            style="%",
         )
         console_handler.setFormatter(formatter)
         self.addHandler(console_handler)

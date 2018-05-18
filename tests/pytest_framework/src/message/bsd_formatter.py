@@ -25,6 +25,7 @@ import socket
 
 
 class BSDFormatter(object):
+
     def __init__(self):
         self.default_message_parts = {
             "priority": "38",
@@ -32,7 +33,7 @@ class BSDFormatter(object):
             "hostname": socket.gethostname(),
             "program": "testprogram",
             "pid": "9999",
-            "message": "test message - árvíztűrő tükörfúrógép"
+            "message": "test message - árvíztűrő tükörfúrógép",
         }
         self.bsd_timestamp_regexp_pattern = "[a-zA-Z]{3} ([0-9]{2}| [0-9]{1}) [0-9]{2}:[0-9]{2}:[0-9]{2}"
 

@@ -25,46 +25,24 @@ import pytest
 from src.syslog_ng_ctl.command_executor import CtlCommandExecutor
 
 
-@pytest.mark.parametrize("ctl_command_name, expected_ctl_command_args", [
-    (
-        "stats",
-        ["stats"]
-    ),
-    (
-        "stats_reset",
-        ["stats", "--reset"]
-    ),
-    (
-        "query_get",
-        ["query", "get"]
-    ),
-    (
-        "query_get_sum",
-        ["query", "get", "--sum"]
-    ),
-    (
-        "query_reset",
-        ["query", "get", "--reset"]
-    ),
-    (
-        "query_list",
-        ["query", "list"]
-    ),
-    (
-        "stop",
-        ["stop"]
-    ),
-    (
-        "reload",
-        ["reload"]
-    ),
-    (
-        "reopen",
-        ["reopen"]
-    ),
-])
+@pytest.mark.parametrize(
+    "ctl_command_name, expected_ctl_command_args",
+    [
+        ("stats", ["stats"]),
+        ("stats_reset", ["stats", "--reset"]),
+        ("query_get", ["query", "get"]),
+        ("query_get_sum", ["query", "get", "--sum"]),
+        ("query_reset", ["query", "get", "--reset"]),
+        ("query_list", ["query", "list"]),
+        ("stop", ["stop"]),
+        ("reload", ["reload"]),
+        ("reopen", ["reopen"]),
+    ],
+)
 def test_slng_ctl_executor(tc_unittest, ctl_command_name, expected_ctl_command_args):
-    ctl_command_executor = CtlCommandExecutor(tc_unittest.fake_logger_factory(), tc_unittest.fake_syslog_ng_instance_parameters())
+    ctl_command_executor = CtlCommandExecutor(
+        tc_unittest.fake_logger_factory(), tc_unittest.fake_syslog_ng_instance_parameters()
+    )
     with pytest.raises(FileNotFoundError):
         ctl_command_executor.slng_ctl_executor(cmd_name=ctl_command_name)
-    assert ctl_command_executor.ctl_commands[ctl_command_name]['cmd'] == expected_ctl_command_args
+    assert ctl_command_executor.ctl_commands[ctl_command_name]["cmd"] == expected_ctl_command_args

@@ -23,22 +23,29 @@
 
 from src.common.blocking import wait_until_true, wait_until_false
 from src.common import blocking
+
 blocking.MONITORING_TIME = 0.5
+
 
 def inner_function_return_true():
     return True
 
+
 def inner_function_return_false():
     return False
+
 
 def test_wait_until_true_inner_function_returns_true():
     assert wait_until_true(inner_function_return_true)
 
+
 def test_wait_until_true_inner_function_returns_false():
     assert wait_until_true(inner_function_return_false) is False
 
+
 def test_wait_until_false_inner_function_returns_true():
     assert wait_until_false(inner_function_return_true) is False
+
 
 def test_wait_until_false_inner_function_returns_false():
     assert wait_until_false(inner_function_return_false)

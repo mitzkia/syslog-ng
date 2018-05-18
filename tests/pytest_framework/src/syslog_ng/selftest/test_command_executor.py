@@ -28,6 +28,7 @@ from src.syslog_ng.command_executor import SlngCommandExecutor
 
 
 class FakePopen(object):
+
     def __init__(self, args, stderr, stdout):
         self.pid = 1234
 

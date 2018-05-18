@@ -41,19 +41,13 @@ def test_one_statement_one_driver(tc):
 
     message_counter = 1
     fd_stats_counters = file_destination.get_stats_counters()
-    assert fd_stats_counters == {
-        "processed": message_counter,
-        "written": message_counter,
-        "queued": 0,
-        "dropped": 0,
-        "memory_usage": 0
-    }
+    assert (
+        fd_stats_counters
+        == {"processed": message_counter, "written": message_counter, "queued": 0, "dropped": 0, "memory_usage": 0}
+    )
 
     fd_query_counters = file_destination.get_query_counters()
-    assert fd_query_counters == {
-        "processed": message_counter,
-        "written": message_counter,
-        "queued": 0,
-        "dropped": 0,
-        "memory_usage": 0
-    }
+    assert (
+        fd_query_counters
+        == {"processed": message_counter, "written": message_counter, "queued": 0, "dropped": 0, "memory_usage": 0}
+    )

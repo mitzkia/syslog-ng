@@ -36,6 +36,7 @@ def wait_until_true(func, *args):
         time.sleep(POLL_FREQ)
     return False
 
+
 def wait_until_false(func, *args):
     negate = lambda func, *args: not func(*args)
     return wait_until_true(negate, func, *args)
