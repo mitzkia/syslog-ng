@@ -22,11 +22,11 @@
 #############################################################################
 
 import pytest
-from src.message.bsd_message import BSDMessage
+from src.message.bsd_formatter import BSDFormatter
 
 
 def test_default_bsd_message_parts():
-    bsd_message = BSDMessage()
+    bsd_message = BSDFormatter()
     assert set(list(bsd_message.default_message_parts)) == {'priority', 'bsd_timestamp', 'hostname', 'program', 'pid',
                                                             'message'}
 
@@ -45,5 +45,5 @@ def test_default_bsd_message_parts():
     ),
 ])
 def test_construct_message(message_parts, expected_result):
-    bsd_message = BSDMessage()
+    bsd_message = BSDFormatter()
     assert bsd_message.construct_message(message_parts) == expected_result

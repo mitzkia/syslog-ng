@@ -20,7 +20,7 @@
 # COPYING for details.
 #
 #############################################################################
-from src.driver_io.file_based.interface import FileInterface
+from src.driver_io.file_based.file_interface import FileInterface
 from src.common.find_in_content import find_regexp_in_content
 
 
@@ -61,8 +61,9 @@ def test_raw_config(tc):
     syslog_ng = tc.new_syslog_ng()
     syslog_ng.start(config)
 
-    dst_file_content = fileio.read_content(file_path=dst_file, expected_message_counter=6)
+    dst_file_messages = fileio.read_content(file_path=dst_file, expected_message_counter=6)
 
+    dst_file_content = "".join(dst_file_messages)
     assert find_regexp_in_content("^>>>>ALMA<<<<.*almafa$", dst_file_content) is True
     assert find_regexp_in_content("^>>>>BELA MAG<<<<.*belafa magja$", dst_file_content) is True
     assert find_regexp_in_content("^>>>>BELA TERMES<<<<.*belafa termese$", dst_file_content) is True

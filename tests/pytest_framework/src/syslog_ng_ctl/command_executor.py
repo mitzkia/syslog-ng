@@ -22,7 +22,7 @@
 #############################################################################
 
 import os
-from src.executors.command.executor import CommandExecutor
+from src.executors.command import CommandExecutor
 
 
 class CtlCommandExecutor(object):

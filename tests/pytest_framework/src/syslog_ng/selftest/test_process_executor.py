@@ -45,8 +45,8 @@ def test_slng_process_start_behind(tc_unittest, parent_command_name):
     patch_dependencies()
     slng_process_executor = get_dependencies(tc_unittest)
     slng_process_executor.slng_process_start_behind(external_tool=parent_command_name)
-    assert parent_command_name in slng_process_executor.process_interface.command_of_process
-    assert "--enable-core" in slng_process_executor.process_interface.command_of_process
+    assert parent_command_name in slng_process_executor.process_executor.command_of_process
+    assert "--enable-core" in slng_process_executor.process_executor.command_of_process
     unstub()
 
 
@@ -55,18 +55,18 @@ def test_slng_start_process(tc_unittest):
     slng_process_executor = get_dependencies(tc_unittest)
     slng_process_executor.slng_process_start()
     assert [
-               '{}/sbin/syslog-ng'.format(tc_unittest.temp_install_dir),
-               '--foreground',
-               '--stderr',
-               '--debug',
-               '--trace',
-               '--verbose',
-               '--startup-debug',
-               '--no-caps',
-               '--enable-core',
-               '--cfgfile={}/test_slng_start_process/syslog_ng_server.conf'.format(tc_unittest.temp_report_dir),
-               '--persist-file={}/test_slng_start_process/syslog_ng_server.persist'.format(tc_unittest.temp_report_dir),
-               '--pidfile={}/test_slng_start_process/syslog_ng_server.pid'.format(tc_unittest.temp_report_dir),
-               '--control={}/test_slng_start_process/syslog_ng_server.ctl'.format(tc_unittest.temp_report_dir)
-        ] == slng_process_executor.process_interface.command_of_process
+        '{}/sbin/syslog-ng'.format(tc_unittest.temp_install_dir),
+        '--foreground',
+        '--stderr',
+        '--debug',
+        '--trace',
+        '--verbose',
+        '--startup-debug',
+        '--no-caps',
+        '--enable-core',
+        '--cfgfile={}/test_slng_start_process/syslog_ng_server.conf'.format(tc_unittest.temp_report_dir),
+        '--persist-file={}/test_slng_start_process/syslog_ng_server.persist'.format(tc_unittest.temp_report_dir),
+        '--pidfile={}/test_slng_start_process/syslog_ng_server.pid'.format(tc_unittest.temp_report_dir),
+        '--control={}/test_slng_start_process/syslog_ng_server.ctl'.format(tc_unittest.temp_report_dir)
+    ] == slng_process_executor.process_executor.command_of_process
     unstub()

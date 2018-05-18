@@ -24,8 +24,8 @@ import pytest
 
 @pytest.mark.parametrize("external_tool", [
     "strace",
-    "perf",
-    "valgrind"
+#    "perf",
+#    "valgrind"
     ])
 def test_external_tools(tc, external_tool):
     config = tc.new_config()

@@ -24,7 +24,7 @@
 import re
 import socket
 import pytest
-from src.message.interface import MessageInterface
+from src.message.message_interface import MessageInterface
 
 
 @pytest.mark.parametrize("message_parts, default_message_parts, expected_result", [
@@ -58,16 +58,15 @@ def test_set_message_parts(tc_unittest, message_parts, default_message_parts, ex
     (
         {},  # use all default values
         1,  # create 1 message
-        "<38>Jun  1 08:05:04 {} testprogram[9999]: test message - árvíztűrő tükörfúrógép\n".format(
-            socket.gethostname())
+        ["<38>Jun  1 08:05:04 {} testprogram[9999]: test message - árvíztűrő tükörfúrógép\n".format(socket.gethostname())]
     ),
     (
         {},  # use all default values
         2,  # create 2 messages
-        "<38>Jun  1 08:05:04 {} testprogram[9999]: test message - árvíztűrő tükörfúrógép\n\
-<38>Jun  1 08:05:04 {} testprogram[9999]: test message - árvíztűrő tükörfúrógép\n".format(
-            socket.gethostname(), socket.gethostname()
-        ),
+        [
+            "<38>Jun  1 08:05:04 {} testprogram[9999]: test message - árvíztűrő tükörfúrógép\n".format(socket.gethostname()),
+            "<38>Jun  1 08:05:04 {} testprogram[9999]: test message - árvíztűrő tükörfúrógép\n".format(socket.gethostname())
+        ],
     ),
     (
         {
@@ -75,8 +74,10 @@ def test_set_message_parts(tc_unittest, message_parts, default_message_parts, ex
             "pid": "9999", "message": "test message"
         },  # overwrite very values
         2,  # create 2 messages
-        "<42>Dec  1 09:06:32 randomhost randomprogram[9999]: test message\n\
-<42>Dec  1 09:06:32 randomhost randomprogram[9999]: test message\n"
+        [
+            "<42>Dec  1 09:06:32 randomhost randomprogram[9999]: test message\n",
+            "<42>Dec  1 09:06:32 randomhost randomprogram[9999]: test message\n"
+        ]
     ),
     (
         {
@@ -84,35 +85,9 @@ def test_set_message_parts(tc_unittest, message_parts, default_message_parts, ex
             "message": "test message"
         },  # skipping some message parts
         1,  # create 1 message
-        "test message\n"
-    ),
-    (
-        {"bsd_timestamp": "regexp"},  # use default message parts and regexp for bsd_timestamp
-        2,  # create 2 messages
-        [
-            re.compile(
-                '<38>[a-zA-Z]{3} ([0-9]{2}| [0-9]{1}) [0-9]{2}:[0-9]{2}:[0-9]{2} %s testprogram[9999]: test message - árvíztűrő tükörfúrógép\n' % socket.gethostname()),
-            re.compile(
-                '<38>[a-zA-Z]{3} ([0-9]{2}| [0-9]{1}) [0-9]{2}:[0-9]{2}:[0-9]{2} %s testprogram[9999]: test message - árvíztűrő tükörfúrógép\n' % socket.gethostname())
-        ]
+        ["test message\n"]
     ),
 ])
 def test_construct_bsd_messages(tc_unittest, message_parts, message_counter, expected_result):
     message_interface = MessageInterface(tc_unittest.fake_logger_factory())
     assert message_interface.construct_bsd_messages(message_parts, message_counter) == expected_result
-
-
-@pytest.mark.parametrize("message_part, message_part_counter, expected_result", [
-    (
-        "hostname",  # we need various hostnames
-        2,  # create 2 messages, with 2 different hostnames
-        [
-            '<38>Jun  1 08:05:04 random_hostname-1 testprogram[9999]: test message - árvíztűrő tükörfúrógép\n',
-            '<38>Jun  1 08:05:04 random_hostname-2 testprogram[9999]: test message - árvíztűrő tükörfúrógép\n'
-        ],
-    ),
-])
-def test_construct_messages_with_random_message_parts(tc_unittest, message_part, message_part_counter, expected_result):
-    message_interface = MessageInterface(tc_unittest.fake_logger_factory())
-    assert message_interface.construct_messages_with_various_message_parts(message_part=message_part,
-                                                                           message_part_counter=message_part_counter) == expected_result

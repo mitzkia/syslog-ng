@@ -38,7 +38,7 @@ class BufferIO(object):
 
     def parsing_messages(self, parse_rule="\n"):
         if parse_rule == "\n":
-            for chunk in self.buffer.splitlines(keepends=True):
+            for chunk in list(self.buffer.splitlines(keepends=True)):
                 if chunk.endswith(parse_rule):
                     self.msg_list.append(chunk)
                     self.buffer = self.buffer.replace(chunk, "", 1)
@@ -82,6 +82,6 @@ class BufferIO(object):
     def is_requested_messages_under_parsed_messages(self, number_of_requested_messages):
         return len(self.msg_list) >= number_of_requested_messages
 
-    def buffering_and_is_number_of_requested_messages_in_buffer(self, read, number_of_requested_messages):
-        self.buffering_messages(read)
-        return number_of_requested_messages == self.buffer.count("\n")
+    # def buffering_and_is_number_of_requested_messages_in_buffer(self, read, number_of_requested_messages):
+    #     self.buffering_messages(read)
+    #     return number_of_requested_messages == self.buffer.count("\n")

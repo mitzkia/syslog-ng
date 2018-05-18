@@ -23,9 +23,9 @@
 
 import os
 from src.common.random import Random
-from src.syslog_ng_config.drivers.driver_interface import DriverBase
-from src.driver_io.file_based.interface import FileInterface
-from src.message.interface import MessageInterface
+from src.syslog_ng_config.drivers.driver_base import DriverBase
+from src.driver_io.file_based.file_interface import FileInterface
+from src.message.message_interface import MessageInterface
 from src.syslog_ng_ctl.syslog_ng_ctl import SyslogNgCtl
 
 class FileBasedDriver(DriverBase):
@@ -65,7 +65,7 @@ class FileBasedDriver(DriverBase):
         return FileInterface(self.logger_factory).read_content(self.mandatory_option_value, expected_message_counter=counter)
 
     def read_messages(self, expected_message_counter=2):
-        return self.read(expected_message_counter).splitlines(keepends=True)
+        return self.read(expected_message_counter)
 
     # Options, this part is uses FileBasedDriver specific variables, can not put into DriverBase
     def add_options(self, driver_node, options=None):

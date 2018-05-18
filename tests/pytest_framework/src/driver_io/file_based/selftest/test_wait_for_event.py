@@ -52,31 +52,31 @@ def test_wait_for_creation_file_not_created(tc_unittest):
     with pytest.raises(FileNotFoundError):
         file_manager.wait_for_creation()
 
-@pytest.mark.parametrize("file_content, expected_lines, expected_result", [
-    (
-        "new message 1\nnew message 2\nnew message 3\n",
-        3,
-        True
-    ),
-    (
-        "new message 1\nnew message 2\nnew message 3\n",
-        4,
-        False
-    ),
-    (
-        "new message 1\nnew message 2\nnew message 3\n",
-        1,
-        False
-    ),
-])
-def test_wait_for_number_of_lines(tc_unittest, file_content, expected_lines, expected_result):
-    temp_file = tc_unittest.fake_file_register().get_registered_file_path("unittest_test_write_content")
-    file_object = File(tc_unittest.fake_logger_factory(), temp_file)
-    file_manager = FileWaitForEvent(tc_unittest.fake_logger_factory(), temp_file)
-    file_object.write(file_content, open_mode="a+", normalize_line_endings=True)
+# @pytest.mark.parametrize("file_content, expected_lines, expected_result", [
+#     (
+#         "new message 1\nnew message 2\nnew message 3\n",
+#         3,
+#         True
+#     ),
+#     (
+#         "new message 1\nnew message 2\nnew message 3\n",
+#         4,
+#         False
+#     ),
+#     (
+#         "new message 1\nnew message 2\nnew message 3\n",
+#         1,
+#         False
+#     ),
+# ])
+# def test_wait_for_number_of_lines(tc_unittest, file_content, expected_lines, expected_result):
+#     temp_file = tc_unittest.fake_file_register().get_registered_file_path("unittest_test_write_content")
+#     file_object = File(tc_unittest.fake_logger_factory(), temp_file)
+#     file_manager = FileWaitForEvent(tc_unittest.fake_logger_factory(), temp_file)
+#     file_object.write(file_content, open_mode="a+", normalize_line_endings=True)
 
-    assert file_manager.wait_for_number_of_lines(expected_lines) == expected_result
-    file_object.delete_file()
+#     assert file_manager.wait_for_number_of_lines(expected_lines) == expected_result
+#     file_object.delete_file()
 
 @pytest.mark.parametrize("file_content, expected_content, expected_result", [
     (

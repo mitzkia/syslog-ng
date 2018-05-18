@@ -21,20 +21,20 @@
 #
 #############################################################################
 
-from src.executors.process.interface import ProcessInterface
+from src.executors.process import ProcessExecutor
 
 def test_start_stop_process(tc_unittest):
-    process_inteface = ProcessInterface(tc_unittest.fake_logger_factory())
+    process_executor = ProcessExecutor(tc_unittest.fake_logger_factory())
     process_command = ["python3", "-c", "import time; time.sleep(3)"]
     stdout_file = tc_unittest.fake_file_register().get_registered_file_path("stdout")
     stderr_file = tc_unittest.fake_file_register().get_registered_file_path("stderr")
 
-    process_inteface.start(process_command, stdout_file, stderr_file)
-    assert process_inteface.is_pid_in_process_list() is True
-    assert process_inteface.is_process_running() is True
-    assert process_inteface.get_process() is not None
-    assert process_inteface.get_pid() is not None
-    process_inteface.stop()
-    assert process_inteface.is_pid_in_process_list() is False
-    assert process_inteface.is_process_running() is False
-    assert process_inteface.get_exit_code() == -15
+    process_executor.start(process_command, stdout_file, stderr_file)
+    assert process_executor.is_pid_in_process_list() is True
+    assert process_executor.is_process_running() is True
+    assert process_executor.get_process() is not None
+    assert process_executor.get_pid() is not None
+    process_executor.stop()
+    assert process_executor.is_pid_in_process_list() is False
+    assert process_executor.is_process_running() is False
+    assert process_executor.get_exit_code() == -15

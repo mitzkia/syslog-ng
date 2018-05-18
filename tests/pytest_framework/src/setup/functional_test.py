@@ -27,7 +27,7 @@ from src.parameters.test_case import TestCaseParameters
 from src.parameters.syslog_ng import SyslogNgParameters
 from src.logger.logger_factory import LoggerFactory
 from src.registers.file import FileRegister
-from src.message.interface import MessageInterface
+from src.message.message_interface import MessageInterface
 from src.syslog_ng_config.syslog_ng_config import SyslogNgConfig
 from src.syslog_ng.syslog_ng import SyslogNg
 from src.syslog_ng.command_executor import SlngCommandExecutor
@@ -93,12 +93,12 @@ class SetupTestCase(object):
         message_parts = {**message_field, **message_header_fields}
         return self.message.construct_bsd_messages(message_parts=message_parts, message_counter=message_counter)
 
-    def new_syslog_message(self, message="test message - árvíztűrő tükörfúrógép", message_header_fields=None, message_counter=1, skip_msg_length=False):
+    def new_syslog_message(self, message="test message - árvíztűrő tükörfúrógép", message_header_fields=None, message_counter=1):
         message_field = {"message": message}
         if not message_header_fields:
             message_header_fields = {}
         message_parts = {**message_field, **message_header_fields}
-        return self.message.construct_ietf_messages(message_parts=message_parts, message_counter=message_counter, skip_msg_length=skip_msg_length)
+        return self.message.construct_ietf_messages(message_parts=message_parts, message_counter=message_counter)
 
     def new_file_path(self, prefix, extension="log"):
         return self.file_register.get_registered_file_path(prefix=prefix, extension=extension)
@@ -117,4 +117,3 @@ class SetupTestCase(object):
     def new_syslog_ng_ctl(self, instance_name="server"):
         instance_parameters = self.syslog_ng_parameters.set_instance_parameters(instance_name)
         return SyslogNgCtl(self.logger_factory, instance_parameters)
-

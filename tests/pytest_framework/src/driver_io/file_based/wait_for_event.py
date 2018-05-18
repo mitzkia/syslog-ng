@@ -41,10 +41,10 @@ class FileWaitForEvent(File):
             return result_file_has_created and (file_size > 0)
         return True
 
-    def wait_for_number_of_lines(self, expected_lines):
-        file_creation_result = self.wait_for_creation()
-        found_expected_lines = wait_until_true(self.bufferio.buffering_and_is_number_of_requested_messages_in_buffer, self.read, expected_lines)
-        return file_creation_result and found_expected_lines
+    # def wait_for_number_of_lines(self, expected_lines):
+    #     file_creation_result = self.wait_for_creation()
+    #     found_expected_lines = self.bufferio.peek_msgs(self.read, expected_lines)
+    #     return file_creation_result and (found_expected_lines is not [])
 
     def wait_for_message(self, expected_message):
         file_creation_result = self.wait_for_creation()

@@ -23,7 +23,7 @@
 
 import os
 import glob
-from src.executors.command.executor import CommandExecutor
+from src.executors.command import CommandExecutor
 from src.driver_io.file_based.file import File
 
 

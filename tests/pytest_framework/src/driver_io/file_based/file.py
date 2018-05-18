@@ -50,7 +50,7 @@ class File(object):
     def delete_file(self):
         return os.unlink(self.file_path)
 
-    def get_lines(self):
+    def get_number_of_lines(self):
         with open(self.file_path, 'r') as file_object:
             return file_object.read().count("\n")
 
@@ -67,10 +67,17 @@ class File(object):
 
     def write(self, content, open_mode, normalize_line_endings):
         with open(self.file_path, open_mode) as file_object:
-            if normalize_line_endings:
-                file_object.write(self.normalize_line_endings(content))
+            if isinstance(content, list):
+                for message in content:
+                    if normalize_line_endings:
+                        file_object.write(self.normalize_line_endings(message))
+                    else:
+                        file_object.write(message)
             else:
-                file_object.write(content)
+                if normalize_line_endings:
+                    file_object.write(self.normalize_line_endings(content))
+                else:
+                    file_object.write(content)
 
     def dump_content(self):
         self.logger.info(self.read())

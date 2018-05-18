@@ -30,7 +30,7 @@ def test_rfc5424_multiple_messages(tc):
     config.create_logpath(sources=[file_source], destinations=[file_destination])
 
     message_counter = 20
-    syslog_messages = tc.new_syslog_message(message_counter=message_counter, skip_msg_length=True)
+    syslog_messages = tc.new_syslog_message(message_counter=message_counter)
     file_source.write(syslog_messages)
 
     syslog_ng = tc.new_syslog_ng()

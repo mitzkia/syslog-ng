@@ -34,6 +34,7 @@ class CommandExecutor(object):
         self.stdout_content = None
         self.stderr_content = None
         self.execute_command(recreate_output)
+        self.print_std_outputs()
         self.evaluate_exit_code()
 
     def execute_command(self, recreate_output):
@@ -46,6 +47,8 @@ class CommandExecutor(object):
             stderr_fd = open(self.stderr, 'a')
         with psutil.Popen(self.command, stderr=stderr_fd, stdout=stdout_fd) as proc:
             self.exit_code = proc.wait(timeout=10)
+        stdout_fd.close()
+        stderr_fd.close()
 
     def get_stdout(self):
         return self.stdout_content
@@ -62,17 +65,16 @@ class CommandExecutor(object):
     def get_command(self):
         return self.command
 
-    def evaluate_exit_code(self):
-        with open(self.stdout, 'r') as file_object:
-            self.stdout_content = file_object.read()
-        with open(self.stderr, 'r') as file_object:
-            self.stderr_content = file_object.read()
+    def print_std_outputs(self):
+        with open(self.stdout, 'r') as stdout_fd, open(self.stderr, 'r') as stderr_fd:
+            self.stdout_content = stdout_fd.read()
+            self.stderr_content = stderr_fd.read()
+        self.logger.debug("All Stdout for this command: [{}]".format(self.stdout_content))
+        self.logger.debug("All Stderr for this command: [{}]".format(self.stderr_content))
 
-        if self.exit_code in [0, 15, 1, -15]:
-            self.logger.debug("Exit code: [{}]".format(self.exit_code))
-            self.logger.debug("All Stderr for this command: [{}]".format(self.stderr_content))
-            self.logger.debug("All Stdout for this command: [{}]".format(self.stdout_content))
+    def evaluate_exit_code(self):
+        exit_code_debug_log = "Exit code: [{}]".format(self.exit_code)
+        if self.exit_code == 0:
+            self.logger.debug(exit_code_debug_log)
         else:
-            self.logger.error("Exit code: [{}]".format(self.exit_code))
-            self.logger.error("All Stderr for this command: [{}]".format(self.stderr_content))
-            self.logger.error("All Stdout for this command: [{}]".format(self.stdout_content))
+            self.logger.error(exit_code_debug_log)

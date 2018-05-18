@@ -43,7 +43,7 @@ def test_add_options_prefix_used(tc_unittest):
     driver_node = syslog_ng_config["sources"]["src_stmt_id_1234"]["driver_id_1234"]
     options = {"file_path": "input"}
     file_based_driver.add_options(driver_node=driver_node, options=options)
-    assert re.findall("input_file_[0-9]{5}.log", driver_node['driver_options']['file_path']) is not []
+    assert re.findall("input_file_[0-9]{5}.log", driver_node['driver_options']['file_path']) != []
     assert len(driver_node['driver_options']) == 1
 
 def test_add_options_prefix_and_options_used(tc_unittest):
@@ -52,7 +52,7 @@ def test_add_options_prefix_and_options_used(tc_unittest):
     driver_node = syslog_ng_config["sources"]["src_stmt_id_1234"]["driver_id_1234"]
     options = {"file_path": "input", "option_name": "option_value"}
     file_based_driver.add_options(driver_node=driver_node, options=options)
-    assert re.findall("input_file_[0-9]{5}.log", driver_node['driver_options']['file_path']) is not []
+    assert re.findall("input_file_[0-9]{5}.log", driver_node['driver_options']['file_path']) != []
     assert driver_node['driver_options']['option_name'] == "option_value"
     assert len(driver_node['driver_options']) == 2
 
@@ -62,7 +62,7 @@ def test_add_options_options_used(tc_unittest):
     driver_node = syslog_ng_config["sources"]["src_stmt_id_1234"]["driver_id_1234"]
     options = {"option_name": "option_value"}
     file_based_driver.add_options(driver_node=driver_node, options=options)
-    assert re.findall("file_[0-9]{5}\.log", driver_node['driver_options']['file_path']) is not []
+    assert re.findall("file_[0-9]{5}.log", driver_node['driver_options']['file_path']) != []
     assert driver_node['driver_options']['option_name'] == "option_value"
     assert len(driver_node['driver_options']) == 2
 
@@ -71,7 +71,7 @@ def test_add_options_prefix_generated(tc_unittest):
     syslog_ng_config = {"sources": {"src_stmt_id_1234": {"driver_id_1234": {"driver_options": {}}}}}
     driver_node = syslog_ng_config["sources"]["src_stmt_id_1234"]["driver_id_1234"]
     file_based_driver.add_options(driver_node=driver_node, options=None)
-    assert re.findall("file_[0-9]{5}.log", driver_node['driver_options']['file_path']) is not []
+    assert re.findall("file_[0-9]{5}.log", driver_node['driver_options']['file_path']) != []
     assert len(driver_node['driver_options']) == 1
 
 def test_update_options_only_prefix(tc_unittest):
@@ -81,7 +81,7 @@ def test_update_options_only_prefix(tc_unittest):
     file_based_driver.add_options(driver_node=driver_node, options=None)
     options = {"file_path": "input"}
     file_based_driver.update_options(options=options)
-    assert re.findall("input_file_[0-9]{5}.log", driver_node['driver_options']['file_path']) is not []
+    assert re.findall("input_file_[0-9]{5}.log", driver_node['driver_options']['file_path']) != []
     assert len(driver_node['driver_options']) == 1
 
 def test_update_options_prefix_and_options(tc_unittest):
@@ -91,7 +91,7 @@ def test_update_options_prefix_and_options(tc_unittest):
     file_based_driver.add_options(driver_node=driver_node, options=None)
     options = {"file_path": "input", "option_name": "option_value"}
     file_based_driver.update_options(options=options)
-    assert re.findall("input_file_[0-9]{5}.log", driver_node['driver_options']['file_path']) is not []
+    assert re.findall("input_file_[0-9]{5}.log", driver_node['driver_options']['file_path']) != []
     assert driver_node['driver_options']['option_name'] == "option_value"
     assert len(driver_node['driver_options']) == 2
 

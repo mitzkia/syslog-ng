@@ -25,10 +25,9 @@ from src.syslog_ng_config.config_node_register import ConfigNodeRegister
 from src.syslog_ng_config.driver_register import DriverRegister
 from src.syslog_ng_config.option_setter import OptionSetter
 from src.syslog_ng_config.drivers.file_based_driver import FileBasedDriver
-from src.syslog_ng_config.drivers.network_based_drivers import NetworkBasedDrivers
 from src.syslog_ng_config.logpath import LogPaths
 from src.syslog_ng_config.renderer import ConfigRenderer
-from src.driver_io.file_based.interface import FileInterface
+from src.driver_io.file_based.file_interface import FileInterface
 
 
 class SyslogNgConfig(object):
@@ -94,11 +93,6 @@ class SyslogNgConfig(object):
 
     def get_file_destination(self, options=None):
         driver_object, driver_node = self.driver_init("destination", "file", FileBasedDriver)
-        driver_object.add_options(driver_node, options)
-        return driver_object
-
-    def get_default_network_drivers_source(self, options=None):
-        driver_object, driver_node = self.driver_init("source", "default_network_drivers", NetworkBasedDrivers)
         driver_object.add_options(driver_node, options)
         return driver_object
 

@@ -59,9 +59,9 @@ def test_read(tc_unittest):
         0
     )
 ])
-def test_get_lines(tc_unittest, file_content, expected_result_lines):
+def test_get_number_of_lines(tc_unittest, file_content, expected_result_lines):
     file_object = instantiate_file_object_with_content(tc_unittest, file_content)
-    assert file_object.get_lines() == expected_result_lines
+    assert file_object.get_number_of_lines() == expected_result_lines
     file_object.delete_file()
 
 def test_is_file_exist(tc_unittest):

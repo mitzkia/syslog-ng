@@ -32,15 +32,14 @@ class FileInterface(object):
 
     def read_content(self, file_path, expected_message_counter=1):
         file_manager = FileWaitForEvent(self.logger_factory, file_path)
-        if not file_manager.wait_for_number_of_lines(expected_message_counter):
-            self.logger.error("Expected message number not arrived: %s" % expected_message_counter)
-        file_content = file_manager.bufferio.buffer
+        file_manager.wait_for_creation()
+        file_content = file_manager.bufferio.pop_msgs(file_manager.read, expected_message_counter)
         self.logger.info(
             "Content received:" +
             "\n>>>From path:[{}]\n".format(file_path) +
             "\n>>>Content:[{}]".format("".join(file_content))
         )
-        return "".join(file_content)
+        return file_content
 
     def write_content(self, file_path, content, open_mode="a+", normalize_line_endings=True):
         file_manager = File(self.logger_factory, file_path)

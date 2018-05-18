@@ -22,21 +22,27 @@
 #############################################################################
 
 import pytest
-from src.driver_io.file_based.interface import FileInterface
+from src.driver_io.file_based.file_interface import FileInterface
 from src.driver_io.file_based.file import File
 from src.common import blocking
 blocking.MONITORING_TIME = 0.5
 
-def get_test_message():
+def get_input_message_without_newline():
     return """new message 1
 new message 2"""
+
+def get_expected_one_message():
+    return ["new message 1\n"]
+
+def get_expected_two_messages():
+    return ["new message 1\n", "new message 2\n"]
 
 def test_read_write_content_append_mode_normalized_endings(tc_unittest):
     file_interface = FileInterface(tc_unittest.fake_logger_factory())
     temp_file = tc_unittest.fake_file_register().get_registered_file_path("unittest_test_write_content")
-    file_interface.write_content(temp_file, get_test_message(), open_mode="a+", normalize_line_endings=True)
-    file_interface.write_content(temp_file, get_test_message(), open_mode="a+", normalize_line_endings=True)
-    assert file_interface.read_content(temp_file, expected_message_counter=4) == get_test_message() + "\n" + get_test_message() + "\n"
+    file_interface.write_content(temp_file, get_input_message_without_newline(), open_mode="a+", normalize_line_endings=True)
+    file_interface.write_content(temp_file, get_input_message_without_newline(), open_mode="a+", normalize_line_endings=True)
+    assert file_interface.read_content(temp_file, expected_message_counter=4) == get_expected_two_messages() + get_expected_two_messages()
     File(tc_unittest.fake_logger_factory(), temp_file).delete_file()
 
 def test_read_write_content_file_never_written(tc_unittest):
@@ -49,7 +55,7 @@ def test_read_write_empty_content(tc_unittest):
     file_interface = FileInterface(tc_unittest.fake_logger_factory())
     temp_file = tc_unittest.fake_file_register().get_registered_file_path("unittest_test_write_content")
     file_interface.write_content(temp_file, "", open_mode="a+", normalize_line_endings=False)
-    assert file_interface.read_content(temp_file, expected_message_counter=0) == ""
+    assert file_interface.read_content(temp_file, expected_message_counter=0) == []
     File(tc_unittest.fake_logger_factory(), temp_file).delete_file()
 
 def test_read_write_content_wait_for_more_message_than_written(tc_unittest):
@@ -58,8 +64,8 @@ def test_read_write_content_wait_for_more_message_than_written(tc_unittest):
     # In real testcases there will be an assert in the testcase about the message counter check
     file_interface = FileInterface(tc_unittest.fake_logger_factory())
     temp_file = tc_unittest.fake_file_register().get_registered_file_path("unittest_test_write_content")
-    file_interface.write_content(temp_file, get_test_message(), open_mode="a+", normalize_line_endings=True)
-    assert file_interface.read_content(temp_file, expected_message_counter=4) == get_test_message() + "\n"
+    file_interface.write_content(temp_file, get_input_message_without_newline(), open_mode="a+", normalize_line_endings=True)
+    assert file_interface.read_content(temp_file, expected_message_counter=4) == get_expected_two_messages()
     File(tc_unittest.fake_logger_factory(), temp_file).delete_file()
 
 def test_read_write_content_wait_for_less_message_than_written(tc_unittest):
@@ -68,6 +74,6 @@ def test_read_write_content_wait_for_less_message_than_written(tc_unittest):
     # In real testcases there will be an assert in the testcase about the message counter check
     file_interface = FileInterface(tc_unittest.fake_logger_factory())
     temp_file = tc_unittest.fake_file_register().get_registered_file_path("unittest_test_write_content")
-    file_interface.write_content(temp_file, get_test_message(), open_mode="a+", normalize_line_endings=True)
-    assert file_interface.read_content(temp_file, expected_message_counter=1) == get_test_message() + "\n"
+    file_interface.write_content(temp_file, get_input_message_without_newline(), open_mode="a+", normalize_line_endings=True)
+    assert file_interface.read_content(temp_file, expected_message_counter=1) == get_expected_one_message()
     File(tc_unittest.fake_logger_factory(), temp_file).delete_file()

@@ -22,13 +22,13 @@
 #############################################################################
 
 import os
-from src.executors.process.interface import ProcessInterface
+from src.executors.process import ProcessExecutor
 
 
 class SlngProcessExecutor(object):
     def __init__(self, logger_factory, instance_parameters):
         self.logger_factory = logger_factory
-        self.process_interface = ProcessInterface(logger_factory)
+        self.process_executor = ProcessExecutor(logger_factory)
         working_dir = instance_parameters['dir_paths']['working_dir']
         syslog_ng_binary_path = instance_parameters['binary_file_paths']['syslog_ng_binary']
         config_path = instance_parameters['file_paths']['config_path']
@@ -86,29 +86,29 @@ class SlngProcessExecutor(object):
         }
 
     def slng_process_start(self):
-        return self.process_interface.start(
+        return self.process_executor.start(
             self.process_start_command_args['start']['cmd'],
             self.process_start_command_args['start']['stdout'],
             self.process_start_command_args['start']['stderr'])
 
     def slng_process_start_behind(self, external_tool):
         concatenated_command = self.process_start_command_args[external_tool]['cmd'] + self.process_start_command_args['start']['cmd']
-        return self.process_interface.start(
+        return self.process_executor.start(
             concatenated_command,
             self.process_start_command_args[external_tool]['stdout'],
             self.process_start_command_args[external_tool]['stderr'])
 
     def slng_process_reload(self):
-        return self.process_interface.reload()
+        return self.process_executor.reload()
 
     def slng_process_stop(self):
-        return self.process_interface.stop()
+        return self.process_executor.stop()
 
     def get_process(self):
-        return self.process_interface.process_object
+        return self.process_executor.process_object
 
     def get_pid(self):
-        return self.process_interface.pid
+        return self.process_executor.pid
 
     def slng_is_running(self):
-        return self.process_interface.is_process_running()
+        return self.process_executor.is_process_running()
