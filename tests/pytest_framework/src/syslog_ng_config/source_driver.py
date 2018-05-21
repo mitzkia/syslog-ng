@@ -21,18 +21,15 @@
 #
 #############################################################################
 
-class OptionSetter(object):
-    def __init__(self):
-        self.root_node = None
+from src.syslog_ng_config.driver import Driver
+from src.syslog_ng_config.driver_io_handler import DriverIOHandler
 
-    def add_options(self, root_node, options):
-        self.save_root_node(root_node)
-        for option_name, option_value in options.items():
-            root_node.update({option_name: option_value})
+class SourceDriver(Driver):
+    def __init__(self, logger_factory, instance_parameters, config_tree, driver_io):
+        self.config_tree = config_tree
+        super().__init__(logger_factory, instance_parameters, self.config_tree)
+        self.driver_io_handler = DriverIOHandler(driver_io)
 
-    def remove_options(self, options):
-        for option_name in options:
-            self.root_node.pop(option_name)
-
-    def save_root_node(self, root_node):
-        self.root_node = root_node
+    def write_content(self, content):
+        mandatory_option_value = self.config_tree.get_mandatory_option_value()
+        self.driver_io_handler.write_content(mandatory_option_value, content)

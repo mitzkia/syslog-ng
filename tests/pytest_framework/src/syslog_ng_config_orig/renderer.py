@@ -21,6 +21,7 @@
 #
 #############################################################################
 
+
 class ConfigRenderer(object):
 
     def __init__(self, syslog_ng_config):
@@ -66,15 +67,17 @@ class ConfigRenderer(object):
                 self.syslog_ng_config_content += "    {}({});\n".format(option_name, option_value)
         self.syslog_ng_config_content += globals_options_footer
 
-    def render_first_place_driver_options(self, driver_options, mandatory_option_name):
+    def render_first_place_driver_options(self, driver_options, mandatory_option_names):
         for option_name, option_value in driver_options.items():
-            if option_name in mandatory_option_name:
+            if option_name in mandatory_option_names:
                 if "path" in option_name:
                     self.syslog_ng_config_content += "        {}\n".format(option_value)
+                elif "port" in option_name:
+                    self.syslog_ng_config_content += "        {}({})\n".format(option_name, option_value)
 
-    def render_driver_options(self, driver_options, mandatory_option_name):
+    def render_driver_options(self, driver_options, mandatory_option_names):
         for option_name, option_value in driver_options.items():
-            if (option_name not in mandatory_option_name) and (option_value != "default"):
+            if (option_name not in mandatory_option_names) and (option_value != "default"):
                 self.syslog_ng_config_content += "        {}({})\n".format(option_name, option_value)
 
     def render_statements(self, root_statement, statement_name):
@@ -88,8 +91,8 @@ class ConfigRenderer(object):
                 self.syslog_ng_config_content += "    {} (\n".format(driver_name)
 
                 # driver options
-                self.render_first_place_driver_options(driver_options, driver_properties["mandatory_option_name"])
-                self.render_driver_options(driver_options, driver_properties["mandatory_option_name"])
+                self.render_first_place_driver_options(driver_options, driver_properties["mandatory_option_names"])
+                self.render_driver_options(driver_options, driver_properties["mandatory_option_names"])
 
                 # driver footer
                 self.syslog_ng_config_content += "    );\n"

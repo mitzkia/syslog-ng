@@ -21,18 +21,12 @@
 #
 #############################################################################
 
-class OptionSetter(object):
+class DriverMessageHandler(object):
     def __init__(self):
-        self.root_node = None
+        pass
 
-    def add_options(self, root_node, options):
-        self.save_root_node(root_node)
-        for option_name, option_value in options.items():
-            root_node.update({option_name: option_value})
+    def generate_output_message(self):
+        pass
 
-    def remove_options(self, options):
-        for option_name in options:
-            self.root_node.pop(option_name)
-
-    def save_root_node(self, root_node):
-        self.root_node = root_node
+    def generate_default_output_message(self):
+        pass

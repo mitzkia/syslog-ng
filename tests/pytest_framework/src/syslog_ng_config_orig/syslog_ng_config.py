@@ -21,22 +21,25 @@
 #
 #############################################################################
 
-from src.syslog_ng_config.config_tree import ConfigTree
-from src.syslog_ng_config.file_source_driver import FileSourceDriver
-from src.syslog_ng_config.file_destination_driver import FileDestinationDriver
+from src.syslog_ng_config.config_node_register import ConfigNodeRegister
+from src.syslog_ng_config.driver_register import DriverRegister
+from src.syslog_ng_config.option_setter import OptionSetter
+from src.syslog_ng_config.drivers.file_based_driver import FileBasedDriver
+from src.syslog_ng_config.logpath import LogPaths
 from src.syslog_ng_config.renderer import ConfigRenderer
 from src.driver_io.file_based.file_interface import FileInterface
-from src.syslog_ng_config.option_setter import OptionSetter
-from src.syslog_ng_config.logpath import LogPaths
+
 
 class SyslogNgConfig(object):
-    def __init__(self, logger_factory, instance_parameters, syslog_ng_version):
+
+    def __init__(self, logger_factory, file_register, instance_parameters, syslog_ng_version):
+        self.logger_factory = logger_factory
+        self.file_register = file_register
         self.instance_parameters = instance_parameters
         self.config_path = instance_parameters["file_paths"]["config_path"]
-        self.logger_factory = logger_factory
         self.fileinterface = FileInterface(logger_factory)
         self.syslog_ng_version = syslog_ng_version
-        self.raw_config = None
+
         self.syslog_ng_config = {
             "version": self.syslog_ng_version,
             "include": ["scl.conf"],
@@ -53,24 +56,22 @@ class SyslogNgConfig(object):
             "destinations": {},
             "logpaths": {},
         }
+        self.raw_config = None
 
-    def __init_driver_registration(self, root_node_name, driver_name, statement_short_name):
-        config_tree = ConfigTree()
-        statement_node = config_tree.register_new_statement(root_node=self.syslog_ng_config[root_node_name], root_node_name=root_node_name)
-        config_tree.register_new_driver(statement_node=statement_node, driver_name=driver_name, statement_short_name=statement_short_name)
-        return config_tree
+    @staticmethod
+    def init_driver_registration():
+        statement = ConfigNodeRegister()
+        driver = DriverRegister()
+        option_setter = OptionSetter()
+        return statement, driver, option_setter
 
-    def get_file_source(self, options=None):
-        config_tree = self.__init_driver_registration(root_node_name="sources", driver_name="file", statement_short_name="src")
-        file_source_driver = FileSourceDriver(self.logger_factory, self.instance_parameters, config_tree)
-        file_source_driver.configure_options(options)
-        return file_source_driver
-
-    def get_file_destination(self, options=None):
-        config_tree = self.__init_driver_registration(root_node_name="destinations", driver_name="file", statement_short_name="dst")
-        file_destination_driver = FileDestinationDriver(self.logger_factory, self.instance_parameters, config_tree)
-        file_destination_driver.configure_options(options)
-        return file_destination_driver
+    def driver_init(self, statement_type, driver_name, baseclass):
+        statement, driver, option_setter = self.init_driver_registration()
+        root_node = "{}s".format(statement_type)
+        statement_node = statement.register_empty_node(self.syslog_ng_config[root_node], statement_type)
+        driver_node = driver.register_driver_node(statement_node, driver_name)
+        driver_object = baseclass(statement, driver, option_setter, self.logger_factory, self.instance_parameters)
+        return driver_object, driver_node
 
     def write_config_content(self):
         if self.raw_config:
@@ -86,7 +87,17 @@ class SyslogNgConfig(object):
         option_setter = OptionSetter()
         option_setter.add_options(self.syslog_ng_config["global_options"], options)
 
+    def get_file_source(self, options=None):
+        driver_object, driver_node = self.driver_init("source", "file", FileBasedDriver)
+        driver_object.add_options(driver_node, options)
+        return driver_object
+
+    def get_file_destination(self, options=None):
+        driver_object, driver_node = self.driver_init("destination", "file", FileBasedDriver)
+        driver_object.add_options(driver_node, options)
+        return driver_object
+
     def create_logpath(self, **kwargs):
         logpath = LogPaths()
-        logpath.register_new_logpath(self.syslog_ng_config["logpaths"], **kwargs)
+        logpath.register_logpath_node(self.syslog_ng_config["logpaths"], **kwargs)
         return logpath

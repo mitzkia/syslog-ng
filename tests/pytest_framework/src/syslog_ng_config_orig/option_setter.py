@@ -21,7 +21,9 @@
 #
 #############################################################################
 
+
 class OptionSetter(object):
+
     def __init__(self):
         self.root_node = None
 

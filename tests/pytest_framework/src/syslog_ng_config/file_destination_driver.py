@@ -21,18 +21,16 @@
 #
 #############################################################################
 
-class OptionSetter(object):
-    def __init__(self):
-        self.root_node = None
+from src.syslog_ng_config.destination_driver import DestinationDriver
+from src.driver_io.file_based.file_interface import FileInterface
 
-    def add_options(self, root_node, options):
-        self.save_root_node(root_node)
-        for option_name, option_value in options.items():
-            root_node.update({option_name: option_value})
+class FileDestinationDriver(DestinationDriver):
+    def __init__(self, logger_factory, instance_parameters, config_tree):
+        self.config_tree = config_tree
+        driver_io = FileInterface(logger_factory)
+        super().__init__(logger_factory, instance_parameters, self.config_tree, driver_io)
+        self.working_dir = instance_parameters["dir_paths"]["working_dir"]
 
-    def remove_options(self, options):
-        for option_name in options:
-            self.root_node.pop(option_name)
-
-    def save_root_node(self, root_node):
-        self.root_node = root_node
+    def configure_options(self, options):
+        self.set_file_path_mandatory_option(options, "file_path", "file_destination", self.working_dir)
+        self.add_options(options)

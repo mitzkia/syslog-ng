@@ -21,18 +21,18 @@
 #
 #############################################################################
 
-class OptionSetter(object):
-    def __init__(self):
-        self.root_node = None
+class DriverIOHandler(object):
+    def __init__(self, driver_io):
+        self.driver_io = driver_io
 
-    def add_options(self, root_node, options):
-        self.save_root_node(root_node)
-        for option_name, option_value in options.items():
-            root_node.update({option_name: option_value})
+    def write_content(self, file_path, content):
+        return self.driver_io.write_content(file_path, content)
 
-    def remove_options(self, options):
-        for option_name in options:
-            self.root_node.pop(option_name)
+    def read_msg(self, file_path):
+        return self.driver_io.read_msg(file_path)
 
-    def save_root_node(self, root_node):
-        self.root_node = root_node
+    def read_msgs(self, file_path, message_counter):
+        return self.driver_io.read_msgs(file_path, message_counter)
+
+    def read_all_msgs(self, file_path):
+        return self.driver_io.read_all_msgs(file_path)

@@ -114,7 +114,7 @@ class SetupTestCase(object):
         instance_parameters = self.syslog_ng_parameters.set_instance_parameters(instance_name)
         syslog_ng_command_executor = SlngCommandExecutor(self.logger_factory, instance_parameters)
         syslog_ng_version = syslog_ng_command_executor.get_version()
-        return SyslogNgConfig(self.logger_factory, self.file_register, instance_parameters, syslog_ng_version)
+        return SyslogNgConfig(self.logger_factory, instance_parameters, syslog_ng_version)
 
     def new_syslog_ng(self, instance_name="server"):
         syslog_ng = SyslogNg(self.logger_factory, self.syslog_ng_parameters, instance_name)
