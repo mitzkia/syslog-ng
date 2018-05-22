@@ -22,7 +22,6 @@
 #############################################################################
 import pytest
 
-
 @pytest.mark.parametrize("stats_level, expected_run, expected_stats", [
     [-1, False, {}],
     [0, True, {}],
@@ -39,17 +38,17 @@ def test_stats_level(tc, stats_level, expected_run, expected_stats):
     file_destination = config.get_file_destination({"file_path": "output"})
     config.create_logpath(sources=[file_source], destinations=[file_destination])
 
-    bsd_message = tc.new_bsd_message()
-    file_source.write(bsd_message)
+    bsd_message = tc.new_bsd_message().build()
+    file_source.write_message(bsd_message)
 
     syslog_ng = tc.new_syslog_ng()
     syslog_ng.start(config, expected_run=expected_run)
     if not expected_run:
         return
 
-    output_message = file_destination.read()
-    expected_output_message = file_destination.generate_default_output_message()
-    assert output_message == expected_output_message
+    output_message = file_destination.read_all_messages()
+    expected_output_message = bsd_message.remove_priority().build()
+    assert output_message == expected_output_message.get_message()
 
-    fd_stats_counters = file_destination.get_stats_counters()
+    fd_stats_counters = file_destination.get_counters()
     assert fd_stats_counters == expected_stats

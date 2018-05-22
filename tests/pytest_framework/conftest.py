@@ -22,10 +22,10 @@
 #############################################################################
 
 import pytest
-from src.setup.functional_test import SetupTestCase
-from src.setup.unittest import SetupUnitTestCase
+from pathlib2 import Path
 from datetime import datetime
-
+from src.setup.testcase import SetupTestCase
+from src.setup.unit_testcase import SetupUnitTestcase
 
 def pytest_addoption(parser):
     parser.addoption("--runslow", action="store_true", help="Also run @slow tests.")
@@ -34,7 +34,7 @@ def pytest_addoption(parser):
 
     parser.addoption("--installdir", action="store",
                      help="Set installdir for installed syslog-ng. Used when installmode is: custom. Example path: '/home/user/syslog-ng/installdir/'")
-    parser.addoption("--reports", action="store", default=get_current_date(),
+    parser.addoption("--reports", action="store", default=get_relative_report_dir(),
                      help="Path for report files folder. Default form: 'reports/<current_date>'")
 
 
@@ -58,6 +58,14 @@ def runslow(request):
     return request.config.getoption("--runslow")
 
 
+def get_relative_report_dir():
+    return Path('reports/', get_current_date())
+
+
+def get_current_date():
+    return datetime.now().strftime('%Y-%m-%d-%H-%M-%S-%f')
+
+
 @pytest.fixture
 def tc(request):
     return SetupTestCase(request)
@@ -65,8 +73,4 @@ def tc(request):
 
 @pytest.fixture
 def tc_unittest(request):
-    return SetupUnitTestCase(request)
-
-
-def get_current_date():
-    return 'reports/' + datetime.now().strftime('%Y-%m-%d-%H-%M-%S-%f')
+    return SetupUnitTestcase(request, get_current_date)

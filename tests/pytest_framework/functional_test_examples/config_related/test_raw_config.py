@@ -20,15 +20,15 @@
 # COPYING for details.
 #
 #############################################################################
-from src.driver_io.file_based.interface import FileInterface
-from src.common.find_in_content import find_regexp_in_content
 
+from src.driver_io.file.file_io import FileIO
+from src.common.find_in_content import is_number_of_occurences_in_content
 
 def test_raw_config(tc):
-    fileio = FileInterface(tc.logger_factory)
     config = tc.new_config()
     src_file = tc.new_file_path(prefix="input")
     dst_file = tc.new_file_path(prefix="output")
+    syslog_ng = tc.new_syslog_ng()
     raw_config = """@version: %s
     log {
         source { file("%s" flags(no-parse) ); };
@@ -47,26 +47,27 @@ def test_raw_config(tc):
         } else {
                 destination { file("%s" persist-name('xxx') template(">>>>XXXX<<<< $ISODATE $HOST $MSGHDR$MSG\n")); };
         };
-    };""" % (config.syslog_ng_version, src_file, dst_file, dst_file, dst_file, dst_file, dst_file, dst_file)
+    };""" % (syslog_ng.get_version(), src_file, dst_file, dst_file, dst_file, dst_file, dst_file, dst_file)
     config.set_raw_config(raw_config)
 
-    fileio.write_content(file_path=src_file, content="almafa")
-    fileio.write_content(file_path=src_file, content="belafa")
-    fileio.write_content(file_path=src_file, content="celafa")
-    fileio.write_content(file_path=src_file, content="test")
-    fileio.write_content(file_path=src_file, content="belafa magja")
-    fileio.write_content(file_path=src_file, content="belafa termese")
-    fileio.write_content(file_path=src_file, content="belafa levele")
+    input_content = """almafa
+belafa
+celafa
+test
+belafa magja
+belafa termese
+belafa levele
+"""
+    FileIO(tc.logger_factory, file_path=src_file).write(content=input_content)
 
-    syslog_ng = tc.new_syslog_ng()
     syslog_ng.start(config)
 
-    dst_file_content = fileio.read_content(file_path=dst_file, expected_message_counter=6)
+    output_messages = FileIO(tc.logger_factory, file_path=dst_file).read()
 
-    assert find_regexp_in_content("^>>>>ALMA<<<<.*almafa$", dst_file_content) is True
-    assert find_regexp_in_content("^>>>>BELA MAG<<<<.*belafa magja$", dst_file_content) is True
-    assert find_regexp_in_content("^>>>>BELA TERMES<<<<.*belafa termese$", dst_file_content) is True
-    assert find_regexp_in_content("^>>>>BELA LEVEL<<<<.*belafa levele$", dst_file_content) is True
-    assert find_regexp_in_content("^>>>>CELA<<<<.*celafa$", dst_file_content) is True
-    assert find_regexp_in_content("^>>>>XXXX<<<<.*test$", dst_file_content) is True
-    assert find_regexp_in_content("^.*belafa$", dst_file_content) is False
+    assert is_number_of_occurences_in_content("^>>>>ALMA<<<<.*almafa$", output_messages) is True
+    assert is_number_of_occurences_in_content("^>>>>BELA MAG<<<<.*belafa magja$", output_messages) is True
+    assert is_number_of_occurences_in_content("^>>>>BELA TERMES<<<<.*belafa termese$", output_messages) is True
+    assert is_number_of_occurences_in_content("^>>>>BELA LEVEL<<<<.*belafa levele$", output_messages) is True
+    assert is_number_of_occurences_in_content("^>>>>CELA<<<<.*celafa$", output_messages) is True
+    assert is_number_of_occurences_in_content("^>>>>XXXX<<<<.*test$", output_messages) is True
+    assert is_number_of_occurences_in_content("^.*belafa$", output_messages) is False

@@ -21,7 +21,6 @@
 #
 #############################################################################
 
-
 def test_rfc5424_multiple_messages(tc):
     config = tc.new_config()
     config.add_global_options({"stats_level": 3})
@@ -30,18 +29,19 @@ def test_rfc5424_multiple_messages(tc):
     config.create_logpath(sources=[file_source], destinations=[file_destination])
 
     message_counter = 20
-    syslog_messages = tc.new_syslog_message(message_counter=message_counter, skip_msg_length=True)
-    file_source.write(syslog_messages)
+    ietf_messages = tc.new_ietf_message().build(counter=message_counter)
+    file_source.write_messages(ietf_messages)
 
     syslog_ng = tc.new_syslog_ng()
     syslog_ng.start(config)
 
-    output_message = file_destination.read(message_counter)
-    expected_output_message = file_destination.generate_default_output_message(message_counter)
-    assert output_message == expected_output_message
+    output_message = file_destination.read_all_messages()
+    bsd_messages = tc.new_bsd_message().build(counter=message_counter)
+    expected_output_message = bsd_messages[0].remove_priority().build()
+    assert output_message == expected_output_message.get_messages(message_counter)
 
-    fd_stats_counters = file_destination.get_stats_counters()
-    assert fd_stats_counters == {
+    fd_counters = file_destination.get_counters()
+    assert fd_counters == {
         "processed": message_counter,
         "written": message_counter,
         "queued": 0,

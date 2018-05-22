@@ -27,23 +27,22 @@ def test_start_reload_stop_start(tc):
     file_destination = config.get_file_destination({"file_path": "output"})
     config.create_logpath(sources=[file_source], destinations=[file_destination])
 
-    bsd_message = tc.new_bsd_message()
-    file_source.write(bsd_message)
+    bsd_message = tc.new_bsd_message().build()
+    file_source.write_message(bsd_message)
 
     syslog_ng = tc.new_syslog_ng()
     syslog_ng.start(config)
 
-    file_source.write(bsd_message)
+    file_source.write_message(bsd_message)
 
-    syslog_ng.reload(config)
-
+    syslog_ng.reload()
     syslog_ng.stop()
 
-    file_source.write(bsd_message)
+    file_source.write_message(bsd_message)
 
-    syslog_ng.start(config)
+    syslog_ng.start()
 
     message_counter = 3
-    output_message = file_destination.read(message_counter)
-    expected_output_message = file_destination.generate_default_output_message(message_counter)
-    assert output_message == expected_output_message
+    output_messages = file_destination.read_all_messages()
+    expected_output_messages = bsd_message.remove_priority().build(message_counter)
+    assert output_messages == expected_output_messages[0].get_messages(message_counter)

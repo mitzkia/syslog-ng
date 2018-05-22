@@ -20,8 +20,8 @@
 # COPYING for details.
 #
 #############################################################################
-from src.common.find_in_content import find_regexp_in_content
-
+import socket
+from src.common.find_in_content import is_number_of_occurences_in_content
 
 def test_message_payload(tc):
     config = tc.new_config()
@@ -29,11 +29,13 @@ def test_message_payload(tc):
     file_destination = config.get_file_destination({"file_path": "output"})
     config.create_logpath(sources=[file_source], destinations=[file_destination])
 
-    test_message = "my favorite custom test message"
-    file_source.write(test_message)
+    test_message = tc.new_log_message("my favorite custom test message").build()
+    file_source.write_message(test_message)
 
     syslog_ng = tc.new_syslog_ng()
     syslog_ng.start(config)
 
-    output_message = file_destination.read()
-    assert find_regexp_in_content(".*{}$".format(test_message), output_message) is True
+    output_messages = file_destination.read_all_messages()
+    expected_output_message = test_message.hostname(socket.gethostname()).build()
+    for output_message in output_messages:
+        assert is_number_of_occurences_in_content(".*{}$".format(expected_output_message.get_raw_message()), output_message) is True

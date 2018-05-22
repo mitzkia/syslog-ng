@@ -23,13 +23,13 @@
 
 import time
 
-MONITORING_TIME = 10
-POLL_FREQ = 0.001
-
+MONITORING_TIME = 10  # 10 sec
+POLL_FREQ = 0.001  # 1 millisecond
 
 def wait_until_true(func, *args):
-    t_end = time.monotonic() + MONITORING_TIME
-    while time.monotonic() <= t_end:
+    # Python 2 compatibility note: time.monotonic() is missing
+    t_end = time.time() + MONITORING_TIME
+    while time.time() <= t_end:
         result = func(*args)
         if result:
             return result

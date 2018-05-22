@@ -23,13 +23,13 @@
 
 import re
 
-
-def find_regexp_in_content(regexp, content, counter=1):
+def is_number_of_occurences_in_content(regexp, content, counter=1):
     regexp_pattern = re.compile(regexp)
-    return counter == len(list(filter(regexp_pattern.match, content.splitlines(keepends=True))))
+    return counter == len(list(filter(regexp_pattern.match, content.splitlines(True))))
 
-def grep_pattern_in_content(pattern, content):
-    for content_line in content.splitlines(keepends=True):
-        if re.search(pattern, content_line) is not None:
+def grep_in_content(regexp, content):
+    regexp_pattern = re.compile(regexp)
+    for content_line in content.splitlines(True):
+        if re.search(regexp_pattern, content_line) is not None:
             return content_line
     return None

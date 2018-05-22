@@ -1,5 +1,10 @@
 colorlog
 mockito
+pathlib2 # python2 module for pathlib
 psutil
+pylint # linter
 pytest
-py
+pytest-cov
+pytest-leaks
+pytest-profiling
+pytest-xdist

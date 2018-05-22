@@ -21,20 +21,18 @@
 #
 #############################################################################
 
-
 def test_custom_formatted_rfc3164(tc):
     config = tc.new_config()
     file_source = config.get_file_source({"file_path": "input", "keep_hostname": "yes"})
     file_destination = config.get_file_destination({"file_path": "output"})
     config.create_logpath(sources=[file_source], destinations=[file_destination])
 
-    message_header_fields = {"program": "myprogram", "hostname": "myhost", "pid": "6666"}
-    bsd_message = tc.new_bsd_message(message_header_fields=message_header_fields)
-    file_source.write(bsd_message)
+    bsd_message = tc.new_bsd_message().program("myprogram").hostname("myhost").pid("1234").build()
+    file_source.write_message(bsd_message)
 
     syslog_ng = tc.new_syslog_ng()
     syslog_ng.start(config)
 
-    output_message = file_destination.read()
-    expected_output_message = file_destination.generate_output_message(message_header_fields=message_header_fields)
-    assert output_message == expected_output_message
+    output_message = file_destination.read_all_messages()
+    expected_output_message = bsd_message.remove_priority().build()
+    assert output_message == expected_output_message.get_message()

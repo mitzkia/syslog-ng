@@ -21,27 +21,27 @@
 #
 #############################################################################
 
-import logging
 import sys
+import logging
 from colorlog import ColoredFormatter
-
 
 class Logger(logging.Logger):
     def __init__(self, logger_name, report_file, loglevel, use_console_handler=True, use_file_handler=True):
-        super().__init__(logger_name, loglevel)
+        super(Logger, self).__init__(logger_name, loglevel)
         self.handlers = []
         if use_console_handler:
-            self.__set_consolehandler()
+            self.__set_console_handler()
         if use_file_handler:
-            self.__set_filehandler(file_name=report_file)
+            self.__set_file_handler(file_path=report_file)
 
-    def __set_filehandler(self, file_name=None):
-        file_handler = logging.FileHandler(file_name)
+    def __set_file_handler(self, file_path=None):
+        # FileHandler can work only with string representation of file_path
+        file_handler = logging.FileHandler(str(file_path))
         formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
         file_handler.setFormatter(formatter)
         self.addHandler(file_handler)
 
-    def __set_consolehandler(self):
+    def __set_console_handler(self):
         console_handler = logging.StreamHandler(sys.stdout)
         logging.captureWarnings(capture=True)
         formatter = ColoredFormatter(
@@ -66,10 +66,15 @@ class Logger(logging.Logger):
         console_handler.setFormatter(formatter)
         self.addHandler(console_handler)
 
-    def write_message_based_on_value(self, message, value, loglevel=logging.DEBUG):
-        pred = value
+    def print_message_based_on_value(self, message, pred, loglevel=logging.DEBUG):
         message = "{}: [{}]".format(message, pred)
         if pred:
             self.log(loglevel, message)
         else:
             self.error(message)
+
+    def print_io_content(self, path, content, main_message):
+        message = "{}\
+        \n->Path:[{}]\
+        \n->Content:[{}]".format(main_message, path, content)
+        self.log(logging.INFO, message)

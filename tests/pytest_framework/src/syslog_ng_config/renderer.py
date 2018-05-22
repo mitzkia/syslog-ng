@@ -22,6 +22,7 @@
 #############################################################################
 
 class ConfigRenderer(object):
+
     def __init__(self, syslog_ng_config):
         self.syslog_ng_config = syslog_ng_config
         self.syslog_ng_config_content = ""
@@ -34,12 +35,12 @@ class ConfigRenderer(object):
             self.render_version()
         if self.syslog_ng_config["include"]:
             self.render_include()
-        if self.syslog_ng_config["module"]:
-            self.render_module()
         if self.syslog_ng_config["global_options"]:
             self.render_global_options()
         if self.syslog_ng_config["sources"]:
             self.render_statements(root_statement="sources", statement_name="source")
+        if self.syslog_ng_config["parsers"]:
+            self.render_statements(root_statement="parsers", statement_name="parser")
         if self.syslog_ng_config["destinations"]:
             self.render_statements(root_statement="destinations", statement_name="destination")
         if self.syslog_ng_config["logpaths"]:
@@ -65,17 +66,15 @@ class ConfigRenderer(object):
                 self.syslog_ng_config_content += "    {}({});\n".format(option_name, option_value)
         self.syslog_ng_config_content += globals_options_footer
 
-    def render_first_place_driver_options(self, driver_options, mandatory_option_names):
+    def render_first_place_driver_options(self, driver_options, mandatory_option_name):
         for option_name, option_value in driver_options.items():
-            if option_name in mandatory_option_names:
+            if option_name in mandatory_option_name:
                 if "path" in option_name:
                     self.syslog_ng_config_content += "        {}\n".format(option_value)
-                elif "port" in option_name:
-                    self.syslog_ng_config_content += "        {}({})\n".format(option_name, option_value)
 
-    def render_driver_options(self, driver_options, mandatory_option_names):
+    def render_driver_options(self, driver_options, mandatory_option_name):
         for option_name, option_value in driver_options.items():
-            if (option_name not in mandatory_option_names) and (option_value != "default"):
+            if (option_name not in mandatory_option_name) and (option_value != "default"):
                 self.syslog_ng_config_content += "        {}({})\n".format(option_name, option_value)
 
     def render_statements(self, root_statement, statement_name):
@@ -83,14 +82,14 @@ class ConfigRenderer(object):
             # statement header
             self.syslog_ng_config_content += "\n{} {} {{\n".format(statement_name, statement_id)
             for dummy_driver_id, driver_properties in driver.items():
-                driver_name = driver_properties['driver_name']
-                driver_options = driver_properties['driver_options']
+                driver_name = driver_properties["driver_name"]
+                driver_options = driver_properties["driver_options"]
                 # driver header
                 self.syslog_ng_config_content += "    {} (\n".format(driver_name)
 
                 # driver options
-                self.render_first_place_driver_options(driver_options, driver_properties['mandatory_option_names'])
-                self.render_driver_options(driver_options, driver_properties['mandatory_option_names'])
+                self.render_first_place_driver_options(driver_options, driver_properties["mandatory_option_name"])
+                self.render_driver_options(driver_options, driver_properties["mandatory_option_name"])
 
                 # driver footer
                 self.syslog_ng_config_content += "    );\n"
@@ -103,6 +102,8 @@ class ConfigRenderer(object):
             self.syslog_ng_config_content += "\nlog {\n"
             for src_driver in self.syslog_ng_config["logpaths"][logpath]["sources"]:
                 self.syslog_ng_config_content += "    source({});\n".format(src_driver)
+            for parser in self.syslog_ng_config["logpaths"][logpath]["parsers"]:
+                self.syslog_ng_config_content += "    parser({});\n".format(parser)
             for dst_driver in self.syslog_ng_config["logpaths"][logpath]["destinations"]:
                 self.syslog_ng_config_content += "    destination({});\n".format(dst_driver)
             for flags in self.syslog_ng_config["logpaths"][logpath]["flags"]:
