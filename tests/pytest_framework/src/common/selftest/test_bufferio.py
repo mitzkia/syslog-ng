@@ -162,7 +162,8 @@ def test_buffer_and_parse(tc_unittest, number_of_requested_messages, buffer_and_
 @pytest.mark.parametrize(
     "number_of_requested_messages, pop_msgs_result, msg_list, buffer",
     [
-        (0, ["new message 1\n", "new message 2\n"], [], "new message 3"),  # means get all messages from buffer
+        (-1, ["new message 1\n", "new message 2\n"], [], "new message 3"),  # means get all messages from buffer
+        (0, [], ['new message 1\n', 'new message 2\n'], "new message 3"),
         (1, ["new message 1\n"], ["new message 2\n"], "new message 3"),
         (2, ["new message 1\n", "new message 2\n"], [], "new message 3"),
         (3, ["new message 1\n", "new message 2\n"], [], "new message 3"),
@@ -198,8 +199,14 @@ def test_pop_msg_when_there_is_no_new_line_at_the_end(tc_unittest):
     "number_of_requested_messages, peek_msgs_result, msg_list, buffer",
     [
         (
-            0,  # means get all messages from buffer
+            -1,  # means get all messages from buffer
             ["new message 1\n", "new message 2\n"],
+            ["new message 1\n", "new message 2\n"],
+            "new message 3",
+        ),
+        (
+            0,
+            [],
             ["new message 1\n", "new message 2\n"],
             "new message 3",
         ),

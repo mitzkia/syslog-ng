@@ -36,6 +36,7 @@ class CommandExecutor(object):
         self.stderr_content = None
         self.execute_command(recreate_output)
         self.print_std_outputs()
+        # import pdb ; pdb.set_trace()
         self.evaluate_exit_code()
 
     def execute_command(self, recreate_output):
@@ -74,7 +75,7 @@ class CommandExecutor(object):
         self.logger.debug("All Stderr for this command: [{}]".format(self.stderr_content))
 
     def evaluate_exit_code(self):
-        exit_code_debug_log = "Exit code: [{}]".format(self.exit_code)
+        exit_code_debug_log = "Command: [{}], Exit code: [{}]".format(self.command, self.exit_code)
         if self.exit_code == 0:
             self.logger.debug(exit_code_debug_log)
         else:

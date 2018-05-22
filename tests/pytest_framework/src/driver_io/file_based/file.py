@@ -79,6 +79,8 @@ class File(object):
                     file_object.write(self.normalize_line_endings(content))
                 else:
                     file_object.write(content)
+            # file_object.flush()
+            # file_object.close()
 
     def dump_content(self):
         self.logger.info(self.read())

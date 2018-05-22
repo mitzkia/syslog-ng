@@ -63,7 +63,7 @@ def test_raw_config(tc):
     syslog_ng = tc.new_syslog_ng()
     syslog_ng.start(config)
 
-    dst_file_messages = fileio.read_content(file_path=dst_file, expected_message_counter=6)
+    dst_file_messages = fileio.read_msgs(file_path=dst_file, expected_message_counter=6)
 
     dst_file_content = "".join(dst_file_messages)
     assert find_regexp_in_content("^>>>>ALMA<<<<.*almafa$", dst_file_content) is True

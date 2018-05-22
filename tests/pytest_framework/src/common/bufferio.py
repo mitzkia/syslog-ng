@@ -29,6 +29,7 @@ class BufferIO(object):
     def __init__(self):
         self.buffer = ""
         self.msg_list = []
+        self.ALL_MSGS = -1
 
     def buffering_messages(self, read):
         content = read()
@@ -58,9 +59,9 @@ class BufferIO(object):
             return popped_message[0]
         return ""
 
-    def pop_msgs(self, read, number_of_requested_messages=0):
+    def pop_msgs(self, read, number_of_requested_messages=-1):
         wait_until_true(self.buffer_and_parse, read, number_of_requested_messages)
-        if number_of_requested_messages == 0:
+        if number_of_requested_messages == self.ALL_MSGS:
             number_of_requested_messages = len(self.msg_list)
         final_msg_list = self.msg_list[0:number_of_requested_messages]
         self.msg_list = self.msg_list[number_of_requested_messages:]
@@ -69,9 +70,9 @@ class BufferIO(object):
     def peek_msg(self, read):
         return self.peek_msgs(read, number_of_requested_messages=1)[0]
 
-    def peek_msgs(self, read, number_of_requested_messages=0):
+    def peek_msgs(self, read, number_of_requested_messages=-1):
         wait_until_true(self.buffer_and_parse, read, number_of_requested_messages)
-        if number_of_requested_messages == 0:
+        if number_of_requested_messages == self.ALL_MSGS:
             number_of_requested_messages = len(self.msg_list)
         return self.msg_list[0:number_of_requested_messages]
 
@@ -83,7 +84,3 @@ class BufferIO(object):
 
     def is_requested_messages_under_parsed_messages(self, number_of_requested_messages):
         return len(self.msg_list) >= number_of_requested_messages
-
-    # def buffering_and_is_number_of_requested_messages_in_buffer(self, read, number_of_requested_messages):
-    #     self.buffering_messages(read)
-    #     return number_of_requested_messages == self.buffer.count("\n")

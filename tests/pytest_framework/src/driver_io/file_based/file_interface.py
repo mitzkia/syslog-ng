@@ -32,38 +32,28 @@ class FileInterface(object):
         self.logger = logger_factory.create_logger("FileInterface")
 
     def read_msg(self, file_path):
-        file_manager = FileWaitForEvent(self.logger_factory, file_path)
-        file_manager.wait_for_creation()
-        file_content = file_manager.bufferio.pop_msg(file_manager.read)
-        self.print_file_content(file_path, file_content)
-        return file_content
+        return self.read_msgs(file_path, 1)
+
+    def read_all_msgs(self, file_path):
+        ALL_MSGS = -1
+        return self.read_msgs(file_path, ALL_MSGS)
 
     def read_msgs(self, file_path, expected_message_counter):
         file_manager = FileWaitForEvent(self.logger_factory, file_path)
         file_manager.wait_for_creation()
         file_content = file_manager.bufferio.pop_msgs(file_manager.read, expected_message_counter)
-        self.print_file_content(file_path, file_content)
+        self.print_file_content(file_path, file_content, "Content has been read from")
+        assert len(file_content) == expected_message_counter
         return file_content
-
-    def read_all_msgs(self, file_path):
-        file_manager = FileWaitForEvent(self.logger_factory, file_path)
-        file_manager.wait_for_creation()
-        file_content = file_manager.bufferio.pop_msgs(file_manager.read)
-        self.print_file_content(file_path, file_content)
-        return file_content
-
-    def print_file_content(self, file_path, content):
-        self.logger.info(
-            "Content received:"
-            + "\n>>>From path:[{}]\n".format(file_path)
-            + "\n>>>Content:[{}]".format("".join(content))
-        )
 
     def write_content(self, file_path, content, open_mode="a+", normalize_line_endings=True):
         file_manager = File(self.logger_factory, file_path)
-        self.logger.info(
-            "Content written:"
-            + "\n>>>From path:[{}]\n".format(file_path)
-            + "\n>>>Content:[{}]".format(content)
-        )
+        self.print_file_content(file_path, content, "Content has been written to")
         file_manager.write(content=content, open_mode=open_mode, normalize_line_endings=normalize_line_endings)
+
+    def print_file_content(self, file_path, content, main_message):
+        self.logger.info(
+            main_message
+            + "\n>>>Path:[{}]\n".format(file_path)
+            + "\n>>>Content:[{}]".format("".join(content))
+        )

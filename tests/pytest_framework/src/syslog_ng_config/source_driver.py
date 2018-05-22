@@ -30,6 +30,6 @@ class SourceDriver(Driver):
         super().__init__(logger_factory, instance_parameters, self.config_tree)
         self.driver_io_handler = DriverIOHandler(driver_io)
 
-    def write_content(self, content):
+    def write(self, message):
         mandatory_option_value = self.config_tree.get_mandatory_option_value()
-        self.driver_io_handler.write_content(mandatory_option_value, content)
+        self.driver_io_handler.write(mandatory_option_value, message)

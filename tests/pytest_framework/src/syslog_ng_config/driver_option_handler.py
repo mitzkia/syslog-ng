@@ -34,20 +34,27 @@ class DriverOptionHandler(object):
     def add_options(self, options):
         self.option_setter.add_options(self.config_tree.driver_node['driver_options'], options)
 
-    def update_options(self, options):
-        self.option_setter.add_options(self.config_tree.driver_node['driver_options'], options)
-
     def remove_options(self, options):
         self.option_setter.remove_options(options)
 
-    def set_file_path_mandatory_option(self, options, mandatory_option_name, file_path_prefix, working_dir):
+    def set_file_path_mandatory_option(self, options, file_path_prefix, working_dir):
         random_id = Random(use_static_seed=False).get_unique_id()
 
+        mandatory_option_name = "file_path"
         if not mandatory_option_name in options.keys():
             self.mandatory_option_value = os.path.join(working_dir, "{}_{}.log".format(file_path_prefix, random_id))
             mandatory_option = {mandatory_option_name: self.mandatory_option_value}
             options.update(mandatory_option)
         else:
+            option_value = options[mandatory_option_name]
+            self.mandatory_option_value = os.path.join(working_dir, "{}_{}.log".format(file_path_prefix, option_value))
+            options.update({mandatory_option_name: self.mandatory_option_value})
+
+        self.config_tree.driver_node['mandatory_option_name'] = mandatory_option_name
+
+    def update_file_path_mandatory_option(self, options, file_path_prefix, working_dir):
+        mandatory_option_name = "file_path"
+        if mandatory_option_name in options.keys():
             option_value = options[mandatory_option_name]
             self.mandatory_option_value = os.path.join(working_dir, "{}_{}.log".format(file_path_prefix, option_value))
             options.update({mandatory_option_name: self.mandatory_option_value})

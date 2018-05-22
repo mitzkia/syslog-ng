@@ -45,6 +45,6 @@ def test_start_reload_stop_start(tc):
     syslog_ng.start(config)
 
     message_counter = 3
-    output_message = file_destination.read(message_counter)
+    output_message = file_destination.read_msgs(message_counter)
     expected_output_message = file_destination.generate_default_output_message(message_counter)
     assert output_message == expected_output_message

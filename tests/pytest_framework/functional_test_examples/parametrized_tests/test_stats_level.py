@@ -50,7 +50,7 @@ def test_stats_level(tc, stats_level, expected_run, expected_stats):
     if not expected_run:
         return
 
-    output_message = file_destination.read()
+    output_message = file_destination.read_msg()
     expected_output_message = file_destination.generate_default_output_message()
     assert output_message == expected_output_message
 

@@ -21,34 +21,26 @@
 #
 #############################################################################
 
-from src.syslog_ng_config.driver_message_handler import DriverMessageHandler
 from src.syslog_ng_config.driver_option_handler import DriverOptionHandler
 from src.syslog_ng_config.driver_stats_handler import DriverStatsHandler
 
 class Driver(object):
     def __init__(self, logger_factory, instance_parameters, config_tree):
         self.config_tree = config_tree
-        self.driver_message_handler = DriverMessageHandler()
         self.driver_option_handler = DriverOptionHandler(self.config_tree)
         self.driver_stats_handler = DriverStatsHandler(logger_factory, instance_parameters, self.config_tree)
-
-    def generate_output_message(self):
-        self.driver_message_handler.generate_output_message()
-
-    def generate_default_output_message(self):
-        self.driver_message_handler.generate_default_output_message()
 
     def add_options(self, options):
         self.driver_option_handler.add_options(options)
 
-    def update_options(self, options):
-        self.driver_option_handler.update_options(options)
-
     def remove_options(self, options):
         self.driver_option_handler.remove_options(options)
 
-    def set_file_path_mandatory_option(self, options, mandatory_option_name, file_path_prefix, working_dir):
-        self.driver_option_handler.set_file_path_mandatory_option(options, mandatory_option_name, file_path_prefix, working_dir)
+    def set_file_path_mandatory_option(self, options, file_path_prefix, working_dir):
+        self.driver_option_handler.set_file_path_mandatory_option(options, file_path_prefix, working_dir)
+
+    def update_file_path_mandatory_option(self, options, file_path_prefix, working_dir):
+        self.driver_option_handler.update_file_path_mandatory_option(options, file_path_prefix, working_dir)
 
     def get_stats_counters(self):
         return self.driver_stats_handler.get_stats_counters()

@@ -32,5 +32,9 @@ class FileSourceDriver(SourceDriver):
         self.working_dir = instance_parameters["dir_paths"]["working_dir"]
 
     def configure_options(self, options):
-        self.set_file_path_mandatory_option(options, "file_path", "file_source", self.working_dir)
+        self.set_file_path_mandatory_option(options, "file_source", self.working_dir)
+        self.add_options(options)
+
+    def update_options(self, options):
+        self.update_file_path_mandatory_option(options, "file_source", self.working_dir)
         self.add_options(options)

@@ -35,6 +35,6 @@ def test_message_payload(tc):
     syslog_ng = tc.new_syslog_ng()
     syslog_ng.start(config)
 
-    dst_file_messages = file_destination.read()
+    dst_file_messages = file_destination.read_msg()
     dst_file_content = "".join(dst_file_messages)
     assert find_regexp_in_content(".*{}$".format(test_message), dst_file_content) is True

@@ -52,7 +52,7 @@ def test_read_write_content_append_mode_normalized_endings(tc_unittest):
         temp_file, get_input_message_without_newline(), open_mode="a+", normalize_line_endings=True
     )
     assert (
-        file_interface.read_content(temp_file, expected_message_counter=4)
+        file_interface.read_msgs(temp_file, expected_message_counter=4)
         == get_expected_two_messages() + get_expected_two_messages()
     )
     File(tc_unittest.fake_logger_factory(), temp_file).delete_file()
@@ -62,14 +62,14 @@ def test_read_write_content_file_never_written(tc_unittest):
     file_interface = FileInterface(tc_unittest.fake_logger_factory())
     temp_file = tc_unittest.fake_file_register().get_registered_file_path("unittest_test_write_content")
     with pytest.raises(FileNotFoundError):
-        file_interface.read_content(temp_file, expected_message_counter=1)
+        file_interface.read_msg(temp_file)
 
 
 def test_read_write_empty_content(tc_unittest):
     file_interface = FileInterface(tc_unittest.fake_logger_factory())
     temp_file = tc_unittest.fake_file_register().get_registered_file_path("unittest_test_write_content")
     file_interface.write_content(temp_file, "", open_mode="a+", normalize_line_endings=False)
-    assert file_interface.read_content(temp_file, expected_message_counter=0) == []
+    assert file_interface.read_msgs(temp_file, expected_message_counter=0) == []
     File(tc_unittest.fake_logger_factory(), temp_file).delete_file()
 
 
@@ -82,7 +82,8 @@ def test_read_write_content_wait_for_more_message_than_written(tc_unittest):
     file_interface.write_content(
         temp_file, get_input_message_without_newline(), open_mode="a+", normalize_line_endings=True
     )
-    assert file_interface.read_content(temp_file, expected_message_counter=4) == get_expected_two_messages()
+    with pytest.raises(AssertionError):
+        file_interface.read_msgs(temp_file, expected_message_counter=4)
     File(tc_unittest.fake_logger_factory(), temp_file).delete_file()
 
 
@@ -95,5 +96,5 @@ def test_read_write_content_wait_for_less_message_than_written(tc_unittest):
     file_interface.write_content(
         temp_file, get_input_message_without_newline(), open_mode="a+", normalize_line_endings=True
     )
-    assert file_interface.read_content(temp_file, expected_message_counter=1) == get_expected_one_message()
+    assert file_interface.read_msg(temp_file) == get_expected_one_message()
     File(tc_unittest.fake_logger_factory(), temp_file).delete_file()

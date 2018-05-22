@@ -45,11 +45,11 @@ def test_multiple_statements(tc):
     syslog_ng = tc.new_syslog_ng()
     syslog_ng.start(config)
 
-    output_message = file_destination.read()
+    output_message = file_destination.read_msg()
     expected_output_message = file_destination.generate_output_message(test_message)
     assert output_message == expected_output_message
 
-    output_message_2 = file_destination_2.read()
+    output_message_2 = file_destination_2.read_msg()
     expected_output_message_2 = file_destination_2.generate_output_message(test_message_2)
     assert output_message_2 == expected_output_message_2
 

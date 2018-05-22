@@ -35,6 +35,6 @@ def test_custom_formatted_rfc3164(tc):
     syslog_ng = tc.new_syslog_ng()
     syslog_ng.start(config)
 
-    output_message = file_destination.read()
+    output_message = file_destination.read_msg()
     expected_output_message = file_destination.generate_output_message(message_header_fields=message_header_fields)
     assert output_message == expected_output_message

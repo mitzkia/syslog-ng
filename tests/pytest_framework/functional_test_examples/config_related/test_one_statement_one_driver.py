@@ -35,7 +35,7 @@ def test_one_statement_one_driver(tc):
     syslog_ng = tc.new_syslog_ng()
     syslog_ng.start(config)
 
-    output_message = file_destination.read()
+    output_message = file_destination.read_msg()
     expected_output_message = file_destination.generate_default_output_message()
     assert output_message == expected_output_message
 

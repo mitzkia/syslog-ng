@@ -53,7 +53,7 @@ class ProcessExecutor(object):
             self.process_object.send_signal(signal.SIGTERM)
             self.exit_code = self.process_object.wait(timeout=2)
 
-            if self.exit_code in [0]:
+            if self.exit_code == 0:
                 self.logger.info("Process [{}] stopped gracefully with exit code [{}]".format(self.pid, self.exit_code))
             else:
                 self.logger.error(

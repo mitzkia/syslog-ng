@@ -36,7 +36,7 @@ def test_config_change_after_start(tc):
     syslog_ng = tc.new_syslog_ng()
     syslog_ng.start(config)
 
-    output_message = file_destination.read()
+    output_message = file_destination.read_msg()
     expected_output_message = file_destination.generate_output_message(test_message)
     assert output_message == expected_output_message
 
@@ -48,7 +48,7 @@ def test_config_change_after_start(tc):
     bsd_message = tc.new_bsd_message(test_message_2)
     file_source.write(bsd_message)
 
-    output_message = file_destination.read()
+    output_message = file_destination.read_msg()
     expected_output_message = file_destination.generate_output_message(test_message_2)
     assert output_message == expected_output_message
 

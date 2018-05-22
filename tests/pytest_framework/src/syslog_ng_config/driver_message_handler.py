@@ -21,12 +21,20 @@
 #
 #############################################################################
 
+from src.message.message_interface import MessageInterface
+
 class DriverMessageHandler(object):
-    def __init__(self):
-        pass
+    def __init__(self, logger_factory):
+        self.message_interface = MessageInterface(logger_factory)
 
-    def generate_output_message(self):
-        pass
+    def generate_output_message(self, message, message_header_fields, counter):
+        message_field = {"message": message}
+        if message_header_fields:
+            message_header_fields = {**message_header_fields, **{"priority": "skip"}}
+        else:
+            message_header_fields = {**{"priority": "skip"}}
+        message_parts = {**message_field, **message_header_fields}
+        return self.message_interface.construct_bsd_messages(message_parts, counter)
 
-    def generate_default_output_message(self):
-        pass
+    def generate_default_output_message(self, counter=1):
+        return self.message_interface.construct_bsd_messages({"priority": "skip"}, counter)

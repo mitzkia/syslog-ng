@@ -23,21 +23,29 @@
 
 from src.syslog_ng_config.driver import Driver
 from src.syslog_ng_config.driver_io_handler import DriverIOHandler
+from src.syslog_ng_config.driver_message_handler import DriverMessageHandler
 
 class DestinationDriver(Driver):
     def __init__(self, logger_factory, instance_parameters, config_tree, driver_io):
         self.config_tree = config_tree
         super().__init__(logger_factory, instance_parameters, config_tree)
         self.driver_io_handler = DriverIOHandler(driver_io)
+        self.driver_message_handler = DriverMessageHandler(logger_factory)
 
     def read_msg(self):
         mandatory_option_value = self.config_tree.get_mandatory_option_value()
-        self.driver_io_handler.read_msg(mandatory_option_value)
+        return self.driver_io_handler.read_msg(mandatory_option_value)
 
     def read_msgs(self, message_counter):
         mandatory_option_value = self.config_tree.get_mandatory_option_value()
-        self.driver_io_handler.read_msgs(mandatory_option_value, message_counter)
+        return self.driver_io_handler.read_msgs(mandatory_option_value, message_counter)
 
     def read_all_msgs(self):
         mandatory_option_value = self.config_tree.get_mandatory_option_value()
-        self.driver_io_handler.read_all_msgs(mandatory_option_value)
+        return self.driver_io_handler.read_all_msgs(mandatory_option_value)
+
+    def generate_output_message(self, message="test message - árvíztűrő tükörfúrógép", message_header_fields=None, counter=1):
+        return self.driver_message_handler.generate_output_message(message, message_header_fields, counter)
+
+    def generate_default_output_message(self, counter=1):
+        return self.driver_message_handler.generate_default_output_message(counter)

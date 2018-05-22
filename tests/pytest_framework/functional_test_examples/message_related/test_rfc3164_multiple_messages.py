@@ -36,7 +36,7 @@ def test_rfc3164_multiple_messages(tc):
     syslog_ng = tc.new_syslog_ng()
     syslog_ng.start(config)
 
-    output_message = file_destination.read(message_counter)
+    output_message = file_destination.read_msgs(message_counter)
     expected_output_message = file_destination.generate_default_output_message(message_counter)
     assert output_message == expected_output_message
 

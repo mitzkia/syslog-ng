@@ -21,7 +21,6 @@
 #
 #############################################################################
 
-import re
 import socket
 import pytest
 from src.message.message_interface import MessageInterface

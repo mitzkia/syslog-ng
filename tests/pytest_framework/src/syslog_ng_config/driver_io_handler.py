@@ -25,8 +25,8 @@ class DriverIOHandler(object):
     def __init__(self, driver_io):
         self.driver_io = driver_io
 
-    def write_content(self, file_path, content):
-        return self.driver_io.write_content(file_path, content)
+    def write(self, file_path, message):
+        return self.driver_io.write_content(file_path, message)
 
     def read_msg(self, file_path):
         return self.driver_io.read_msg(file_path)
