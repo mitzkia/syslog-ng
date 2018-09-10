@@ -28,20 +28,20 @@ from messagegen import syslog_prefix
 def logstore_reader(fname):
     try:
         return os.popen("../../src/logcat %s.lgs" % fname, "r")
-    except OSError, e:
+    except OSError as e:
         print_user("Error opening file: %s, %s" % (fname, str(e)))
 
 def file_reader(fname):
     try:
         return open(fname + ".log", "r")
-    except IOError, e:
+    except IOError as e:
         print_user("Error opening file: %s, %s" % (fname, str(e)))
 
 def sql_reader(name):
     (db, table) = name
     try:
         return os.popen("""echo "select * from %s order by msg;" | sqlite3 -separator " "  %s """ % (table, db), "r")
-    except OSError, e:
+    except OSError as e:
         print_user("Error opening file: %s, %s" % (fname, str(e)))
 
 
@@ -75,7 +75,8 @@ def check_contents(f, messages, syslog_prefix, skip_prefix):
         msg = m.group(1)
         session = int(m.group(2))
         id = int(m.group(3))
-        if not matches.has_key((msg, session)):
+        if (msg, session) not in matches.keys():
+        #if not matches.has_key((msg, session)):
             if id != 1:
                 print_user("the id of the first message in a session is not 1, session=%d, id=%d, file=%s:%d, line=%s"  % (session, id, f, lineno, read_line))
                 return False
@@ -89,7 +90,8 @@ def check_contents(f, messages, syslog_prefix, skip_prefix):
 
     for (msg, session, count) in messages:
 
-        if not matches.has_key((msg, session)):
+        if (msg, session) not in matches.keys():
+        #if not matches.has_key((msg, session)):
             print_user("output log files lack this kind of message: %s session: %d, count: %d" % (msg, session, count))
             return False
         if matches[(msg, session)] != count - 1:
