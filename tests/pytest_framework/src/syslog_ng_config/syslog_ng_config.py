@@ -41,6 +41,7 @@ class SyslogNgConfig(object):
         self.__logger = logger_factory.create_logger("SyslogNgConfig")
         self.__syslog_ng_config = {
             "version": syslog_ng_version,
+            "include": [],
             "global_options": {},
             "statement_groups": [],
             "logpath_groups": [],
@@ -70,6 +71,9 @@ class SyslogNgConfig(object):
         if flags:
             logpath.add_flags(cast_to_list(flags))
         return logpath
+
+    def add_include(self, include_file):
+        self.__syslog_ng_config["include"].append(include_file)
 
     def create_global_options(self, **kwargs):
         self.__syslog_ng_config["global_options"].update(kwargs)

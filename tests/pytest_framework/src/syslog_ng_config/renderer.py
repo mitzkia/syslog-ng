@@ -39,6 +39,8 @@ class ConfigRenderer(object):
             self.__syslog_ng_config_content = ""
         if self.__syslog_ng_config["version"]:
             self.__render_version()
+        if self.__syslog_ng_config["include"]:
+            self.__render_include()
         if self.__syslog_ng_config["global_options"]:
             self.__render_global_options()
         if self.__syslog_ng_config["statement_groups"]:
@@ -48,6 +50,10 @@ class ConfigRenderer(object):
 
     def __render_version(self):
         self.__syslog_ng_config_content += "@version: {}\n".format(self.__syslog_ng_config["version"])
+
+    def __render_include(self):
+        for include_path in self.__syslog_ng_config["include"]:
+            self.__syslog_ng_config_content += "@include '%s'\n" % include_path
 
     def __render_global_options(self):
         globals_options_header = "options {\n"
