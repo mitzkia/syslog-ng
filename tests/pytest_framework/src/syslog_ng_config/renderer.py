@@ -57,17 +57,16 @@ class ConfigRenderer(object):
             self.__syslog_ng_config_content += "    {}({});\n".format(option_name, option_value)
         self.__syslog_ng_config_content += globals_options_footer
 
-    def __render_positional_options(self, driver_options, positional_options):
-        for option_name, option_value in driver_options.items():
-            if option_name in positional_options:
-                if str(self.__instance_paths.get_working_dir()) not in str(option_value):
-                    driver_options[option_name] = Path(self.__instance_paths.get_working_dir(), option_value)
-                option_value = str(driver_options[option_name])
-                self.__syslog_ng_config_content += "        {}\n".format(option_value)
+    def __render_positional_options(self, driver_options, positional_option_name):
+        if positional_option_name == "file_name":
+            relative_path = driver_options[positional_option_name]
+            absolute_path = Path(self.__instance_paths.get_working_dir(), relative_path)
+            driver_options[positional_option_name] = absolute_path
+        self.__syslog_ng_config_content += "        {}\n".format(driver_options[positional_option_name])
 
-    def __render_driver_options(self, driver_options, positional_options):
+    def __render_driver_options(self, driver_options, positional_option_name):
         for option_name, option_value in driver_options.items():
-            if option_name not in positional_options:
+            if option_name not in positional_option_name:
                 self.__syslog_ng_config_content += "        {}({})\n".format(option_name, option_value)
 
     def __render_statement_groups(self):
