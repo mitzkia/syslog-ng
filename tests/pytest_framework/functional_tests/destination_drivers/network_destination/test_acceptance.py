@@ -26,6 +26,7 @@ def test_acceptance(tc):
     config = tc.new_config()
 
     file_source = config.create_file_source(file_name="input.log")
+    # network_source = config.create_network_source(ip="127.0.0.1", port=8888)
     source_group = config.create_source_group(file_source)
 
     network_destination = config.create_network_destination(ip="127.0.0.1")

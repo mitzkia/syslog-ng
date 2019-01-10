@@ -26,7 +26,7 @@ from src.syslog_ng_config.statements.sources.source_driver import SourceDriver
 
 
 class StreamBasedNetworkSources(SourceDriver):
-    def __init__(self, logger_factory, instance_paths, driver_name, **kwargs):
+    def __init__(self, driver_name, logger_factory, instance_paths, **kwargs):
         super(StreamBasedNetworkSources, self).__init__(logger_factory, SocketStreamIO)
         self.__options = kwargs
         self.__driver_name = driver_name
