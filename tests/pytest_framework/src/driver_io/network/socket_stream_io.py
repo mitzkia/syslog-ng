@@ -34,13 +34,13 @@ class SocketStreamIO(Network):
         self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.socket.bind(self.socket_address)
         self.socket.listen(5)
-        self.socket.settimeout(1)
+        self.socket.settimeout(0.1)
 
     def read(self):
         while True:
             try:
                 client_connection, client_address = self.socket.accept()
-                client_connection.settimeout(1)
+                client_connection.settimeout(0.1)
                 while True:
                     incoming_data = client_connection.recv(8192).decode('utf-8')
                     if incoming_data:

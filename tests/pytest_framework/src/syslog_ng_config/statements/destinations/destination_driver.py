@@ -61,4 +61,4 @@ class DestinationDriver(object):
         self.p.join()
 
     def dd_received_socket_messages(self):
-        return self.received_messages
+        return self.received_messages[0]

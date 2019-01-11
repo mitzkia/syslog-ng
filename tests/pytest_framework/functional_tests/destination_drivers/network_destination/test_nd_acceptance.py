@@ -26,10 +26,11 @@ def test_acceptance(tc):
     config = tc.new_config()
 
     config.add_include("scl.conf")
+    config.create_global_options(keep_timestamp="yes")
     file_source = config.create_file_source(file_name="input.log")
     source_group = config.create_source_group(file_source)
 
-    network_destination = config.create_network_destination(ip="127.0.0.1", port=4444)
+    network_destination = config.create_network_destination(ip="127.0.0.1")
     destination_group = config.create_destination_group([network_destination])
 
     config.create_logpath(statements=[source_group, destination_group])
@@ -37,7 +38,7 @@ def test_acceptance(tc):
     file_source2 = config.create_file_source(file_name="input2.log")
     source_group = config.create_source_group(file_source2)
 
-    syslog_destination = config.create_syslog_destination(ip="127.0.0.1", port=2222)
+    syslog_destination = config.create_syslog_destination(ip="127.0.0.1")
     destination_group = config.create_destination_group([syslog_destination])
 
     config.create_logpath(statements=[source_group, destination_group])
@@ -54,9 +55,8 @@ def test_acceptance(tc):
     syslog_ng.start(config)
 
     network_destination.stop_listen()
-    print("BBBBBBBBBBBBBBBBBBBBBBBBBBB1: %s" % network_destination.get_received_socket_messages())
-    print("BBBBBBBBBBBBBBBBBBBBBBBBBBB2: %s" % syslog_destination.get_received_socket_messages())
+    # print("BBBBBBBBBBBBBBBBBBBBBBBBBBB1: %s" % network_destination.get_received_socket_messages())
+    # print("BBBBBBBBBBBBBBBBBBBBBBBBBBB2: %s" % syslog_destination.get_received_socket_messages())
 
-    # output_logs = file_destination.read_logs(counter=3)
-    # expected_output_message = log_message.remove_priority()
-    # assert output_logs == tc.format_as_bsd_logs(expected_output_message, counter=3)
+    output_logs = network_destination.get_received_socket_messages()
+    assert output_logs == tc.format_as_bsd_logs(log_message, counter=3)

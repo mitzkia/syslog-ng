@@ -27,3 +27,6 @@ UNIQUE_LENGTH = 5
 
 def get_unique_id(length=UNIQUE_LENGTH):
     return str(random.getrandbits(16 * 8))[0:length]
+
+def get_random_port():
+    return random.randint(30000,40000)

@@ -21,6 +21,7 @@
 #
 #############################################################################
 
+from src.common.random_id import get_random_port
 from src.driver_io.network.socket_stream_io import SocketStreamIO
 from src.syslog_ng_config.statements.destinations.destination_driver import DestinationDriver
 
@@ -31,6 +32,8 @@ class StreamBasedNetworkDestinations(DestinationDriver):
         self.__options = kwargs
         self.__driver_name = driver_name
         self.__positional_option = "ip"
+        if "port" not in self.__options.keys():
+            self.__options['port'] = get_random_port()
 
     @property
     def driver_name(self):
