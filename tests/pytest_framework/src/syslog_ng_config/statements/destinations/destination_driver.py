@@ -31,8 +31,12 @@ class DestinationDriver(object):
         self.__logger = logger_factory.create_logger("DestinationDriver")
         self.__IOClass = IOClass
         self.__reader = None
+        self.p = None
+        self.manager = Manager()
+        self.received_messages = self.manager.list()
 
     def dd_read_logs(self, path, counter):
+        empty_list = []
         if not self.__reader:
             io = self.__IOClass(self.__logger_factory, path)
             io.wait_for_creation()
@@ -40,15 +44,15 @@ class DestinationDriver(object):
                 self.__logger_factory, io.read, SingleLineParser(self.__logger_factory)
             )
             self.__reader = message_reader
-        messages = self.__reader.pop_messages(counter)
+        messages = self.__reader.pop_messages(counter, empty_list)
         self.__logger.print_io_content(path, messages, "Content has been read from")
         return messages
 
     def dd_start_listen(self, socket, counter):
-        self.native_driver_io = self.__native_driver_io_ref(socket)
-        self.native_driver_io.listen()
+        io = self.__IOClass(socket)
+        io.listen()
         message_reader = MessageReader(
-                self.__logger_factory, self.native_driver_io.read, SingleLineParser(self.__logger_factory)
+                self.__logger_factory, io.read, SingleLineParser(self.__logger_factory)
             )
         self.p = Process(target=message_reader.pop_messages, args=(counter,self.received_messages, ))
         self.p.start()
