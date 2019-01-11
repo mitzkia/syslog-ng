@@ -64,6 +64,8 @@ class ConfigRenderer(object):
         self.__syslog_ng_config_content += globals_options_footer
 
     def __render_positional_options(self, driver_options, positional_option_name):
+        if not positional_option_name:
+            return
         if positional_option_name == "file_name":
             relative_path = driver_options[positional_option_name]
             absolute_path = Path(self.__instance_paths.get_working_dir(), relative_path)
