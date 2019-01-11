@@ -23,7 +23,7 @@
 
 from src.message_reader.message_reader import MessageReader
 from src.message_reader.single_line_parser import SingleLineParser
-
+from multiprocessing import Process, Manager
 
 class DestinationDriver(object):
     def __init__(self, logger_factory, IOClass):
@@ -43,3 +43,18 @@ class DestinationDriver(object):
         messages = self.__reader.pop_messages(counter)
         self.__logger.print_io_content(path, messages, "Content has been read from")
         return messages
+
+    def dd_start_listen(self, socket, counter):
+        self.native_driver_io = self.__native_driver_io_ref(socket)
+        self.native_driver_io.listen()
+        message_reader = MessageReader(
+                self.__logger_factory, self.native_driver_io.read, SingleLineParser(self.__logger_factory)
+            )
+        self.p = Process(target=message_reader.pop_messages, args=(counter,self.received_messages, ))
+        self.p.start()
+
+    def dd_stop_listen(self):
+        self.p.join()
+
+    def dd_received_socket_messages(self):
+        return self.received_messages

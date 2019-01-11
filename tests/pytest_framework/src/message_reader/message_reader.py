@@ -47,9 +47,10 @@ class MessageReader(object):
             return len(self.__parser.msg_list)
         return counter
 
-    def pop_messages(self, counter):
+    def pop_messages(self, counter, list_for_exposing_messages):
         assert wait_until_true(self.__buffer_and_parse, counter) is True
         counter = self.__map_counter(counter)
+        list_for_exposing_messages.append(self.__parser.msg_list[0:counter])
         required_number_of_messages = self.__parser.msg_list[0:counter]
         self.__parser.msg_list = self.__parser.msg_list[
             counter:

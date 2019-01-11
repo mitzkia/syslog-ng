@@ -21,15 +21,37 @@
 #
 #############################################################################
 
+import socket
 from src.driver_io.network.network import Network
 
 class SocketStreamIO(Network):
-    def __init__(self):
-        pass
+    def __init__(self, socket_address):
+        self.socket_address = socket_address #('127.0.0.1', 4444)
+        self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.received_messages = ""
 
+    def listen(self):
+        self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        self.socket.bind(self.socket_address)
+        self.socket.listen(5)
+        self.socket.settimeout(1)
 
     def read(self):
-        pass
+        while True:
+            try:
+                client_connection, client_address = self.socket.accept()
+                client_connection.settimeout(1)
+                while True:
+                    incoming_data = client_connection.recv(8192).decode('utf-8')
+                    if incoming_data:
+                        self.received_messages += incoming_data
+            except socket.error:
+                break
+            except socket.timeout:
+                break
+        client_connection.close()
+        self.socket.close()
+        return self.received_messages
 
     def write(self, content):
         pass

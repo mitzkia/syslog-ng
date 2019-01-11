@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #############################################################################
-# Copyright (c) 2015-2018 Balabit
+# Copyright (c) 2015-2019 Balabit
 #
 # This program is free software; you can redistribute it and/or modify it
 # under the terms of the GNU General Public License version 2 as published
@@ -21,25 +21,14 @@
 #
 #############################################################################
 
+from src.driver_io.network.network import Network
 
-def test_acceptance(tc):
-    config = tc.new_config()
+class SocketDgramIO(Network):
+    def __init__(self):
+        pass
 
-    file_source = config.create_file_source(file_name="input.log")
-    source_group = config.create_source_group(file_source)
+    def read(self):
+        pass
 
-    file_destination = config.create_file_destination(file_name="output.log", aaa="AAA")
-    destination_group = config.create_destination_group(file_destination)
-
-    config.create_logpath(statements=[source_group, destination_group])
-
-    log_message = tc.new_log_message()
-    bsd_log = tc.format_as_bsd(log_message)
-    file_source.write_log(bsd_log, counter=3)
-
-    syslog_ng = tc.new_syslog_ng()
-    syslog_ng.start(config)
-
-    output_logs = file_destination.read_logs(counter=3)
-    expected_output_message = log_message.remove_priority()
-    assert output_logs == tc.format_as_bsd_logs(expected_output_message, counter=3)
+    def write(self, content):
+        pass

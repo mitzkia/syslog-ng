@@ -49,10 +49,11 @@ class ConsoleLogReader(object):
         return self.__wait_for_messages_in_console_log(syslog_ng_reload_messages)
 
     def __wait_for_messages_in_console_log(self, expected_messages):
+        empty_list = []
         if not self.__stderr_io.wait_for_creation():
             raise Exception
 
-        console_log_messages = self.__message_reader.pop_messages(counter=0)
+        console_log_messages = self.__message_reader.pop_messages(counter=0, list_for_exposing_messages=empty_list)
         console_log_content = "".join(console_log_messages)
 
         result = []

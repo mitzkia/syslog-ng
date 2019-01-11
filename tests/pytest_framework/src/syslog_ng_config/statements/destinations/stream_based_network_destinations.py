@@ -58,3 +58,12 @@ class StreamBasedNetworkDestinations(DestinationDriver):
 
     def read_logs(self, counter):
         return self.dd_read_logs(self.get_socket(), counter=counter)
+
+    def start_listen(self, counter):
+        return self.dd_start_listen(self.get_socket(), counter)
+
+    def stop_listen(self):
+        return self.dd_stop_listen()
+
+    def get_received_socket_messages(self):
+        return self.dd_received_socket_messages()
