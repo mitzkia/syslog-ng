@@ -51,11 +51,12 @@ class MessageReader(object):
         assert wait_until_true(self.__buffer_and_parse, counter) is True
         counter = self.__map_counter(counter)
         list_for_exposing_messages.append(self.__parser.msg_list[0:counter])
-        required_number_of_messages = self.__parser.msg_list[0:counter]
+        # required_number_of_messages = self.__parser.msg_list[0:counter]
         self.__parser.msg_list = self.__parser.msg_list[
             counter:
         ]  # remove messages from the beginning of the msg_list, this is why we call it pop
-        return required_number_of_messages
+        # return required_number_of_messages
+        return list_for_exposing_messages[0]
 
     def peek_messages(self, counter):
         assert wait_until_true(self.__buffer_and_parse, counter) is True
