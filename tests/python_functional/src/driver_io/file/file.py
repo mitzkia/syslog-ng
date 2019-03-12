@@ -21,8 +21,8 @@
 #
 #############################################################################
 import io
-import os
 import logging
+import os
 
 from src.common.blocking import wait_until_true
 from src.common.operations import open_file

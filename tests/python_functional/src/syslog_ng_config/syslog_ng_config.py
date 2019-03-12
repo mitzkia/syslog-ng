@@ -26,6 +26,7 @@ from pathlib2 import Path
 
 from src.common.operations import cast_to_list
 from src.driver_io.file.file_io import FileIO
+from src.driver_io.file.wildcard_file import WildcardFileIO
 from src.driver_io.file.pipe_io import PipeIO
 from src.message_reader.single_line_parser import SingleLineParser
 from src.syslog_ng_config.renderer import ConfigRenderer
@@ -52,6 +53,7 @@ class SyslogNgConfig(object):
         self.driver_resources = {
             "file": {"driver_io": FileIO, "parser": SingleLineParser},
             "pipe": {"driver_io": PipeIO, "parser": SingleLineParser},
+            "wildcard_file": {"driver_io": WildcardFileIO, "parser": SingleLineParser},
         }
 
     # Public API
@@ -94,7 +96,7 @@ class SyslogNgConfig(object):
     def create_example_msg_generator(**options):
         driver_name = "example_msg_generator"
         if "num" not in options.keys():
-            options['num'] = 1
+            options["num"] = 1
         generator_source = SourceDriver(
             driver_name=driver_name,
             driver_resources=None,
@@ -114,6 +116,20 @@ class SyslogNgConfig(object):
             positional_option="file_name",
             connection_options="file_name")
         return pipe_source
+
+    def create_wildcard_file(self, **options):
+        driver_name = "wildcard_file"
+        if "filename_pattern" not in options.keys():
+            options["filename_pattern"] = "*.aaa"
+        if "base_dir" not in options.keys():
+            options["base_dir"] = Path(self.__working_dir)
+        wildcard_file = SourceDriver(
+            driver_name=driver_name,
+            driver_resources=self.driver_resources[driver_name],
+            options=options,
+            positional_option=None,
+            connection_options=["filename_pattern", "base_dir"])
+        return wildcard_file
 
     # Destinations
     def create_file_destination(self, **options):
