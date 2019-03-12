@@ -46,3 +46,6 @@ dbld/rules.conf
 debian/build-tree/
 debian/*.log
 debian/autoreconf.*
+build/
+install/
+reports/
