@@ -6,13 +6,32 @@ DEFAULT_IMAGE ?= ubuntu-bionic
 DEFAULT_DEB_IMAGE=$(DEFAULT_IMAGE)
 DEFAULT_RPM_IMAGE=centos-7
 DOCKER=docker
+TESTDB_DIR=/home/micek/takaritas_2019_03_07/egybe-nagy-mappak/micek_git_projects/git.balabit/testdb7
+ZTS_DIR=/home/micek/takaritas_2019_03_07/egybe-nagy-mappak/micek_git_projects/git.balabit/zts
 DOCKER_RUN_ARGS=-e USER_NAME_ON_HOST=$(shell whoami)	\
         --network=host --privileged \
 	--ulimit nofile=1024:1024 \
 	-v $(ROOT_DIR):/source \
 	-v $(DBLD_DIR)/build:/build \
 	-v $(DBLD_DIR)/install:/install \
-	$(if $(wildcard ${HOME}/.gitconfig),-v ${HOME}/.gitconfig:${HOME}/.gitconfig)
+	$(if $(wildcard ${HOME}/.gitconfig),-v ${HOME}/.gitconfig:${HOME}/.gitconfig) \
+	$(if $(wildcard ${TESTDB_DIR}),-v ${TESTDB_DIR}:/testdb7) \
+	$(if $(wildcard ${ZTS_DIR}),-v ${ZTS_DIR}:/zts)
+DOCKER_RUN_KIRA=-e USER_NAME_ON_HOST=$(shell whoami)	\
+        --network=host \
+		--privileged \
+		--ulimit nofile=1024:1024 \
+		--detach \
+		--entrypoint /sbin/init \
+		--name=kira-$* \
+		--rm \
+		-v $(ROOT_DIR):/source \
+		-v $(DBLD_DIR)/build:/build \
+		-v $(DBLD_DIR)/install:/install \
+		$(if $(wildcard ${HOME}/.gitconfig),-v ${HOME}/.gitconfig:${HOME}/.gitconfig) \
+		$(if $(wildcard ${TESTDB_DIR}),-v ${TESTDB_DIR}:/testdb) \
+		$(if $(wildcard ${ZTS_DIR}),-v ${ZTS_DIR}:/zts) \
+		--workdir=/testdb
 ROOT_DIR=$(shell pwd)
 DBLD_DIR=$(ROOT_DIR)/dbld
 BUILD_DIR=$(DBLD_DIR)/build
@@ -65,6 +84,12 @@ bootstrap-%: setup
 
 make-%: setup
 	$(DOCKER) run $(DOCKER_RUN_ARGS) --rm -i  balabit/syslog-ng-$(DEFAULT_IMAGE) /source/dbld/make $(MAKE_ARGS) $*
+
+kira-detach-%:
+	$(DOCKER) run ${DOCKER_RUN_KIRA} balabit/syslog-ng-$*
+
+kira-start-%:
+	$(DOCKER) exec kira-$* ./zts.sh run -d 7 -p functions/source-drivers/file-source-driver/options/004-flags-kernel.zts -a 'local localhost' -L --variant product=ose --variant platform=$*_amd64 --install-version=@3.20
 
 tarball: tarball-$(DEFAULT_IMAGE)
 tarball-%: setup
