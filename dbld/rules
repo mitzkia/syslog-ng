@@ -17,7 +17,7 @@ DOCKER_RUN_ARGS=-e USER_NAME_ON_HOST=$(shell whoami)	\
 	$(if $(wildcard ${HOME}/.gitconfig),-v ${HOME}/.gitconfig:${HOME}/.gitconfig) \
 	$(if $(wildcard ${TESTDB_DIR}),-v ${TESTDB_DIR}:/testdb7) \
 	$(if $(wildcard ${ZTS_DIR}),-v ${ZTS_DIR}:/zts)
-DOCKER_RUN_KIRA=-e USER_NAME_ON_HOST=$(shell whoami)	\
+DOCKER_RUN_KIRA_ARGS=-e USER_NAME_ON_HOST=$(shell whoami)	\
         --network=host \
 		--privileged \
 		--ulimit nofile=1024:1024 \
@@ -86,10 +86,10 @@ make-%: setup
 	$(DOCKER) run $(DOCKER_RUN_ARGS) --rm -i  balabit/syslog-ng-$(DEFAULT_IMAGE) /source/dbld/make $(MAKE_ARGS) $*
 
 kira-detach-%:
-	$(DOCKER) run ${DOCKER_RUN_KIRA} balabit/syslog-ng-$*
+	$(DOCKER) run ${DOCKER_RUN_KIRA_ARGS} balabit/syslog-ng-$*
 
 kira-start-%:
-	$(DOCKER) exec kira-$* ./zts.sh run -d 7 -p functions/source-drivers/file-source-driver/options/004-flags-kernel.zts -a 'local localhost' -L --variant product=ose --variant platform=$*_amd64 --install-version=@3.20
+	$(DOCKER) exec kira-$* $(KIRA_START_COMMAND)
 
 tarball: tarball-$(DEFAULT_IMAGE)
 tarball-%: setup
