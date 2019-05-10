@@ -26,9 +26,10 @@ from src.common.operations import calculate_testcase_name
 
 
 class TestcaseParameters(object):
-    def __init__(self, pytest_request):
+    def __init__(self, pytest_request, relative_report_dir=None):
         testcase_name = calculate_testcase_name(pytest_request)
-        relative_report_dir = pytest_request.config.getoption("--reports")
+        if not relative_report_dir:
+            relative_report_dir = pytest_request.config.getoption("--reports")
         absolute_framework_dir = Path.cwd()
         self.testcase_parameters = {
             "dirs": {
