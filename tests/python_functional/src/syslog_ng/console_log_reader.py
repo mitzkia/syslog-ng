@@ -22,7 +22,7 @@
 #############################################################################
 import logging
 
-from src.driver_io.file.file_io import FileIO
+from src.driver_io.file.file_reader import FileReader
 from src.message_reader.message_reader import MessageReader
 from src.message_reader.message_reader import READ_ALL_MESSAGES
 from src.message_reader.single_line_parser import SingleLineParser
@@ -32,8 +32,8 @@ logger = logging.getLogger(__name__)
 
 class ConsoleLogReader(object):
     def __init__(self, instance_paths):
-        self.__stderr_io = FileIO(instance_paths.get_stderr_path())
-        self.__message_reader = MessageReader(self.__stderr_io.read, SingleLineParser())
+        self.__stderr_reader = FileReader(instance_paths.get_stderr_path())
+        self.__message_reader = MessageReader(self.__stderr_reader.read, SingleLineParser())
 
     def wait_for_start_message(self):
         syslog_ng_start_message = ["syslog-ng starting up;"]
@@ -52,7 +52,7 @@ class ConsoleLogReader(object):
         return self.__wait_for_messages_in_console_log(syslog_ng_reload_messages)
 
     def __wait_for_messages_in_console_log(self, expected_messages):
-        if not self.__stderr_io.wait_for_creation():
+        if not self.__stderr_reader.wait_for_creation():
             raise Exception
 
         console_log_messages = self.__message_reader.pop_messages(counter=READ_ALL_MESSAGES)
