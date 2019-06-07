@@ -85,17 +85,17 @@ class SyslogNgConfig(object):
             logpath.add_flags(cast_to_list(flags))
         return logpath
 
-    def create_global_options(self, **kwargs):
-        self.__syslog_ng_config["global_options"].update(kwargs)
+    def create_global_options(self, **options):
+        self.__syslog_ng_config["global_options"].update(options)
 
-    def create_file_source(self, **kwargs):
-        return FileSource(**kwargs)
+    def create_file_source(self, **options):
+        return FileSource(**options)
 
-    def create_file_destination(self, **kwargs):
-        return FileDestination(**kwargs)
+    def create_file_destination(self, **options):
+        return FileDestination(**options)
 
-    def create_filter(self, **kwargs):
-        return Filter(**kwargs)
+    def create_filter(self, **options):
+        return Filter(**options)
 
     def create_statement_group(self, statements):
         statement_group = StatementGroup(statements)
