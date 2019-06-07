@@ -36,7 +36,7 @@ test_parameters_syslog = [
     ids=list(map(str, range(len(test_parameters_syslog)))),
 )
 def test_application_syslog(config, syslog_ng, input_message, template, expected_value):
-    config.add_include("scl.conf")
+    config.set_include("scl.conf")
 
     generator_source = config.create_example_msg_generator(num=1, template=config.stringify(input_message))
     syslog_parser = config.create_syslog_parser(flags="syslog-protocol")

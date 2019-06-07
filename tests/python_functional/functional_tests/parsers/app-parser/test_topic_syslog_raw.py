@@ -40,7 +40,7 @@ test_parameters_raw = [
     ids=list(map(str, range(len(test_parameters_raw)))),
 )
 def test_application_raw(config, syslog_ng, input_message, template, expected_value):
-    config.add_include("scl.conf")
+    config.set_include("scl.conf")
 
     generator_source = config.create_example_msg_generator(num=1, template=config.stringify(input_message))
     app_parser = config.create_app_parser(topic="syslog-raw")

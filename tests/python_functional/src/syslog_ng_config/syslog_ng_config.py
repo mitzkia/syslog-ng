@@ -65,10 +65,10 @@ class SyslogNgConfig(object):
     def set_version(self, version):
         self.__syslog_ng_config["version"] = version
 
-    def add_include(self, include):
+    def set_include(self, include):
         self.__syslog_ng_config["includes"].append(include)
 
-    def create_global_options(self, **options):
+    def set_global_options(self, **options):
         self.__syslog_ng_config["global_options"].update(options)
 
     def create_file_source(self, **options):
