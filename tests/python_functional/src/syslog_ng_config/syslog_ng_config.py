@@ -54,13 +54,13 @@ class SyslogNgConfig(object):
     def set_raw_config(self, raw_config):
         self.__raw_config = raw_config
 
-    def write_content(self, config_path):
+    def write_config(self, config_path):
         if self.__raw_config:
-            rendered_config = self.__raw_config
+            config_content = self.__raw_config
         else:
-            rendered_config = ConfigRenderer(self.__syslog_ng_config).get_rendered_config()
-        logger.info("Generated syslog-ng config\n{}\n".format(rendered_config))
-        FileIO(config_path).rewrite(rendered_config)
+            config_content = ConfigRenderer(self.__syslog_ng_config).get_rendered_config()
+        logger.info("Generated syslog-ng config\n{}\n".format(config_content))
+        FileIO(config_path).rewrite(config_content)
 
     def set_version(self, version):
         self.__syslog_ng_config["version"] = version
