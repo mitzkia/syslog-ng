@@ -28,4 +28,4 @@ class Parser(object):
     def __init__(self, driver_name, **options):
         self.driver_name = driver_name
         self.options = options
-        self.positional_parameters = []
+        self.positional_options = []

@@ -28,4 +28,4 @@ class Filter(object):
     def __init__(self, **options):
         self.options = options
         self.driver_name = ""
-        self.positional_parameters = []
+        self.positional_options = []
