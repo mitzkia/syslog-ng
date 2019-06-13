@@ -20,27 +20,22 @@
 # COPYING for details.
 #
 #############################################################################
-from pathlib2 import Path
-
-import src.testcase_parameters.testcase_parameters as tc_parameters
-from src.driver_io.file.file_io import FileIO
-from src.syslog_ng_config.statements.sources.source_writer import SourceWriter
+import logging
+logger = logging.getLogger(__name__)
 
 
-class FileSource(object):
-    def __init__(self, file_name=None, **options):
-        self.driver_name = "file"
-        self.group_type = "source"
-        self.options = options
-        if file_name:
-            self.positional_option = Path(tc_parameters.WORKING_DIR, file_name)
-        self.source_writer = SourceWriter(FileIO)
+class SourceWriter(object):
+    def __init__(self, IOClass):
+        self.__IOClass = IOClass
+        self.__writer = None
 
-    def get_path(self):
-        return self.positional_option
+    def __construct_writer(self, path):
+        if not self.__writer:
+            self.__writer = self.__IOClass(path)
 
-    def set_path(self, pathname):
-        self.positional_option = Path(tc_parameters.WORKING_DIR, pathname)
-
-    def write_log(self, formatted_log, counter=1):
-        self.source_writer.sd_write_log(self.get_path(), formatted_log, counter=counter)
+    def sd_write_log(self, path, formatted_log, counter):
+        self.__construct_writer(path)
+        for __i in range(0, counter):
+            self.__writer.write(formatted_log)
+        written_description = "Content has been written to\nresource: {}\nnumber of times: {}\ncontent: {}\n".format(path, counter, formatted_log)
+        logger.info(written_description)

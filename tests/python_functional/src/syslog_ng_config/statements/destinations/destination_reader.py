@@ -28,9 +28,7 @@ from src.message_reader.single_line_parser import SingleLineParser
 logger = logging.getLogger(__name__)
 
 
-class DestinationDriver(object):
-    group_type = "destination"
-
+class DestinationReader(object):
     def __init__(self, IOClass):
         self.__IOClass = IOClass
         self.__reader = None

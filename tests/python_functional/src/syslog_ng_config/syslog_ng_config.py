@@ -30,8 +30,8 @@ from src.syslog_ng_config.statements.destinations.file_destination import FileDe
 from src.syslog_ng_config.statements.filters.filter import Filter
 from src.syslog_ng_config.statements.logpath.logpath import LogPath
 from src.syslog_ng_config.statements.parsers.parser import Parser
+from src.syslog_ng_config.statements.sources.example_msg_generator import ExampleMsgGenerator
 from src.syslog_ng_config.statements.sources.file_source import FileSource
-from src.syslog_ng_config.statements.sources.source_driver import SourceDriver
 
 logger = logging.getLogger(__name__)
 
@@ -75,11 +75,7 @@ class SyslogNgConfig(object):
         return FileSource(file_name, **options)
 
     def create_example_msg_generator(self, **options):
-        generator_source = SourceDriver(None)
-        generator_source.driver_name = "example_msg_generator"
-        generator_source.DEFAULT_MESSAGE = "-- Generated message. --"
-        generator_source.options = options
-        return generator_source
+        return ExampleMsgGenerator(**options)
 
     def create_filter(self, **options):
         return Filter(**options)
