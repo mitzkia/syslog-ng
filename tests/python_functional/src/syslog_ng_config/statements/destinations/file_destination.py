@@ -24,16 +24,17 @@ from pathlib2 import Path
 
 import src.testcase_parameters.testcase_parameters as tc_parameters
 from src.driver_io.file.file_io import FileIO
-from src.syslog_ng_config.statements.destinations.destination_driver import DestinationDriver
+from src.syslog_ng_config.statements.destinations.destination_reader import DestinationReader
 
 
-class FileDestination(DestinationDriver):
+class FileDestination(object):
     def __init__(self, file_name=None, **options):
         self.driver_name = "file"
+        self.group_type = "destination"
         self.options = options
         if file_name:
             self.positional_option = Path(tc_parameters.WORKING_DIR, file_name)
-        super(FileDestination, self).__init__(FileIO)
+        self.destination_reader = DestinationReader(FileIO)
 
     def get_path(self):
         return self.positional_option
@@ -42,7 +43,7 @@ class FileDestination(DestinationDriver):
         self.positional_option = Path(tc_parameters.WORKING_DIR, pathname)
 
     def read_log(self):
-        return self.dd_read_logs(self.get_path(), counter=1)[0]
+        return self.destination_reader.dd_read_logs(self.get_path(), counter=1)[0]
 
     def read_logs(self, counter):
-        return self.dd_read_logs(self.get_path(), counter=counter)
+        return self.destination_reader.dd_read_logs(self.get_path(), counter=counter)
