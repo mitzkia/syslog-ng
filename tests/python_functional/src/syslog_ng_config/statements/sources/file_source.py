@@ -28,16 +28,18 @@ from src.syslog_ng_config.statements.sources.source_driver import SourceDriver
 
 
 class FileSource(SourceDriver):
-    def __init__(self, file_name, **options):
+    def __init__(self, file_name=None, **options):
         self.driver_name = "file"
-        self.path = Path(tc_parameters.WORKING_DIR, file_name)
-        super(FileSource, self).__init__(FileIO, [self.path], options)
+        self.options = options
+        if file_name:
+            self.positional_option = Path(tc_parameters.WORKING_DIR, file_name)
+        super(FileSource, self).__init__(FileIO)
 
     def get_path(self):
-        return self.path
+        return self.positional_option
 
     def set_path(self, pathname):
-        self.path = Path(tc_parameters.WORKING_DIR, pathname)
+        self.positional_option = Path(tc_parameters.WORKING_DIR, pathname)
 
     def write_log(self, formatted_log, counter=1):
         self.sd_write_log(self.get_path(), formatted_log, counter=counter)

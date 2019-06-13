@@ -62,8 +62,11 @@ class ConfigRenderer(object):
         self.__syslog_ng_config_content += globals_options_footer
 
     def __render_positional_options(self, positional_options):
-        for parameter in positional_options:
-            self.__syslog_ng_config_content += "        {}\n".format(str(parameter))
+        for positional_option in positional_options:
+            self.__render_positional_option(positional_option)
+
+    def __render_positional_option(self, positional_option):
+        self.__syslog_ng_config_content += "        {}\n".format(str(positional_option))
 
     def __render_driver_options(self, driver_options):
         for option_name, option_value in driver_options.items():
@@ -86,7 +89,10 @@ class ConfigRenderer(object):
                 self.__syslog_ng_config_content += "    {} (\n".format(statement.driver_name)
 
                 # driver options
-                self.__render_positional_options(statement.positional_options)
+                if hasattr(statement, "positional_options"):
+                    self.__render_positional_options(statement.positional_options)
+                if hasattr(statement, "positional_option"):
+                    self.__render_positional_option(statement.positional_option)
                 self.__render_driver_options(statement.options)
 
                 # driver footer
