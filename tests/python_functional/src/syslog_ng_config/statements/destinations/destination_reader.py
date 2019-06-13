@@ -29,16 +29,16 @@ logger = logging.getLogger(__name__)
 
 
 class DestinationReader(object):
-    def __init__(self, IOClass):
-        self.__IOClass = IOClass
+    def __init__(self, driver_io_cls):
+        self.__driver_io_cls = driver_io_cls
         self.__reader = None
 
-    def dd_read_logs(self, path, counter):
+    def read_logs(self, path, counter):
         if not self.__reader:
-            io = self.__IOClass(path)
-            io.wait_for_creation()
+            driver_io = self.__driver_io_cls(path)
+            driver_io.wait_for_creation()
             message_reader = MessageReader(
-                io.read, SingleLineParser(),
+                driver_io.read, SingleLineParser(),
             )
             self.__reader = message_reader
         messages = self.__reader.pop_messages(counter)
