@@ -43,7 +43,7 @@ class FileDestination(object):
         self.positional_option = Path(tc_parameters.WORKING_DIR, pathname)
 
     def read_log(self):
-        return self.destination_reader.dd_read_logs(self.get_path(), counter=1)[0]
+        return self.destination_reader.read_logs(self.get_path(), counter=1)[0]
 
     def read_logs(self, counter):
-        return self.destination_reader.dd_read_logs(self.get_path(), counter=counter)
+        return self.destination_reader.read_logs(self.get_path(), counter=counter)
