@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #############################################################################
-# Copyright (c) 2015-2018 Balabit
+# Copyright (c) 2015-2019 Balabit
 #
 # This program is free software; you can redistribute it and/or modify it
 # under the terms of the GNU General Public License version 2 as published
@@ -20,24 +20,33 @@
 # COPYING for details.
 #
 #############################################################################
-import pytest
+from pathlib2 import Path
 
-input_log = "<38>Feb 11 21:27:22 testhost testprogram[9999]: test message\n"
-expected_log = "Feb 11 21:27:22 testhost testprogram[9999]: test message\n"
+import src.testcase_parameters.testcase_parameters as tc_parameters
 
 
-@pytest.mark.parametrize(
-    "input_log, expected_log, counter", [
-        (input_log, expected_log, 1),
-        (input_log, expected_log, 10),
-    ], ids=["with_one_log", "with_ten_logs"],
-)
-def test_acceptance(config, syslog_ng, input_log, expected_log, counter):
-    file_source = config.create_file_source(file_name="input.log")
+def test_fd_rename_file_path_from_config(config, syslog_ng, generate_bsd_messages_without_pri):
+    config.set_global_options(keep_hostname="yes")
+    file_source = config.create_file_source()
     file_destination = config.create_file_destination(file_name="output.log")
     config.create_logpath(statements=[file_source, file_destination])
-    config.create_global_options(keep_hostname="yes")
 
-    file_source.write_log(input_log, counter)
+    input_messages, expected_messages = generate_bsd_messages_without_pri
+
+    file_source.write_log(input_messages[1])
     syslog_ng.start(config)
-    assert file_destination.read_logs(counter) == [expected_log] * counter
+    assert file_destination.read_log() == expected_messages[1]
+
+    new_output_path = Path(tc_parameters.WORKING_DIR, "output2.log")
+
+    file_destination.set_path(str(new_output_path))
+
+    assert not new_output_path.exists()
+
+    file_source.write_log(input_messages[2])
+
+    syslog_ng.reload(config)
+
+    assert file_destination.read_log() == expected_messages[2]
+
+    assert new_output_path.exists()
