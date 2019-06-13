@@ -25,15 +25,15 @@ logger = logging.getLogger(__name__)
 
 
 class SourceWriter(object):
-    def __init__(self, IOClass):
-        self.__IOClass = IOClass
+    def __init__(self, driver_io_cls):
+        self.__driver_io_cls = driver_io_cls
         self.__writer = None
 
     def __construct_writer(self, path):
         if not self.__writer:
-            self.__writer = self.__IOClass(path)
+            self.__writer = self.__driver_io_cls(path)
 
-    def sd_write_log(self, path, formatted_log, counter):
+    def write_log(self, path, formatted_log, counter):
         self.__construct_writer(path)
         for __i in range(0, counter):
             self.__writer.write(formatted_log)

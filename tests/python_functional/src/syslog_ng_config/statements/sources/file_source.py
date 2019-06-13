@@ -43,4 +43,4 @@ class FileSource(object):
         self.positional_option = Path(tc_parameters.WORKING_DIR, pathname)
 
     def write_log(self, formatted_log, counter=1):
-        self.source_writer.sd_write_log(self.get_path(), formatted_log, counter=counter)
+        self.source_writer.write_log(self.get_path(), formatted_log, counter=counter)
