@@ -41,6 +41,7 @@ class FileSource(object):
 
     def set_path(self, pathname):
         self.positional_option = Path(tc_parameters.WORKING_DIR, pathname)
+        self.source_writer.construct_driver_io(self.positional_option)
 
     def write_log(self, formatted_log, counter=1):
         self.source_writer.write_log(self.get_path(), formatted_log, counter=counter)
