@@ -23,14 +23,14 @@
 import logging
 
 from src.message_reader.message_reader import MessageReader
-from src.message_reader.single_line_parser import SingleLineParser
 
 logger = logging.getLogger(__name__)
 
 
 class DestinationReader(object):
-    def __init__(self, driver_io_cls):
+    def __init__(self, driver_io_cls, driver_io_parser_cls):
         self.__driver_io_cls = driver_io_cls
+        self.__driver_io_parser_cls = driver_io_parser_cls
         self.__reader = None
 
     def read_logs(self, path, counter):
@@ -38,7 +38,7 @@ class DestinationReader(object):
             driver_io = self.__driver_io_cls(path)
             driver_io.wait_for_creation()
             message_reader = MessageReader(
-                driver_io.read, SingleLineParser(),
+                driver_io.read, self.__driver_io_parser_cls(),
             )
             self.__reader = message_reader
         messages = self.__reader.pop_messages(counter)

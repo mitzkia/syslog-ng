@@ -24,6 +24,7 @@ from pathlib2 import Path
 
 import src.testcase_parameters.testcase_parameters as tc_parameters
 from src.driver_io.file.file_io import FileIO
+from src.message_reader.single_line_parser import SingleLineParser
 from src.syslog_ng_config.statements.destinations.destination_reader import DestinationReader
 
 
@@ -34,7 +35,7 @@ class FileDestination(object):
         self.options = options
         if file_name:
             self.positional_option = Path(tc_parameters.WORKING_DIR, file_name)
-        self.destination_reader = DestinationReader(FileIO)
+        self.destination_reader = DestinationReader(FileIO, SingleLineParser)
 
     def get_path(self):
         return self.positional_option
