@@ -42,6 +42,7 @@ class FileDestination(object):
 
     def set_path(self, pathname):
         self.positional_option = Path(tc_parameters.WORKING_DIR, pathname)
+        self.destination_reader.construct_driver_io(self.positional_option)
 
     def read_log(self):
         return self.destination_reader.read_logs(self.get_path(), counter=1)[0]

@@ -31,17 +31,24 @@ class DestinationReader(object):
     def __init__(self, driver_io_cls, driver_io_parser_cls):
         self.__driver_io_cls = driver_io_cls
         self.__driver_io_parser_cls = driver_io_parser_cls
-        self.__reader = None
+        self.__message_reader = None
+        self.__saved_driver_io_parameter = None
 
-    def read_logs(self, path, counter):
-        if not self.__reader:
-            driver_io = self.__driver_io_cls(path)
-            driver_io.wait_for_creation()
-            message_reader = MessageReader(
-                driver_io.read, self.__driver_io_parser_cls(),
-            )
-            self.__reader = message_reader
-        messages = self.__reader.pop_messages(counter)
-        read_description = "Content has been read from\nresource: {}\ncontent: {}\n".format(path, messages)
+    def construct_driver_io(self, driver_io_parameter):
+        if self.__saved_driver_io_parameter != driver_io_parameter:
+            self.__saved_driver_io_parameter = driver_io_parameter
+            self.driver_io = self.__driver_io_cls(driver_io_parameter)
+
+    def construct_message_reader(self):
+        self.driver_io.wait_for_creation()
+        self.__message_reader = MessageReader(
+            self.driver_io.read, self.__driver_io_parser_cls(),
+        )
+
+    def read_logs(self, driver_io_parameter, counter):
+        self.construct_driver_io(driver_io_parameter)
+        self.construct_message_reader()
+        messages = self.__message_reader.pop_messages(counter)
+        read_description = "Content has been read from\nresource: {}\ncontent: {}\n".format(driver_io_parameter, messages)
         logger.info(read_description)
         return messages
