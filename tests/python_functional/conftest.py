@@ -27,6 +27,7 @@ from datetime import datetime
 import pytest
 from pathlib2 import Path
 
+from src.common.random_id import get_unique_id
 from src.message_builder.bsd_format import BSDFormat
 from src.message_builder.log_message import LogMessage
 from src.syslog_ng.syslog_ng import SyslogNg
@@ -122,6 +123,19 @@ def bsd_formatter():
 @pytest.fixture
 def log_message():
     return LogMessage()
+
+
+@pytest.fixture
+def generate_bsd_messages_without_pri(bsd_formatter):
+    input_messages = []
+    expected_messages = []
+
+    for counter in range(0, 100):
+        uniq_message_content = get_unique_id()
+        log_message = LogMessage().message(uniq_message_content)
+        input_messages.append(bsd_formatter.format_message(log_message))
+        expected_messages.append(bsd_formatter.format_message(log_message.remove_priority()))
+    return input_messages, expected_messages
 
 
 @pytest.fixture(scope="session")
