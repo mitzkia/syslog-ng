@@ -23,18 +23,28 @@
 from pathlib2 import Path
 
 import src.testcase_parameters.testcase_parameters as tc_parameters
+from src.common.random_id import get_unique_id
 from src.driver_io.file.file_io import FileIO
 from src.syslog_ng_config.statements.sources.source_writer import SourceWriter
 
 
 class FileSource(object):
-    def __init__(self, file_name=None, **options):
+    def __init__(self, file_name, **options):
         self.driver_name = "file"
         self.group_type = "source"
         self.options = options
-        if file_name:
-            self.positional_option = Path(tc_parameters.WORKING_DIR, file_name)
+        self.calculate_positional_option(file_name)
         self.source_writer = SourceWriter(FileIO)
+
+    def calculate_positional_option(self, file_name):
+        if file_name == "":
+            self.positional_option = "''"
+        elif file_name is None:
+            self.positional_option = Path(tc_parameters.WORKING_DIR, "input_fs_{}.log".format(get_unique_id()))
+        elif file_name == "skip":
+            pass
+        else:
+            self.positional_option = Path(tc_parameters.WORKING_DIR, file_name)
 
     def get_path(self):
         return self.positional_option
