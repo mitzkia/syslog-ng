@@ -23,6 +23,7 @@
 from pathlib2 import Path
 
 import src.testcase_parameters.testcase_parameters as tc_parameters
+from src.common.random_id import get_unique_id
 from src.driver_io.file.file_io import FileIO
 from src.message_reader.single_line_parser import SingleLineParser
 from src.syslog_ng_config.statements.destinations.destination_reader import DestinationReader
@@ -33,8 +34,13 @@ class FileDestination(object):
         self.driver_name = "file"
         self.group_type = "destination"
         self.options = options
-        if file_name:
-            self.positional_option = Path(tc_parameters.WORKING_DIR, file_name)
+        if file_name is not None:
+            if file_name == "":
+                self.positional_option = "''"
+            elif file_name == "auto":
+                self.positional_option = Path(tc_parameters.WORKING_DIR, "output_fd_{}.log".format(get_unique_id()))
+            else:
+                self.positional_option = Path(tc_parameters.WORKING_DIR, file_name)
         self.destination_reader = DestinationReader(FileIO, SingleLineParser)
 
     def get_path(self):

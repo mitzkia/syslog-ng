@@ -86,7 +86,7 @@ class SyslogNgConfig(object):
     def create_syslog_parser(self, **options):
         return Parser("syslog-parser", **options)
 
-    def create_file_destination(self, file_name=None, **options):
+    def create_file_destination(self, file_name="auto", **options):
         return FileDestination(file_name, **options)
 
     def create_logpath(self, statements=None, flags=None):
