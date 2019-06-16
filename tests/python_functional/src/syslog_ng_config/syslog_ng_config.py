@@ -71,7 +71,7 @@ class SyslogNgConfig(object):
     def set_global_options(self, **options):
         self.__syslog_ng_config["global_options"].update(options)
 
-    def create_file_source(self, file_name=None, **options):
+    def create_file_source(self, file_name="auto", **options):
         return FileSource(file_name, **options)
 
     def create_example_msg_generator(self, **options):
