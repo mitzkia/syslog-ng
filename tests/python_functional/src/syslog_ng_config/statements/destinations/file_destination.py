@@ -23,19 +23,29 @@
 from pathlib2 import Path
 
 import src.testcase_parameters.testcase_parameters as tc_parameters
+from src.common.random_id import get_unique_id
 from src.driver_io.file.file_io import FileIO
 from src.message_reader.single_line_parser import SingleLineParser
 from src.syslog_ng_config.statements.destinations.destination_reader import DestinationReader
 
 
 class FileDestination(object):
-    def __init__(self, file_name=None, **options):
+    def __init__(self, file_name, **options):
         self.driver_name = "file"
         self.group_type = "destination"
         self.options = options
-        if file_name:
-            self.positional_option = Path(tc_parameters.WORKING_DIR, file_name)
+        self.calculate_positional_option(file_name)
         self.destination_reader = DestinationReader(FileIO, SingleLineParser)
+
+    def calculate_positional_option(self, file_name):
+        if file_name == "":
+            self.positional_option = "''"
+        elif file_name is None:
+            self.positional_option = Path(tc_parameters.WORKING_DIR, "input_fs_{}.log".format(get_unique_id()))
+        elif file_name == "skip":
+            pass
+        else:
+            self.positional_option = Path(tc_parameters.WORKING_DIR, file_name)
 
     def get_path(self):
         return self.positional_option
