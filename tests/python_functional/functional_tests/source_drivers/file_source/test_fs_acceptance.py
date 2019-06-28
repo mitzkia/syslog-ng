@@ -35,6 +35,7 @@ expected_log = "Feb 11 21:27:22 {} testprogram[9999]: test message\n".format(get
     ], ids=["with_one_log", "with_ten_logs"],
 )
 def test_fs_acceptance(config, syslog_ng, input_log, expected_log, counter):
+    config.set_global_options(stats_level=3)
     file_source = config.create_file_source(file_name="input.log")
     file_destination = config.create_file_destination(file_name="output.log")
     config.create_logpath(statements=[file_source, file_destination])
@@ -42,3 +43,6 @@ def test_fs_acceptance(config, syslog_ng, input_log, expected_log, counter):
     file_source.write_log(input_log, counter)
     syslog_ng.start(config)
     assert file_destination.read_logs(counter) == [expected_log] * counter
+
+    assert file_destination.get_query() == {'memory_usage': 0, 'written': counter, 'processed': counter, 'dropped': 0, 'queued': 0}
+    assert file_destination.get_stats() == {'memory_usage': 0, 'written': counter, 'processed': counter, 'dropped': 0, 'queued': 0}
