@@ -25,6 +25,7 @@ from pathlib2 import Path
 from src.common.pytest_operations import calculate_testcase_name
 
 WORKING_DIR = None
+INSTANCE_PATH = None
 
 
 class TestcaseParameters(object):
