@@ -56,3 +56,18 @@ class SyslogNgCtlExecutor(object):
         if reset:
             stats_command.append("--reset")
         return stats_command
+
+    @staticmethod
+    def construct_ctl_query_command(pattern, query_get, query_list, query_sum, reset):
+        query_command = ["query"]
+        if query_get:
+            query_command += ["get"]
+        elif query_sum:
+            query_command += ["get --sum"]
+        elif query_list:
+            query_command += ["list"]
+        elif reset:
+            query_command += ["get --reset"]
+        query_command += [pattern]
+
+        return query_command
