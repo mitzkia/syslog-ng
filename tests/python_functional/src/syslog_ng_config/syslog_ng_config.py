@@ -27,6 +27,7 @@ from src.driver_io.file.file_io import FileIO
 from src.syslog_ng_config.renderer import ConfigRenderer
 from src.syslog_ng_config.statement_group import StatementGroup
 from src.syslog_ng_config.statements.destinations.file_destination import FileDestination
+from src.syslog_ng_config.statements.destinations.snmp_destination import SNMPDestination
 from src.syslog_ng_config.statements.filters.filter import Filter
 from src.syslog_ng_config.statements.logpath.logpath import LogPath
 from src.syslog_ng_config.statements.parsers.parser import Parser
@@ -96,6 +97,9 @@ class SyslogNgConfig(object):
 
     def create_file_destination(self, file_name=None, **options):
         return FileDestination(file_name, **options)
+
+    def create_snmp_destination(self, options):
+        return SNMPDestination(options)
 
     def create_logpath(self, statements=None, flags=None):
         logpath = self.__create_logpath_with_conversion(statements, flags)
