@@ -47,11 +47,9 @@ class SyslogNgConfig(object):
             "logpath_groups": [],
         }
 
-    def set_version(self, version):
-        self.__syslog_ng_config["version"] = version
-
-    def add_include(self, include):
-        self.__syslog_ng_config["includes"].append(include)
+    @staticmethod
+    def stringify(s):
+        return '"' + s.replace('\\', "\\\\").replace('"', '\\"').replace('\n', '\\n') + '"'
 
     def set_raw_config(self, raw_config):
         self.__raw_config = raw_config
@@ -63,6 +61,47 @@ class SyslogNgConfig(object):
             rendered_config = ConfigRenderer(self.__syslog_ng_config).get_rendered_config()
         logger.info("Generated syslog-ng config\n{}\n".format(rendered_config))
         FileIO(config_path).rewrite(rendered_config)
+
+    def set_version(self, version):
+        self.__syslog_ng_config["version"] = version
+
+    def add_include(self, include):
+        self.__syslog_ng_config["includes"].append(include)
+
+    def create_global_options(self, **kwargs):
+        self.__syslog_ng_config["global_options"].update(kwargs)
+
+    def create_file_source(self, **kwargs):
+        return FileSource(**kwargs)
+
+    def create_example_msg_generator_source(self, **options):
+        return ExampleMsgGeneratorSource(**options)
+
+    def create_filter(self, **kwargs):
+        return Filter(**kwargs)
+
+    def create_app_parser(self, **options):
+        return Parser("app-parser", **options)
+
+    def create_syslog_parser(self, **options):
+        return Parser("syslog-parser", **options)
+
+    def create_file_destination(self, **kwargs):
+        return FileDestination(**kwargs)
+
+    def create_logpath(self, statements=None, flags=None):
+        logpath = self.__create_logpath_with_conversion(statements, flags)
+        self.__syslog_ng_config["logpath_groups"].append(logpath)
+        return logpath
+
+    def create_inner_logpath(self, statements=None, flags=None):
+        inner_logpath = self.__create_logpath_with_conversion(statements, flags)
+        return inner_logpath
+
+    def create_statement_group(self, statements):
+        statement_group = StatementGroup(statements)
+        self.__syslog_ng_config["statement_groups"].append(statement_group)
+        return statement_group
 
     def create_statement_group_if_needed(self, item):
         if isinstance(item, (StatementGroup, LogPath)):
@@ -84,42 +123,3 @@ class SyslogNgConfig(object):
         if flags:
             logpath.add_flags(cast_to_list(flags))
         return logpath
-
-    def create_global_options(self, **kwargs):
-        self.__syslog_ng_config["global_options"].update(kwargs)
-
-    def create_file_source(self, **kwargs):
-        return FileSource(**kwargs)
-
-    def create_file_destination(self, **kwargs):
-        return FileDestination(**kwargs)
-
-    def create_filter(self, **kwargs):
-        return Filter(**kwargs)
-
-    def create_statement_group(self, statements):
-        statement_group = StatementGroup(statements)
-        self.__syslog_ng_config["statement_groups"].append(statement_group)
-        return statement_group
-
-    def create_logpath(self, statements=None, flags=None):
-        logpath = self.__create_logpath_with_conversion(statements, flags)
-        self.__syslog_ng_config["logpath_groups"].append(logpath)
-        return logpath
-
-    def create_inner_logpath(self, statements=None, flags=None):
-        inner_logpath = self.__create_logpath_with_conversion(statements, flags)
-        return inner_logpath
-
-    def create_example_msg_generator_source(self, **options):
-        return ExampleMsgGeneratorSource(**options)
-
-    def create_app_parser(self, **options):
-        return Parser("app-parser", **options)
-
-    def create_syslog_parser(self, **options):
-        return Parser("syslog-parser", **options)
-
-    @staticmethod
-    def stringify(s):
-        return '"' + s.replace('\\', "\\\\").replace('"', '\\"').replace('\n', '\\n') + '"'
