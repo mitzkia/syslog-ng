@@ -22,6 +22,7 @@
 #
 #############################################################################
 import pytest
+from pathlib2 import Path
 
 import src.testcase_parameters.testcase_parameters as tc_parameters
 from src.testcase_parameters.testcase_parameters import TestcaseParameters
@@ -36,10 +37,13 @@ def test_message():
 def fake_testcase_parameters(request, tmpdir):
     orig_installdir = request.config.option.installdir
     orig_reportdir = request.config.option.reports
-    tc_parameters.WORKING_DIR = tmpdir.join("workingdir")
+    tc_parameters.WORKING_DIR = working_dir = Path(tmpdir.join("workingdir"))
     request.config.option.installdir = tmpdir.join("installdir")
     request.config.option.reports = tmpdir.join("reports")
     request.config.option.runundertool = ""
+    request.node.user_properties.append(("working_dir", working_dir))
+    request.node.user_properties.append(("relative_working_dir", working_dir.relative_to(tmpdir.join("workingdir"))))
+
     yield TestcaseParameters(request)
     request.config.option.installdir = orig_installdir
     request.config.option.reports = orig_reportdir
