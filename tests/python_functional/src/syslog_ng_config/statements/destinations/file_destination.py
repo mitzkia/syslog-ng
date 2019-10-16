@@ -31,7 +31,7 @@ class FileDestination(DestinationDriver):
     def __init__(self, file_name, **options):
         self.driver_name = "file"
         self.path = Path(tc_parameters.WORKING_DIR, file_name)
-        super(FileDestination, self).__init__(FileIO, [self.path], options)
+        super().__init__(FileIO, [self.path], options)
 
     def get_path(self):
         return self.path

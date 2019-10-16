@@ -33,7 +33,7 @@ from src.syslog_ng_ctl.syslog_ng_ctl import SyslogNgCtl
 logger = logging.getLogger(__name__)
 
 
-class SyslogNgCli(object):
+class SyslogNgCli:
     def __init__(self, instance_paths, testcase_parameters):
         self.__instance_paths = instance_paths
         self.__console_log_reader = ConsoleLogReader(instance_paths)

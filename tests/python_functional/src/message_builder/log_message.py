@@ -23,7 +23,7 @@
 import time
 
 
-class LogMessage(object):
+class LogMessage:
     def __init__(self):
         self.priority_value = "38"
         self.timestamp_value = time.time()

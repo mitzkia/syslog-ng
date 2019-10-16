@@ -36,7 +36,7 @@ from src.syslog_ng_config.statements.sources.source_driver import SourceDriver
 logger = logging.getLogger(__name__)
 
 
-class SyslogNgConfig(object):
+class SyslogNgConfig:
     def __init__(self, version):
         self.__raw_config = None
         self.__syslog_ng_config = {

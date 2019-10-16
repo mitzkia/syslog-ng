@@ -26,7 +26,7 @@ import src.testcase_parameters.testcase_parameters as tc_parameters
 from src.executors.command_executor import CommandExecutor
 
 
-class SyslogNgCtlExecutor(object):
+class SyslogNgCtlExecutor:
     def __init__(self, instance_paths):
         self.__instance_paths = instance_paths
         self.__syslog_ng_control_tool_path = instance_paths.get_syslog_ng_ctl_bin()

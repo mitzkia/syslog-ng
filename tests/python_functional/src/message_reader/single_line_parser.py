@@ -22,7 +22,7 @@
 #############################################################################
 
 
-class SingleLineParser(object):
+class SingleLineParser:
     def __init__(self):
         self.msg_list = []
         self.__parse_rule = "\n"

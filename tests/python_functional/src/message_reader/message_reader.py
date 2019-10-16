@@ -26,7 +26,7 @@ from src.common.blocking import wait_until_true_custom
 READ_ALL_MESSAGES = 0
 
 
-class MessageReader(object):
+class MessageReader:
     def __init__(self, read, parser):
         self.__read = read
         self.__parser = parser

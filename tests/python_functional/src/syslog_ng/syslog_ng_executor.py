@@ -25,7 +25,7 @@ from src.executors.command_executor import CommandExecutor
 from src.executors.process_executor import ProcessExecutor
 
 
-class SyslogNgExecutor(object):
+class SyslogNgExecutor:
     def __init__(self, instance_paths):
         self.__instance_paths = instance_paths
         self.__process_executor = ProcessExecutor()

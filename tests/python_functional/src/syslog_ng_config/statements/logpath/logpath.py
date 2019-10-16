@@ -22,7 +22,7 @@
 #############################################################################
 
 
-class LogPath(object):
+class LogPath:
     def __init__(self):
         self.__group_type = "log"
         self.__logpath = []

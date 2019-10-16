@@ -32,7 +32,7 @@ from src.executors.command_executor import prepare_std_outputs
 logger = logging.getLogger(__name__)
 
 
-class ProcessExecutor(object):
+class ProcessExecutor:
     def __init__(self):
         self.__file_ref = File
         self.process = None

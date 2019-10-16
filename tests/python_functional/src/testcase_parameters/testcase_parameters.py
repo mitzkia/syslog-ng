@@ -27,7 +27,7 @@ from src.common.pytest_operations import calculate_testcase_name
 WORKING_DIR = None
 
 
-class TestcaseParameters(object):
+class TestcaseParameters:
     def __init__(self, pytest_request):
         testcase_name = calculate_testcase_name(pytest_request)
         relative_report_dir = pytest_request.config.getoption("--reports")

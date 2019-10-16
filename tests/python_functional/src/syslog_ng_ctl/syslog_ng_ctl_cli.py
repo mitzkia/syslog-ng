@@ -23,7 +23,7 @@
 from src.syslog_ng_ctl.syslog_ng_ctl_executor import SyslogNgCtlExecutor
 
 
-class SyslogNgCtlCli(object):
+class SyslogNgCtlCli:
     def __init__(self, instance_paths):
         self.__syslog_ng_ctl_executor = SyslogNgCtlExecutor(instance_paths)
 

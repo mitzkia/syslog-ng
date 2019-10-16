@@ -25,7 +25,7 @@ from src.driver_io.file.file import File
 
 class FileIO(File):
     def __init__(self, file_path):
-        super(FileIO, self).__init__(file_path)
+        super().__init__(file_path)
         self.__readable_file = None
         self.__writeable_file = None
 

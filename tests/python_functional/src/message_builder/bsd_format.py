@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 #############################################################################
 # Copyright (c) 2015-2018 Balabit
 #
@@ -23,7 +22,7 @@
 #############################################################################
 
 
-class BSDFormat(object):
+class BSDFormat:
     @staticmethod
     def format_message(message, add_new_line=True):
         formatted_message = ""

@@ -49,7 +49,7 @@ def prepare_executable_command(command):
     return executable_command
 
 
-class CommandExecutor(object):
+class CommandExecutor:
     def __init__(self):
         self.__file_ref = File
         self.__start_timeout = 10

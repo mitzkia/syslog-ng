@@ -24,7 +24,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-class SourceDriver(object):
+class SourceDriver:
     group_type = "source"
 
     def __init__(self, IOClass, positional_parameters=None, options=None):

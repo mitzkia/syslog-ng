@@ -26,7 +26,7 @@ import src.testcase_parameters.testcase_parameters as tc_parameters
 from src.common.random_id import get_unique_id
 
 
-class SyslogNgPaths(object):
+class SyslogNgPaths:
     def __init__(self, testcase_parameters):
         self.__testcase_parameters = testcase_parameters
         self.__instance_name = None

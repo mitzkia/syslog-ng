@@ -22,7 +22,7 @@
 #############################################################################
 
 
-class Parser(object):
+class Parser:
     group_type = "parser"
 
     def __init__(self, driver_name, **kwargs):

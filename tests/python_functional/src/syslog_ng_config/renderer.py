@@ -22,7 +22,7 @@
 #############################################################################
 
 
-class ConfigRenderer(object):
+class ConfigRenderer:
     def __init__(self, syslog_ng_config):
         self.__syslog_ng_config = syslog_ng_config
         self.__syslog_ng_config_content = ""

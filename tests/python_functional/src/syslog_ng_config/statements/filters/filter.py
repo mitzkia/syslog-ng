@@ -22,7 +22,7 @@
 #############################################################################
 
 
-class Filter(object):
+class Filter:
     group_type = "filter"
 
     def __init__(self, **kwargs):
