@@ -21,8 +21,7 @@
 #
 #############################################################################
 import logging
-
-from pathlib2 import Path
+from pathlib import Path
 
 import src.testcase_parameters.testcase_parameters as tc_parameters
 from src.common.blocking import wait_until_false

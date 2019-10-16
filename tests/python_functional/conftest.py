@@ -23,9 +23,9 @@
 import logging
 import subprocess
 from datetime import datetime
+from pathlib import Path
 
 import pytest
-from pathlib2 import Path
 
 from src.message_builder.bsd_format import BSDFormat
 from src.message_builder.log_message import LogMessage
