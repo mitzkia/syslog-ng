@@ -47,6 +47,7 @@ addons:
       - libxml2-utils
       - doxygen
       - libsnmp-dev
+      - python3
 install:
       - pip install --user -r requirements.txt
       - pip list
