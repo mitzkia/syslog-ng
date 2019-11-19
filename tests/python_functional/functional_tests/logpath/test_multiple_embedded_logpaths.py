@@ -20,6 +20,7 @@
 # COPYING for details.
 #
 #############################################################################
+from pathlib2 import Path
 from src.message_builder.log_message import LogMessage
 
 
@@ -94,4 +95,4 @@ def test_multiple_embedded_logpaths(config, syslog_ng, bsd_formatter):
 
     # no messages should arrived into destination4,
     # no source() or flags(catch-all) is added
-    assert file_destination4.get_path().exists() is False
+    assert Path(file_destination4.get_path()).exists() is False
