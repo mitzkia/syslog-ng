@@ -81,8 +81,9 @@ class SyslogNgConfig(object):
     def create_dummy_destination(self):
         options = {}
         return FileDestination(file_name=None, **options)
-    def create_file_source(self, **options):
-        return FileSource(**options)
+
+    def create_file_source(self, file_name=None, **options):
+        return FileSource(file_name, **options)
 
     def create_example_msg_generator_source(self, **options):
         return ExampleMsgGeneratorSource(**options)
@@ -96,8 +97,8 @@ class SyslogNgConfig(object):
     def create_syslog_parser(self, **options):
         return Parser("syslog-parser", **options)
 
-    def create_file_destination(self, **options):
-        return FileDestination(**options)
+    def create_file_destination(self, file_name=None, **options):
+        return FileDestination(file_name, **options)
 
     def create_logpath(self, statements=None, flags=None):
         logpath = self.__create_logpath_with_conversion(statements, flags)
