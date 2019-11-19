@@ -31,7 +31,7 @@ class FileIO(File):
 
     def read(self, position=None):
         if not self.__readable_file:
-            self.__readable_file = self.open_file(mode="r")
+            self.__readable_file = self.open_file(mode="rb")
 
         if position is not None:
             self.__readable_file.seek(position)
