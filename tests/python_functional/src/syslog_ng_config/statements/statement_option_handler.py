@@ -75,6 +75,8 @@ class StatementOptionHandler(object):
     def update_option_container(self, container, option_name, option_value):
         if option_value == "skip":
             container.update({option_name: None})
+        elif option_value in ["''", '""']:
+            container.update({option_name: option_value})
         elif option_value is None:
             container.update({option_name: self.construct_option_default_value(option_name)})
         else:

@@ -32,3 +32,14 @@ def test_fs_positional_option_missing(config, syslog_ng):
     with pytest.raises(Exception) as excinfo:
         syslog_ng.start(config)
     assert "syslog-ng can not started due to config syntax error" in str(excinfo.value)
+
+
+def test_fs_positional_option_empty(config, syslog_ng):
+    # source source_24638 { file (''); };
+    file_source = config.create_file_source(file_name='""')
+    file_destination = config.create_file_destination()
+    config.create_logpath(statements=[file_source, file_destination])
+
+    syslog_ng.start(config)
+
+    assert syslog_ng.wait_for_console_log(message="Follow-mode file source not found, deferring open; filename=''")
