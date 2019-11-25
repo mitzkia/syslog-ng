@@ -21,6 +21,9 @@
 #
 #############################################################################
 import pytest
+from pathlib2 import Path
+
+import src.testcase_parameters.testcase_parameters as tc_parameters
 
 
 def test_fd_positional_option_missing(config, syslog_ng):
@@ -45,3 +48,17 @@ def test_fd_positional_option_empty(config, syslog_ng):
     syslog_ng.start(config)
 
     assert syslog_ng.wait_for_console_log(message="Error opening file for writing; filename='', error='No such file or directory (2)'")
+
+
+def test_fd_positional_option_custom_dir(config, syslog_ng):
+    custom_dir = Path(tc_parameters.WORKING_DIR, "custom_dir")
+    custom_dir.mkdir()
+    file_source = config.create_file_source()
+    file_destination = config.create_file_destination(file_name=str(custom_dir))
+    config.create_logpath(statements=[file_source, file_destination])
+
+    file_source.write_log("dummy message\n")
+
+    syslog_ng.start(config)
+
+    assert syslog_ng.wait_for_console_log(message="Error opening file for writing")

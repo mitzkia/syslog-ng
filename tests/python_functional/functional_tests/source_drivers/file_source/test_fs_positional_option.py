@@ -21,6 +21,9 @@
 #
 #############################################################################
 import pytest
+from pathlib2 import Path
+
+import src.testcase_parameters.testcase_parameters as tc_parameters
 
 
 def test_fs_positional_option_missing(config, syslog_ng):
@@ -43,3 +46,18 @@ def test_fs_positional_option_empty(config, syslog_ng):
     syslog_ng.start(config)
 
     assert syslog_ng.wait_for_console_log(message="Follow-mode file source not found, deferring open; filename=''")
+
+
+def test_fs_positional_option_custom_dir(config, syslog_ng):
+    # source source_24638 { file ("/tmp/dir/"); };
+    custom_dir = Path(tc_parameters.WORKING_DIR, "custom_dir")
+    custom_dir.mkdir()
+    file_source = config.create_file_source(file_name=str(custom_dir))
+    file_destination = config.create_file_destination()
+    config.create_logpath(statements=[file_source, file_destination])
+
+    with pytest.raises(Exception) as excinfo:
+        syslog_ng.start(config)
+    assert "syslog-ng is not running" in str(excinfo.value)
+
+    assert syslog_ng.wait_for_console_log(message="Unable to determine how to monitor this file")
