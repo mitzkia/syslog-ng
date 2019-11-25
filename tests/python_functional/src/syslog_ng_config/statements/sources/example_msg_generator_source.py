@@ -21,10 +21,15 @@
 #
 #############################################################################
 from src.syslog_ng_config.statements.sources.source_driver import SourceDriver
+from src.syslog_ng_config.statements.statement_option_handler import StatementOptionHandler
 
 
 class ExampleMsgGeneratorSource(SourceDriver):
     def __init__(self, **options):
         self.driver_name = "example_msg_generator"
+
+        self.options = options
         self.DEFAULT_MESSAGE = "-- Generated message. --"
-        super(ExampleMsgGeneratorSource, self).__init__(None, options)
+
+        self.option_handler = StatementOptionHandler(self.options)
+        super(ExampleMsgGeneratorSource, self).__init__(self.option_handler)

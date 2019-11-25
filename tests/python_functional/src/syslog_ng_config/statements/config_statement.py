@@ -26,18 +26,23 @@ DEFAULT_DRIVER_INDENTATION = " " * 2 * 4
 
 
 class ConfigStatement(object):
-    def __init__(self):
+    def __init__(self, option_handler):
+        self.__option_handler = option_handler
         self.rendered_driver_config = None
+
+    def reload_option_handler(self):
+        self.__option_handler.reload_options(self.options)
 
     def render_driver_options(self):
         self.rendered_driver_config = ""
         self.render_positional_options()
-        self.render_options(self.options)
+        self.render_options(self.__option_handler.non_positional_options())
         return self.rendered_driver_config
 
     def render_positional_options(self):
-        if self.positional_parameters and self.positional_parameters[0]:
-            self.rendered_driver_config += "{}{}\n".format(DEFAULT_DRIVER_INDENTATION, self.positional_parameters[0])
+        positional_option_value = self.__option_handler.get_positional_option_value()
+        if positional_option_value:
+            self.rendered_driver_config += "{}{}\n".format(DEFAULT_DRIVER_INDENTATION, positional_option_value)
 
     def render_options(self, options, indentation=DEFAULT_DRIVER_INDENTATION):
         for option_name, option_value in options.items():

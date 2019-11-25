@@ -22,6 +22,8 @@
 #############################################################################
 import logging
 
+from pathlib2 import Path
+
 from src.common.blocking import wait_until_true
 from src.common.operations import open_file
 
@@ -30,7 +32,7 @@ logger = logging.getLogger(__name__)
 
 class File(object):
     def __init__(self, file_path):
-        self.__file_path = file_path
+        self.__file_path = Path(file_path)
         self.__opened_file = None
 
     def __del__(self):
