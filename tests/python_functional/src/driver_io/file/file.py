@@ -38,11 +38,11 @@ class File(object):
             self.__opened_file.close()
             self.__opened_file = None
 
-    def __is_file_exist(self):
+    def is_file_exist(self):
         return self.__file_path.exists()
 
     def wait_for_creation(self):
-        file_created = wait_until_true(self.__is_file_exist)
+        file_created = wait_until_true(self.is_file_exist)
         if file_created:
             logger.debug("File has been created:\n{}".format(self.__file_path))
         else:
