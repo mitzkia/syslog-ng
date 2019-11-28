@@ -29,7 +29,7 @@ class SingleLineParser(object):
         self.current_chunk = ""
 
     def parse_buffer(self, content_buffer):
-        full_content = self.current_chunk + content_buffer
+        full_content = self.current_chunk + content_buffer.decode("UTF-8", errors='ignore')
         for line in list(full_content.splitlines(True)):
             if line.endswith(self.__parse_rule):
                 self.msg_list.append(line)
