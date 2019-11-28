@@ -26,6 +26,7 @@ from src.common.pytest_operations import calculate_testcase_name
 
 
 WORKING_DIR = None
+RELATIVE_WORKING_DIR = None
 
 
 class TestcaseParameters(object):
