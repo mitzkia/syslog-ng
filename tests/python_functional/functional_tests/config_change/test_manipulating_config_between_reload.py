@@ -35,7 +35,7 @@ def test_manipulating_config_between_reload(config, syslog_ng):
     file_source.set_path("updated_input.log")
 
     # add new option to file source
-    file_source.options["log_iw_size"] = "100"
+    file_source.options["log_iw_size"] = 100
 
     # create new file source and add to separate source group
     file_source2 = config.create_file_source(file_name="input2.log")
