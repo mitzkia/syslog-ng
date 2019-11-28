@@ -21,6 +21,7 @@
 #
 #############################################################################
 from src.driver_io.file.file_io import FileIO
+from src.syslog_ng_config.statements.option_formatters import file_path_formatter
 from src.syslog_ng_config.statements.sources.source_driver import SourceDriver
 from src.syslog_ng_config.statements.statement_option_handler import StatementOptionHandler
 
@@ -29,17 +30,17 @@ class FileSource(SourceDriver):
     def __init__(self, file_name, **options):
         self.driver_name = "file"
         self.options = options
+        self.options["file_name"] = file_name
 
-        self.option_handler = StatementOptionHandler(self.options)
-        self.option_handler.register_option_list(["file_name"])
-
-        self.option_handler.set_driver_mandatory_options(direction="input", file_name=file_name)
+        self.option_handler = StatementOptionHandler()
+        self.option_handler.init_options(self.options)
+        self.option_handler.set_option_property("file_name", is_driverio=True, is_positional=True, formatter=file_path_formatter)
 
         super(FileSource, self).__init__(option_handler=self.option_handler, driver_io_cls=FileIO)
 
-    def set_path(self, new_file_name):
-        self.option_handler.set_driver_mandatory_options(direction="input", file_name=new_file_name)
-        self.init_source_writer()
+    # def set_path(self, new_file_name):
+    #     self.option_handler.set_driver_mandatory_options(direction="input", file_name=new_file_name)
+    #     self.init_source_writer()
 
-    def get_path(self):
-        return self.option_handler.get_positional_option_values()[0]
+    # def get_path(self):
+    #     return self.option_handler.get_positional_option_values()[0]

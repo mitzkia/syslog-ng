@@ -23,6 +23,7 @@
 from src.driver_io.file.file_io import FileIO
 from src.message_reader.single_line_parser import SingleLineParser
 from src.syslog_ng_config.statements.destinations.destination_driver import DestinationDriver
+from src.syslog_ng_config.statements.option_formatters import file_path_formatter
 from src.syslog_ng_config.statements.statement_option_handler import StatementOptionHandler
 
 
@@ -30,17 +31,17 @@ class FileDestination(DestinationDriver):
     def __init__(self, file_name, **options):
         self.driver_name = "file"
         self.options = options
+        self.options["file_name"] = file_name
 
-        self.option_handler = StatementOptionHandler(self.options)
-        self.option_handler.register_option_list(["file_name"])
-
-        self.option_handler.set_driver_mandatory_options(direction="output", file_name=file_name)
+        self.option_handler = StatementOptionHandler()
+        self.option_handler.init_options(self.options)
+        self.option_handler.set_option_property("file_name", is_driverio=True, is_positional=True, formatter=file_path_formatter)
 
         super(FileDestination, self).__init__(option_handler=self.option_handler, driver_io_cls=FileIO, line_parser_cls=SingleLineParser)
 
-    def set_path(self, new_file_name):
-        self.option_handler.set_driver_mandatory_options(direction="output", file_name=new_file_name)
-        self.init_destination_reader()
+    # def set_path(self, new_file_name):
+    #     self.option_handler.set_driver_mandatory_options(direction="output", file_name=new_file_name)
+    #     self.init_destination_reader()
 
-    def get_path(self):
-        return self.option_handler.get_positional_option_values()[0]
+    # def get_path(self):
+    #     return self.option_handler.get_positional_option_values()[0]

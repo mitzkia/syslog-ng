@@ -419,7 +419,7 @@ class FilteredDriver(Exception):
     pass
 
 
-class PortAllocator():
+class PortAllocator(object):
     def __init__(self):
         self.allocated_ports = set()
 

@@ -21,6 +21,8 @@
 #
 #############################################################################
 
+DEFAULT_DRIVER_INDENTATION = " " * 2 * 4
+
 
 class ConfigStatement(object):
     def __init__(self, option_handler):
@@ -32,30 +34,26 @@ class ConfigStatement(object):
     def render_driver_options(self):
         rendered_driver_config = ""
         rendered_driver_config += self.render_positional_options()
-        rendered_driver_config += self.render_options()
+        rendered_driver_config += self.render_options(self.__option_handler.get_non_positional_options())
         return rendered_driver_config
 
     def render_positional_options(self):
         rendered_positional_options = ""
-        for positional_option_value in self.__option_handler.get_positional_option_values():
-            if positional_option_value is None:
-                rendered_positional_options += "\n"
-            else:
-                rendered_positional_options += "    {}\n".format(positional_option_value)
+        positional_option_value = self.__option_handler.get_positional_options()
+        if positional_option_value:
+            rendered_positional_options += "{}{}\n".format(DEFAULT_DRIVER_INDENTATION, positional_option_value)
         return rendered_positional_options
 
-    def render_options(self):
+    def render_options(self, options, indentation=DEFAULT_DRIVER_INDENTATION):
         rendered_options = ""
-        indentation = " " * 4
-        for option_name, option_value in self.__option_handler.options.items():
-            if option_value is None:
-                rendered_options += "{}{}()\n".format(indentation, option_name)
-            elif option_name is None:
-                rendered_options += "{}{}\n".format(indentation, option_value)
-            elif option_name and option_value:
-                rendered_options += "{}{}({})\n".format(indentation, option_name, option_value)
+        for option_name, option_value in options.items():
+            if isinstance(option_value, dict):
+                inner_block_indentation = " " * 4
+                rendered_options += "{}{}(\n".format(indentation, option_name)
+                self.render_options(option_value, indentation=indentation + inner_block_indentation)
+                rendered_options += "{})\n".format(indentation)
             else:
-                raise ValueError
+                rendered_options += "{}{}({})\n".format(indentation, option_name, option_value)
         return rendered_options
 
     # def get_rendered_driver(self):

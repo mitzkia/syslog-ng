@@ -12,8 +12,8 @@ from utils.ConfigOptions import get_driver_options
 from syslog_ng_tests.property_based.option_type_and_hypothesis_strategy_mapping import STRATEGY_MAPPING_BY_OPTION_NAME
 from syslog_ng_tests.property_based.option_type_and_hypothesis_strategy_mapping import STRATEGY_MAPPING_BY_OPTION_TYPE
 
-
 sys.path.append(os.path.join("../../contrib/config_option_database"))
+
 
 PROPERTY_BASED_TESTS_RELATIVE_PATH = "syslog_ng_tests/property_based/"
 
@@ -51,12 +51,10 @@ class PropertyTestGenerator:
         # self.blacklist_drivers.extend(['credit_card_hash'])  # rewrites
 
     def add_hardcoded_blacklist_blocks(self):
-        pass
-        # self.blacklist_blocks.extend(["attributes", "rekey", "config", "option", "failover", "failback", "tls", "type", "value_pairs", "disk_buffer", "hook_commands"])
+        self.blacklist_blocks.extend(["attributes", "rekey", "config", "option", "failover", "failback", "tls", "type", "value_pairs", "disk_buffer", "hook_commands"])
 
     def add_hardcoded_blacklist_options(self):
-        pass
-        # self.blacklist_options.extend(["multi_line_garbage", "multi_line_prefix", "persist_name", "disk_buffer", "force_directory_polling", "recursive", "positional", "interface", "workers"])
+        self.blacklist_options.extend(["multi_line_garbage", "multi_line_prefix", "persist_name", "disk_buffer", "force_directory_polling", "recursive", "positional", "interface", "workers", "localip"])
 
     def generate_pbts_for_database(self, write_testcase_content=True):
         for option_item in self.option_database:
@@ -78,6 +76,8 @@ class PropertyTestGenerator:
                 testcase_name = self.construct_testcase_name(option_types, option_name, selected_block_names)
                 testcase_content = self.construct_testcase_content(testcase_name, option_name, option_types, selected_block_names, selected_parent_drivers)
                 self.save_testcase_name_and_content(testcase_name, testcase_content)
+
+                print(testcase_name)
 
                 if write_testcase_content:
                     self.write_testcase_content_to_disk(testcase_name, testcase_content)
@@ -211,7 +211,6 @@ def get_normalized_properties(parent_driver, option_name, option_types, block_na
     normalized_parent_driver = [parent_driver.split("/")[0].replace("-", "_")]
 
     option_name = option_name if option_name else "positional"
-    print(option_name)
     normalized_option_name = option_name.split("/")[0].replace("-", "_").replace("<", "typed_").replace(">", "")
 
     option_types = option_types if option_types else ('<empty>',)
@@ -298,7 +297,7 @@ def main():
     }
 
     generate_property_based_tests(args.max_examples, user_filters)
-    # run_property_based_tests(args.installdir)
+    run_property_based_tests(args.installdir)
 
 
 if __name__ == "__main__":

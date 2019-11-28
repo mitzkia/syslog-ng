@@ -35,6 +35,7 @@ from src.syslog_ng_config.statements.statement_option_handler import StatementOp
 
 
 DEFAULT_REMOTE_HOST_ADDRESS = DEFAULT_LOCALHOST_ADDRESS = "127.0.0.1"
+DEFAULT_LOCALHOST_IPV6_ADDRESS = "::1"
 
 
 # File Based
@@ -101,12 +102,12 @@ class TcpDestination(DestinationDriver):
         self.driver_name = "tcp"
         self.port_allocator = port_allocator
         self.options = options
+        self.options["ip"] = DEFAULT_LOCALHOST_ADDRESS
+        self.options["port"] = port_allocator.allocate_random_port()
 
-        self.option_handler = StatementOptionHandler(self.options)
-        self.option_handler.register_option_list(["ip"])
-        self.option_handler.register_option_list(["port"], mandatory=True, driver_io=True, positional=False)
-        self.set_ip(ip)
-        self.set_port(port)
+        self.option_handler = StatementOptionHandler()
+        self.option_handler.init_options(self.options)
+        self.option_handler.set_option_property("ip", is_driverio=True, is_positional=True)
 
         super(TcpDestination, self).__init__(option_handler=self.option_handler)
 
@@ -114,7 +115,7 @@ class TcpDestination(DestinationDriver):
         self.option_handler.set_ip(new_ip)
 
     def set_port(self, new_port):
-        self.option_handler.set_port(self.port_allocator, new_port)
+        self.port_allocator(new_port)
 
 
 class Tcp6Destination(DestinationDriver):
@@ -123,11 +124,12 @@ class Tcp6Destination(DestinationDriver):
         self.port_allocator = port_allocator
         self.options = options
 
-        self.option_handler = StatementOptionHandler(self.options)
-        self.option_handler.register_option_list(["ip"])
-        self.option_handler.register_option_list(["port"], mandatory=True, driver_io=True, positional=False)
-        self.set_ip(ip)
-        self.set_port(port)
+        self.options["ip"] = DEFAULT_LOCALHOST_IPV6_ADDRESS
+        self.options["port"] = port_allocator.allocate_random_port()
+
+        self.option_handler = StatementOptionHandler()
+        self.option_handler.init_options(self.options)
+        self.option_handler.set_option_property("ip", is_driverio=True, is_positional=True)
 
         super(Tcp6Destination, self).__init__(option_handler=self.option_handler)
 
@@ -144,11 +146,12 @@ class NetworkDestination(DestinationDriver):
         self.port_allocator = port_allocator
         self.options = options
 
-        self.option_handler = StatementOptionHandler(self.options)
-        self.option_handler.register_option_list(["ip"])
-        self.option_handler.register_option_list(["port"], mandatory=True, driver_io=True, positional=False)
-        self.set_ip(ip)
-        self.set_port(port)
+        self.options["ip"] = DEFAULT_LOCALHOST_ADDRESS
+        self.options["port"] = port_allocator.allocate_random_port()
+
+        self.option_handler = StatementOptionHandler()
+        self.option_handler.init_options(self.options)
+        self.option_handler.set_option_property("ip", is_driverio=True, is_positional=True)
 
         super(NetworkDestination, self).__init__(option_handler=self.option_handler)
 
@@ -165,11 +168,12 @@ class SyslogDestination(DestinationDriver):
         self.port_allocator = port_allocator
         self.options = options
 
-        self.option_handler = StatementOptionHandler(self.options)
-        self.option_handler.register_option_list(["ip"])
-        self.option_handler.register_option_list(["port"], mandatory=True, driver_io=True, positional=False)
-        self.set_ip(ip)
-        self.set_port(port)
+        self.options["ip"] = DEFAULT_LOCALHOST_ADDRESS
+        self.options["port"] = port_allocator.allocate_random_port()
+
+        self.option_handler = StatementOptionHandler()
+        self.option_handler.init_options(self.options)
+        self.option_handler.set_option_property("ip", is_driverio=True, is_positional=True)
 
         super(SyslogDestination, self).__init__(option_handler=self.option_handler)
 
@@ -186,11 +190,12 @@ class UdpDestination(DestinationDriver):
         self.port_allocator = port_allocator
         self.options = options
 
-        self.option_handler = StatementOptionHandler(self.options)
-        self.option_handler.register_option_list(["ip"])
-        self.option_handler.register_option_list(["port"], mandatory=True, driver_io=True, positional=False)
-        self.set_ip(ip)
-        self.set_port(port)
+        self.options["ip"] = DEFAULT_LOCALHOST_ADDRESS
+        self.options["port"] = port_allocator.allocate_random_port()
+
+        self.option_handler = StatementOptionHandler()
+        self.option_handler.init_options(self.options)
+        self.option_handler.set_option_property("ip", is_driverio=True, is_positional=True)
 
         super(UdpDestination, self).__init__(option_handler=self.option_handler)
 
@@ -207,11 +212,12 @@ class Udp6Destination(DestinationDriver):
         self.port_allocator = port_allocator
         self.options = options
 
-        self.option_handler = StatementOptionHandler(self.options)
-        self.option_handler.register_option_list(["ip"])
-        self.option_handler.register_option_list(["port"], mandatory=True, driver_io=True, positional=False)
-        self.set_ip(ip)
-        self.set_port(port)
+        self.options["ip"] = DEFAULT_LOCALHOST_IPV6_ADDRESS
+        self.options["port"] = port_allocator.allocate_random_port()
+
+        self.option_handler = StatementOptionHandler()
+        self.option_handler.init_options(self.options)
+        self.option_handler.set_option_property("ip", is_driverio=True, is_positional=True)
 
         super(Udp6Destination, self).__init__(option_handler=self.option_handler)
 

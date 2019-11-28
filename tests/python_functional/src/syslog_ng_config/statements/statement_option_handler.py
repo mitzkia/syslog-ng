@@ -20,94 +20,109 @@
 # COPYING for details.
 #
 #############################################################################
-from pathlib2 import Path
+# from pathlib2 import Path
+# import src.testcase_parameters.testcase_parameters as tc_parameters
+# from src.common.random_id import get_unique_id
 
-import src.testcase_parameters.testcase_parameters as tc_parameters
-from src.common.random_id import get_unique_id
 
-
-class StatementOptionHandler:
-    def __init__(self, options):
-        self.options = options
-
-        self.mandatory_options = []
-        self.driver_io_options = []
-        self.positional_options = []
-
-        self.positional_options_and_values = {}
-
-    def reload_options(self, options):
-        self.options = options
-
-    def register_option_list(self, option_list, mandatory=True, driver_io=True, positional=True):
-        if mandatory:
-            self.mandatory_options = option_list
-        if driver_io:
-            self.driver_io_options = option_list
-        if positional:
-            self.positional_options = option_list
-
-    def register_mandatory_options(self, option_list):
-        self.mandatory_options = option_list
-
-    def register_driver_io_options(self, option_list):
-        self.driver_io_options = option_list
-
-    def register_positional_options(self, option_list):
-        self.positional_options = option_list
-
-    def get_driver_io_option_values(self):
-        driver_io_option_values = []
-        for option in self.driver_io_options:
-            if option in self.options:
-                driver_io_option_values.append(self.options[option])
-            elif option in self.positional_options_and_values:
-                driver_io_option_values.append(self.positional_options_and_values[option])
-
-        if len(driver_io_option_values) == 1:
-            return driver_io_option_values[0]
-        return driver_io_option_values
-
-    def get_positional_option_values(self):
-        positional_option_values = []
-        for option_name, option_value in self.positional_options_and_values.items():
-            if isinstance(option_value, Path):
-                option_value = str(option_value)
-            positional_option_values.append(option_value)
-
-        return positional_option_values
-
-    def construct_option_default_value(self, option_name, direction):
-        option_default_values = {
-            "ip": "127.0.0.1",
-            "port": "1",
-            "file_name": str(Path(tc_parameters.WORKING_DIR, "{}_{}.log".format(direction, get_unique_id()))),
-        }
-        return option_default_values[option_name]
-
-    def construct_option_value(self, option_name, option_value, direction):
-        if option_value == "skip":
-            return None
-        if option_value in ["''", '""']:
-            return option_value
-        if option_name in ["file_name"]:
-            return str(Path(tc_parameters.WORKING_DIR, option_value))
-        return option_value
-
-    def set_driver_mandatory_options(self, direction=None, **mandatory_option_values):
-        # import pdb; pdb.set_trace()
-        for mandatory_option_name, mandatory_option_value in mandatory_option_values.items():
-            if mandatory_option_name in self.positional_options:
-                if mandatory_option_value is None:
-                    print("YYYYYYYYYYYYYYYYYYYYYYYYYYYY")
-                    self.positional_options_and_values.update({mandatory_option_name: self.construct_option_default_value(mandatory_option_name, direction)})
-                else:
-                    print("KKKKKKKKKKKKKKKKKKKKKKKKKKKKKK")
-                    self.positional_options_and_values.update({mandatory_option_name: self.construct_option_value(mandatory_option_name, mandatory_option_value, direction)})
-                continue
-            if mandatory_option_value is None:
-                print("PPPPPPPPPPPPPPPPPPPPPPPPP")
-                self.options.update({mandatory_option_name: self.construct_option_default_value(mandatory_option_name, direction)})
+def get_dict_node_recursively(base_dictionary, nodes_to_option, create=False):
+    current_dict = base_dictionary
+    for node in nodes_to_option:
+        if node not in current_dict:
+            if create:
+                current_dict[node] = {}
             else:
-                print("WWWWWWWWWWWWWWWWWWWWWWWWW")
-                self.options.update({mandatory_option_name: self.construct_option_value(mandatory_option_name, mandatory_option_value, direction)})
+                return False
+        current_dict = current_dict[node]
+    return current_dict
+
+
+class StatementOptionHandler(object):
+    def __init__(self):
+        self.options = None
+        self.option_properties = {}
+
+    def init_options(self, options):
+        self.options = options
+
+    def set_option_property(self, option_name, is_driverio=False, is_positional=False, formatter=None):
+        self.option_properties.update({option_name: {"is_driverio": is_driverio, "is_positional": is_positional, "formatter": formatter}})
+
+    def set_block_option_property(self, path_to_option_in_dict, option_name, is_driverio=False, is_positional=False, formatter=None):
+        dict_node_to_option = get_dict_node_recursively(self.option_properties, path_to_option_in_dict, create=True)
+        dict_node_to_option.update({option_name: {"is_driverio": is_driverio, "is_positional": is_positional, "formatter": formatter}})
+
+    def get_property_for_option(self, path_to_option_in_dict, option_name, option_property):
+        if path_to_option_in_dict is None:
+            try:
+                return self.option_properties[option_name][option_property]
+            except KeyError:
+                return False
+
+        dict_node_to_option = get_dict_node_recursively(self.option_properties, path_to_option_in_dict)
+        try:
+            if dict_node_to_option and option_name in dict_node_to_option:
+                return dict_node_to_option[option_name][option_property]
+            else:
+                return False
+        except KeyError:
+            raise
+
+    def get_positional_options(self):
+        positional_dict = self.get_options_by_criteria(criteria={"is_positional": True})
+        # import pdb; pdb.set_trace()
+        # assert len(positional_dict.keys()) != 1
+        if positional_dict:
+            return list(positional_dict.values())[0]
+        return None
+
+    def get_driverio_options(self):
+        return self.get_options_by_criteria(criteria={"is_driverio": True})
+
+    def get_non_positional_options(self):
+        return self.get_options_by_criteria(criteria={"is_positional": False})
+
+    def get_options_by_criteria(self, criteria):
+        assert len(criteria.keys()) == 1
+        option_type = list(criteria.keys())[0]
+        option_type_bool = criteria[option_type]
+
+        formatted_options = {}
+        path_to_option_in_dict = []
+
+        if self.options:
+            self._get_options_by_criteria_helper(option_type, option_type_bool, self.options, path_to_option_in_dict, formatted_options)
+
+        return formatted_options
+
+    def _get_options_by_criteria_helper(self, option_type, option_type_bool, base_options, path_to_option_in_dict, formatted_options):
+        for option_name, option_value in base_options.items():
+            if isinstance(option_value, dict):
+                new_stack = path_to_option_in_dict.copy()
+                new_stack.append(option_name)
+                self._get_options_by_criteria_helper(option_type, option_type_bool, option_value, new_stack, formatted_options)
+            else:
+                if self.get_property_for_option(path_to_option_in_dict, option_name, option_type) == option_type_bool:
+                    option_formatter = self.get_property_for_option(path_to_option_in_dict, option_name, "formatter")
+                    formatted_option_value = self.run_option_formatter(option_name, option_value, option_formatter)
+                    current_node = get_dict_node_recursively(formatted_options, path_to_option_in_dict, create=True)
+                    current_node.update({option_name: formatted_option_value})
+
+    def run_option_formatter(self, option_name, option_value, option_formatter):
+        assert option_name is not None
+        general_formatted_value = self.run_general_formatter(option_value)
+        if general_formatted_value is False and option_formatter:
+            formatted_value = option_formatter(option_value)
+            return formatted_value
+        elif general_formatted_value is False and not option_formatter:
+            return option_value
+        else:
+            return general_formatted_value
+
+    def run_general_formatter(self, option_value):
+        if option_value == "empty":
+            return ""
+        elif option_value == "''":
+            return option_value
+        else:
+            return False

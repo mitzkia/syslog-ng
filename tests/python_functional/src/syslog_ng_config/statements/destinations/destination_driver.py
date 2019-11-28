@@ -39,9 +39,9 @@ class DestinationDriver(ConfigStatement):
         super(DestinationDriver, self).__init__(option_handler)
 
     def init_destination_reader(self):
-        if self.driver_io_cls and self.line_parser_cls and self.option_handler.get_driver_io_option_values():
+        if self.driver_io_cls and self.line_parser_cls and self.option_handler.get_driverio_options():
             self.destination_reader = DestinationReader(self.driver_io_cls, self.line_parser_cls)
-            self.destination_reader.init_driver_io(self.option_handler.get_driver_io_option_values())
+            self.destination_reader.init_driver_io(self.option_handler.get_driverio_options())
 
     def read_log(self):
         if self.destination_reader:

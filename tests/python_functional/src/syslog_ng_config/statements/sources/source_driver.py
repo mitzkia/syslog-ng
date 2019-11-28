@@ -38,9 +38,9 @@ class SourceDriver(ConfigStatement):
         super(SourceDriver, self).__init__(self.option_handler)
 
     def init_source_writer(self):
-        if self.driver_io_cls and self.option_handler.get_driver_io_option_values():
+        if self.driver_io_cls and self.option_handler.get_driverio_options():
             self.source_writer = SourceWriter(self.driver_io_cls)
-            self.source_writer.init_driver_io(self.option_handler.get_driver_io_option_values())
+            self.source_writer.init_driver_io(self.option_handler.get_driverio_options())
 
     def write_log(self, formatted_log, counter=1):
         if self.source_writer:

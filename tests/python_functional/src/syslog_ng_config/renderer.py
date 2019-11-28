@@ -69,7 +69,7 @@ class ConfigRenderer(object):
             )
 
             for statement in statement_group:
-                statement.reload_option_handler()
+                # statement.reload_option_handler()
                 # driver header
                 self.__syslog_ng_config_content += "    {} (\n".format(statement.driver_name)
 

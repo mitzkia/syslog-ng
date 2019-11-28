@@ -20,24 +20,13 @@
 # COPYING for details.
 #
 #############################################################################
-import logging
-logger = logging.getLogger(__name__)
+from pathlib2 import Path
+
+import src.testcase_parameters.testcase_parameters as tc_parameters
+from src.common.random_id import get_unique_id
 
 
-class SourceWriter(object):
-    def __init__(self, driver_io_cls):
-        self.__driver_io_cls = driver_io_cls
-
-        self.__driver_io = None
-        self.__saved_driver_io_parameter = None
-
-    def init_driver_io(self, driver_io_parameter):
-        if self.__saved_driver_io_parameter != driver_io_parameter:
-            self.__saved_driver_io_parameter = driver_io_parameter
-            self.__driver_io = self.__driver_io_cls(dict_parameters=driver_io_parameter)
-
-    def write_log(self, formatted_log, counter):
-        for __i in range(0, counter):
-            self.__driver_io.write(formatted_log)
-        written_description = "Content has been written to\nresource: {}\nnumber of times: {}\ncontent: {}\n".format(self.__saved_driver_io_parameter, counter, formatted_log)
-        logger.info(written_description)
+def file_path_formatter(file_name):
+    if file_name is None:
+        return str(Path(tc_parameters.WORKING_DIR, "{}.log".format(get_unique_id())))
+    return str(Path(tc_parameters.WORKING_DIR, file_name))

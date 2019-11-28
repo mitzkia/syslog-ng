@@ -39,7 +39,7 @@ class DestinationReader(object):
     def init_driver_io(self, driver_io_parameter):
         if self.__saved_driver_io_parameter != driver_io_parameter:
             self.__saved_driver_io_parameter = driver_io_parameter
-            self.__driver_io = self.__driver_io_cls(driver_io_parameter)
+            self.__driver_io = self.__driver_io_cls(dict_parameters=driver_io_parameter)
 
     def __construct_message_reader(self):
         self.__driver_io.wait_for_creation()

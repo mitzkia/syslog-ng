@@ -24,7 +24,10 @@ from src.driver_io.file.file import File
 
 
 class FileIO(File):
-    def __init__(self, file_path):
+    def __init__(self, file_path=None, dict_parameters=None):
+        assert file_path or dict_parameters
+        if dict_parameters:
+            file_path = dict_parameters["file_name"]
         super(FileIO, self).__init__(file_path)
         self.__readable_file = None
         self.__writeable_file = None
