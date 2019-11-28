@@ -28,6 +28,8 @@ from pathlib2 import Path
 import src.testcase_parameters.testcase_parameters as tc_parameters
 from src.common.operations import copy_file
 from src.common.pytest_operations import calculate_testcase_name
+from src.common.random_id import get_unique_id
+from src.message_builder.log_message import LogMessage
 
 logger = logging.getLogger(__name__)
 
@@ -55,3 +57,26 @@ def setup(request):
 
     copy_file(testcase_parameters.get_testcase_file(), testcase_parameters.get_working_dir())
     request.addfinalizer(lambda: logger.info("Report file path\n{}\n".format(calculate_report_file_path(testcase_parameters.get_working_dir()))))
+
+
+@pytest.fixture
+def generate_msgs_for_dummy_src_and_dst(bsd_formatter):
+    input_messages = []
+    expected_messages = []
+
+    for counter in range(0, 3):
+        uniq_message_content = get_unique_id()
+        log_message = LogMessage().message(uniq_message_content)
+        input_messages.append(bsd_formatter.format_message(log_message))
+        expected_messages.append(bsd_formatter.format_message(log_message.remove_priority()))
+    return input_messages, expected_messages
+
+
+@pytest.fixture
+def generate_msgs_for_dummy_src_and_file_dst(generate_msgs_for_dummy_src_and_dst):
+    return generate_msgs_for_dummy_src_and_dst
+
+
+@pytest.fixture
+def generate_msgs_for_file_src_and_dummy_dst(generate_msgs_for_dummy_src_and_dst):
+    return generate_msgs_for_dummy_src_and_dst
