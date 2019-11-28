@@ -43,9 +43,15 @@ def cast_to_list(items):
     return [items]
 
 
-def copy_shared_file(shared_file_name, syslog_ng_testcase):
-    shared_dir = syslog_ng_testcase.testcase_parameters.get_shared_dir()
-    copy_file(Path(shared_dir, shared_file_name), tc_parameters.WORKING_DIR)
+def copy_shared_file(shared_file_name, destination_subdir=None):
+    shared_dir = Path(Path.cwd(), "shared_dir")
+    if destination_subdir:
+        destination_path = Path(tc_parameters.WORKING_DIR, destination_subdir)
+        destination_path.mkdir(parents=True)
+    else:
+        destination_path = tc_parameters.WORKING_DIR
+    source_file_path = Path(shared_dir, shared_file_name)
+    copy_file(source_file_path, destination_path)
 
 
 def delete_session_file(shared_file_name):
