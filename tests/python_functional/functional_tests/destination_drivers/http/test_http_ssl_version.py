@@ -36,16 +36,16 @@ def test_http_ssl_version_invalid_string(config, syslog_ng):
         syslog_ng.start(config)
 
 
-def test_http_ssl_version_remote_too_old(config, syslog_ng):
+def test_http_ssl_version_remote_too_old(config, syslog_ng, some_port):
     generator_source = config.create_example_msg_generator_source(num=1)
-    http_destination = config.create_http_destination(url='"https://localhost:8081"', ssl_version='tlsv1_2', peer_verify='no')
+    http_destination = config.create_http_destination(url='"https://localhost:{}"'.format(some_port), ssl_version='tlsv1_2', peer_verify='no')
     config.create_logpath(statements=[generator_source, http_destination])
 
     openssl_args = [
         "openssl", "s_server",
         "-cert", "cert.pem",
         "-key", "key.pem",
-        "-port", "8081", "-tls1_1",
+        "-port", str(some_port), "-tls1_1",
     ]
 
     with subprocess.Popen(openssl_args):
