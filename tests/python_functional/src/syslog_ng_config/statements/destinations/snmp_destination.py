@@ -21,9 +21,17 @@
 #
 #############################################################################
 from src.syslog_ng_config.statements.destinations.destination_driver import DestinationDriver
+from src.syslog_ng_ctl.driver_stats_handler import DriverStatsHandler
 
 
 class SnmpDestination(DestinationDriver):
     def __init__(self, **options):
         self.driver_name = "snmp"
         super(SnmpDestination, self).__init__(None, options)
+        self.stats_handler = DriverStatsHandler(group_type=self.group_type, driver_name=self.driver_name)
+
+    def get_stats(self):
+        return self.stats_handler.get_stats()
+
+    def get_query(self):
+        return self.stats_handler.get_query()
