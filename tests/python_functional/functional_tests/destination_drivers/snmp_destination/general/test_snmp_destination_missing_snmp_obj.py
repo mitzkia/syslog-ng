@@ -24,52 +24,19 @@ import pytest
 
 from src.helpers.snmptrapd.conftest import *  # noqa:F403, F401
 
-TIMETICKS = '97881'
-
-OID1 = "1.3.6.1.4.1.9.9.41.1.2.3.1.2.55"
-OID2 = "1.3.6.1.6.3.1.1.4.1.0"
-TRAP_DATA = ".1.3.6.1.4.1.9.9.41.2.0.1"
-
-input_log = "<38>Feb 11 21:27:22 testhost testprogram[9999]: test message\n"
-
-expected_logs = [
-    '.{} = Timeticks: ({}) 0:16:18.81'.format(OID1, TIMETICKS),
-    '.{} = OID: {}'.format(OID2, TRAP_DATA),
-]
-
 
 @pytest.mark.snmp
-def test_snmp_dest_reload_restart_stat(config, syslog_ng, snmptrapd, syslog_ng_ctl):
-    # create source driver config
-    file_source = config.create_file_source(file_name="input.log")
-
-    # create destination driver config
-    snmp_objs = (
-        "'{}', 'Timeticks', '{}'".format(OID1, TIMETICKS),
-    )
-
-    trap_obj = "'.{}','Objectid','{}'".format(OID2, TRAP_DATA)
-
+def test_snmp_dest_missing_snmp_obj(config, syslog_ng, snmptrapd, snmp_test_params):
+    generator_source = config.create_example_msg_generator_source(num=1)
     snmp_destination = config.create_snmp_destination(
-        host="'127.0.0.1'",
+        host=snmp_test_params.get_ip_address(),
         port=snmptrapd.get_port(),
-        version="'v2c'",
-        snmp_obj=snmp_objs,
-        trap_obj=trap_obj,
+        trap_obj=snmp_test_params.get_basic_trap_obj(),
     )
-
-    config.create_logpath(statements=[file_source, snmp_destination])
-    config.update_global_options(keep_hostname="yes")
-
-    count = 100
-    for i in range(count):
-        file_source.write_log(input_log)
+    config.create_logpath(statements=[generator_source, snmp_destination])
 
     syslog_ng.start(config)
 
     received_traps = snmptrapd.get_traps()
-    for exp_log in expected_logs:
-        assert exp_log in received_traps
-
-    assert snmp_destination.get_query() == {'written': count, 'processed': count, 'dropped': 0, 'queued': 0}
-    assert snmp_destination.get_stats() == {'written': count, 'processed': count, 'dropped': 0, 'queued': 0}
+    assert snmp_test_params.get_expected_empty_trap() in received_traps
+    assert any(snmp_test_params.get_default_community() in line for line in snmptrapd.get_raw_traps())

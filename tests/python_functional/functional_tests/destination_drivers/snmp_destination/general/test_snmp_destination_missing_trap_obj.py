@@ -25,46 +25,15 @@ import pytest
 from src.helpers.snmptrapd.conftest import *  # noqa:F403, F401
 
 
-CISCO_TIMETICKS = '97881'
-
-OBJ_OID = "1.3.6.1.4.1.2682.1.4.5.1.1.99.1.1.6"
-TRAP_OID = "1.3.6.1.6.3.1.1.4.1.0"
-TRAP_DATA = "1.3.6.1.4.1.9.9.41.2.0.1"
-
-input_log = "<38>Feb 11 21:27:22 testhost testprogram[9999]: test message\n"
-expected_logs = [
-    '.{} = Timeticks: ({}) 0:16:18.81'.format(OBJ_OID, CISCO_TIMETICKS),
-    '.{} = OID: .{}'.format(TRAP_OID, TRAP_DATA),
-]
-
-
 @pytest.mark.snmp
-def test_snmp_dest_v2_custom_community(config, syslog_ng, snmptrapd):
-    # create source driver config
-    file_source = config.create_file_source(file_name="input.log")
-
-    # create destination driver config
-    snmp_objs = (
-        "'{}','Timeticks','{}'".format(OBJ_OID, CISCO_TIMETICKS),
-    )
-
-    trap_obj = "'.{}','Objectid','{}'".format(TRAP_OID, TRAP_DATA)
-
+def test_snmp_dest_missing_trap_obj(config, syslog_ng, snmptrapd, snmp_test_params):
+    generator_source = config.create_example_msg_generator_source(num=1)
     snmp_destination = config.create_snmp_destination(
-        host="'127.0.0.1'",
+        host=snmp_test_params.get_ip_address(),
         port=snmptrapd.get_port(),
-        version="'v2c'",
-        snmp_obj=snmp_objs,
-        trap_obj=trap_obj,
-        community="'testcommunity'",
+        snmp_obj=snmp_test_params.get_basic_snmp_obj(),
     )
+    config.create_logpath(statements=[generator_source, snmp_destination])
 
-    config.create_logpath(statements=[file_source, snmp_destination])
-    config.update_global_options(keep_hostname="yes")
-    file_source.write_log(input_log)
-
-    syslog_ng.start(config)
-
-    received_traps = snmptrapd.get_traps()
-    for exp_log in expected_logs:
-        assert exp_log in received_traps
+    with pytest.raises(Exception):
+        syslog_ng.start(config)

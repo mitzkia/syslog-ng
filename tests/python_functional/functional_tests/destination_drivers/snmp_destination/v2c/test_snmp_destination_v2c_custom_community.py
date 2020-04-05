@@ -25,36 +25,22 @@ import pytest
 from src.helpers.snmptrapd.conftest import *  # noqa:F403, F401
 
 
-CISCO_TIMETICKS = '97881'
-
-OBJ_OID = "1.3.6.1.4.1.2682.1.4.5.1.1.99.1.1.6"
-TRAP_OID = "1.3.6.1.6.3.1.1.4.1.0"
-TRAP_DATA = "1.3.6.1.4.1.9.9.41.2.0.1"
-
-
 @pytest.mark.snmp
-def test_snmp_dest_wrong_version(config, syslog_ng, snmptrapd):
-    # create source driver config
-    file_source = config.create_file_source(file_name="input.log")
+def test_snmp_dest_v2c_custom_community(config, syslog_ng, snmptrapd, snmp_test_params):
+    test_community = "testcommunity"
 
-    # create destination driver config
-    snmp_objs = (
-        "'{}','Timeticks','{}'".format(OBJ_OID, CISCO_TIMETICKS),
-    )
-
-    trap_obj = "'.{}','Objectid','{}'".format(TRAP_OID, TRAP_DATA)
-
+    generator_source = config.create_example_msg_generator_source(num=1)
     snmp_destination = config.create_snmp_destination(
-        host="'127.0.0.1'",
+        host=snmp_test_params.get_ip_address(),
         port=snmptrapd.get_port(),
-        version="'FAKE_VERSION'",
-        snmp_obj=snmp_objs,
-        trap_obj=trap_obj,
+        snmp_obj=snmp_test_params.get_basic_snmp_obj(),
+        trap_obj=snmp_test_params.get_basic_trap_obj(),
+        version="v2c",
+        community=test_community,
     )
+    config.create_logpath(statements=[generator_source, snmp_destination])
 
-    config.create_logpath(statements=[file_source, snmp_destination])
-    config.update_global_options(keep_hostname="yes")
+    syslog_ng.start(config)
 
-    # syslog/ng shall not start due to wrong version parameter
-    with pytest.raises(Exception):
-        syslog_ng.start(config)
+    assert snmp_test_params.get_expected_basic_trap().sort() == snmptrapd.get_traps().sort()
+    assert any(test_community in line for line in snmptrapd.get_raw_traps())
