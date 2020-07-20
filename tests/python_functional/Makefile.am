@@ -4,13 +4,18 @@ EXTRA_DIST += \
 	tests/python_functional/CMakeLists.txt
 
 PYTEST_SUBDIR=
+PYTEST_UNITTEST_SUBDIR=$(top_srcdir)/tests/python_functional/src/$(PYTEST_SUBDIR)
+PYTEST_FUNCTEST_SUBDIR=$(top_srcdir)/tests/python_functional/functional_tests/$(PYTEST_SUBDIR)
 PYTEST_VERBOSE=false
+PYTEST_VERBOSITY_ARGS=-o log_cli=$(PYTEST_VERBOSE) --showlocals --verbosity=3
+PYTEST_SELF_CHECK_DEFAULT_ARGS=$(PYTEST_VERBOSITY_ARGS) $(PYTEST_UNITTEST_SUBDIR)
+PYTEST_CHECK_DEFAULT_ARGS=$(PYTEST_VERBOSITY_ARGS) $(PYTEST_FUNCTEST_SUBDIR)
 
 pytest-self-check:
-	@${PYTHON} -m pytest $(top_srcdir)/tests/python_functional/src --showlocals --verbosity=3
+	@${PYTHON} -m pytest $${PYTEST_ARGS:-$(PYTEST_SELF_CHECK_DEFAULT_ARGS)}
 
 pytest-check:
-	@${PYTHON} -m pytest -o log_cli=$(PYTEST_VERBOSE) $(top_srcdir)/tests/python_functional/functional_tests/$(PYTEST_SUBDIR) --installdir=${prefix} --showlocals --verbosity=3
+	@${PYTHON} -m pytest --installdir=${prefix} $${PYTEST_ARGS:-$(PYTEST_CHECK_DEFAULT_ARGS)}
 
 pytest-linters:
 	@find $(top_srcdir)/tests/python_functional/ -name "*.py" \
