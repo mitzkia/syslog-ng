@@ -33,6 +33,7 @@ expected_log = "Feb 11 21:27:22 testhost testprogram[9999]: test message\n"
     ], ids=["with_one_log", "with_ten_logs"],
 )
 def test_acceptance(config, syslog_ng, input_log, expected_log, counter):
+    config.update_global_options(stats_level=1)
     file_source = config.create_file_source(file_name="input.log")
     file_destination = config.create_file_destination(file_name="output.log")
     config.create_logpath(statements=[file_source, file_destination])
@@ -41,3 +42,5 @@ def test_acceptance(config, syslog_ng, input_log, expected_log, counter):
     file_source.entrypoint.write_log(input_log, counter)
     syslog_ng.start(config)
     assert file_destination.endpoint.read_logs(counter) == [expected_log] * counter
+
+    assert file_source.stats.get_query() == {'processed': counter}
