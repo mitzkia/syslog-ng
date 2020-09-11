@@ -37,7 +37,7 @@ def test_secure_logging(config, syslog_ng, slog):
     config.create_logpath(statements=[generator_source, file_destination])
     syslog_ng.start(config)
 
-    logs = file_destination.read_logs(num_of_messages)
+    logs = file_destination.endpoint.read_logs(num_of_messages)
     # test for no clear text
     assert not any(map(lambda x: message_base in x, logs))
 

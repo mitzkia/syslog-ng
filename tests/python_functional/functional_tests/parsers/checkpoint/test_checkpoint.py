@@ -45,4 +45,4 @@ def test_checkpoint_parser(config, syslog_ng, input_message, expected_value):
     config.create_logpath(statements=[generator_source, checkpoint_parser, file_destination])
 
     syslog_ng.start(config)
-    assert file_destination.read_log().strip() == expected_value
+    assert file_destination.endpoint.read_log().strip() == expected_value

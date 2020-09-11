@@ -27,7 +27,7 @@ def write_msg_with_fields(file_source, bsd_formatter, hostname):
     log_message = LogMessage().hostname(hostname)
     input_message = bsd_formatter.format_message(log_message)
     expected_message = bsd_formatter.format_message(log_message.remove_priority())
-    file_source.write_log(input_message)
+    file_source.entrypoint.write_log(input_message)
     return expected_message
 
 
@@ -59,11 +59,11 @@ def test_flags_final(config, syslog_ng, bsd_formatter):
 
     syslog_ng.start(config)
 
-    dest1_logs = file_destination1.read_log()
+    dest1_logs = file_destination1.endpoint.read_log()
     # host("host-A") matches on first message
     assert expected_message1 in dest1_logs
 
-    dest2_logs = file_destination2.read_log()
+    dest2_logs = file_destination2.endpoint.read_log()
     # second message should arrived only into destination3
     # first message was stopped on first logpath(), because of
     # flags(final)

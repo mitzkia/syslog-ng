@@ -28,4 +28,4 @@ def test_example_destination_parser(config, syslog_ng):
     config.create_logpath(statements=[generator_source, example_destination])
 
     syslog_ng.start(config)
-    assert example_destination.wait_file_content("message text")
+    assert "message text" in example_destination.endpoint.read_log()

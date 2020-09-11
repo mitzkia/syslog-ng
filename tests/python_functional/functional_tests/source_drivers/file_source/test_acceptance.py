@@ -38,6 +38,6 @@ def test_acceptance(config, syslog_ng, input_log, expected_log, counter):
     config.create_logpath(statements=[file_source, file_destination])
     config.update_global_options(keep_hostname="yes")
 
-    file_source.write_log(input_log, counter)
+    file_source.entrypoint.write_log(input_log, counter)
     syslog_ng.start(config)
-    assert file_destination.read_logs(counter) == [expected_log] * counter
+    assert file_destination.endpoint.read_logs(counter) == [expected_log] * counter

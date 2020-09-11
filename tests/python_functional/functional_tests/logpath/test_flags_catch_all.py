@@ -44,15 +44,15 @@ def test_flags_catch_all(config, syslog_ng, log_message, bsd_formatter):
 
     input_message = bsd_formatter.format_message(log_message)
     expected_message = bsd_formatter.format_message(log_message.remove_priority())
-    file_source.write_log(input_message)
+    file_source.entrypoint.write_log(input_message)
 
     syslog_ng.start(config)
 
-    destination_log = file_destination.read_log()
+    destination_log = file_destination.endpoint.read_log()
     # message should arrived into destination1
     assert expected_message in destination_log
 
-    catch_all_destination_log = catch_all_destination.read_log()
+    catch_all_destination_log = catch_all_destination.endpoint.read_log()
     # message should arrived into catch_all_destination
     # there is a flags(catch-all)
     assert expected_message in catch_all_destination_log

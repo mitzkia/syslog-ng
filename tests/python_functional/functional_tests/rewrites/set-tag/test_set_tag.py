@@ -34,6 +34,6 @@ def test_set_tag(config, syslog_ng):
     config.create_logpath(statements=[generator_source, set_tag_with_matching, set_tag_without_matching, file_destination])
 
     syslog_ng.start(config)
-    log_line = file_destination.read_log().strip()
+    log_line = file_destination.endpoint.read_log().strip()
     assert "SHOULDMATCH" in log_line
     assert "DONOTMATCH" not in log_line

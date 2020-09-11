@@ -39,4 +39,4 @@ def test_use_syslogng_pid(config, syslog_ng, use_syslogng_pid):
         expected_value = "PID={}".format(p.pid)
     else:
         expected_value = "PID={}".format(DEFAULT_PID)
-    assert file_destination.read_log().strip() == expected_value
+    assert file_destination.endpoint.read_log().strip() == expected_value

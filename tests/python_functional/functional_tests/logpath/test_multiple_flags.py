@@ -27,7 +27,7 @@ def write_msg_with_fields(file_source, bsd_formatter, hostname, program):
     log_message = LogMessage().hostname(hostname).program(program)
     input_message = bsd_formatter.format_message(log_message)
     expected_message = bsd_formatter.format_message(log_message.remove_priority())
-    file_source.write_log(input_message)
+    file_source.entrypoint.write_log(input_message)
     return expected_message
 
 
@@ -72,22 +72,22 @@ def test_multiple_flags(config, syslog_ng, bsd_formatter):
 
     syslog_ng.start(config)
 
-    dest1_logs = file_destination1.read_logs(counter=2)
+    dest1_logs = file_destination1.endpoint.read_logs(counter=2)
     # host("host-A") matches on first and second messages
     assert expected_message1 in dest1_logs
     assert expected_message2 in dest1_logs
 
-    dest2_logs = file_destination2.read_logs(counter=1)
+    dest2_logs = file_destination2.endpoint.read_logs(counter=1)
     # program("app-A") matches on first and third messages, but flags(final)
     # in previous logpath() say that first message can not arrived here
     assert expected_message3 in dest2_logs
 
-    dest3_logs = file_destination3.read_logs(counter=1)
+    dest3_logs = file_destination3.endpoint.read_logs(counter=1)
     # only fourth message should arrive here, because of
     # flags(fallback), only this messages was not matched before
     assert expected_message4 in dest3_logs
 
-    dest4_logs = file_destination4.read_logs(counter=4)
+    dest4_logs = file_destination4.endpoint.read_logs(counter=4)
     # every message should arrived into destination4
     # there is a flags(catch-all)
     assert expected_message1 in dest4_logs

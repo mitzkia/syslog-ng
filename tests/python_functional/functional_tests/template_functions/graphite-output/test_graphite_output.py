@@ -30,5 +30,5 @@ def test_graphite_output(config, syslog_ng):
 
     config.create_logpath(statements=[generator_source, file_destination])
     syslog_ng.start(config)
-    log = file_destination.read_logs(2)
+    log = file_destination.endpoint.read_logs(2)
     assert log == ["test.key1 value1 custom_timestamp\n", "test.key2 value2 custom_timestamp\n"]
