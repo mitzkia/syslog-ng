@@ -53,7 +53,7 @@ class DriverStatsHandler(object):
         parsed_output = {}
         for stat_element in statistical_elements:
             for line in result:
-                if stat_element in line:
+                if (stat_element in line) and ("stamp" not in line):
                     if result_type == "query":
                         parsed_output.update({stat_element: int(line.split(".")[-1].split("=")[-1])})
                     elif result_type == "stats":

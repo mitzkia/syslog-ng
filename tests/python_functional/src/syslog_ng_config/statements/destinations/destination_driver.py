@@ -33,11 +33,5 @@ class DestinationDriver(object):
         if options is None:
             options = {}
         self.options = options
-        self.stats_handler = DriverStatsHandler(group_type=self.group_type, driver_name=self.driver_name)
+        self.stats = DriverStatsHandler(group_type=self.group_type, driver_name=self.driver_name)
         self.endpoint = endpoint_handler
-
-    def get_stats(self):
-        return self.stats_handler.get_stats()
-
-    def get_query(self):
-        return self.stats_handler.get_query()

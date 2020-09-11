@@ -20,6 +20,7 @@
 # COPYING for details.
 #
 #############################################################################
+from src.syslog_ng_ctl.driver_stats_handler import DriverStatsHandler
 
 
 class SourceDriver(object):
@@ -33,3 +34,4 @@ class SourceDriver(object):
             options = {}
         self.options = options
         self.entrypoint = entrypoint_handler
+        self.stats = DriverStatsHandler(group_type=self.group_type, driver_name=self.driver_name)
