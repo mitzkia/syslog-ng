@@ -25,10 +25,11 @@
 class SourceDriver(object):
     group_type = "source"
 
-    def __init__(self, positional_parameters=None, options=None):
+    def __init__(self, positional_parameters=None, options=None, entrypoint_handler=None):
         if positional_parameters is None:
             positional_parameters = []
         self.positional_parameters = positional_parameters
         if options is None:
             options = {}
         self.options = options
+        self.entrypoint = entrypoint_handler
