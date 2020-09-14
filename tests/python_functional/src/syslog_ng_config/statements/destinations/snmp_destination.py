@@ -20,10 +20,13 @@
 # COPYING for details.
 #
 #############################################################################
+from src.syslog_ng_config.config_statement import ConfigStatement
 from src.syslog_ng_config.statements.destinations.destination_driver import DestinationDriver
 
 
 class SnmpDestination(DestinationDriver):
     def __init__(self, **options):
         self.driver_name = "snmp"
-        super(SnmpDestination, self).__init__(None, options)
+        self.options = options
+        self.config_statement = ConfigStatement
+        super(SnmpDestination, self).__init__(self.config_statement(self.options, "destination", self.driver_name), None)

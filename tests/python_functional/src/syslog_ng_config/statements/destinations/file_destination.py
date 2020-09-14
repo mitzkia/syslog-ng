@@ -24,6 +24,7 @@ from pathlib2 import Path
 
 import src.testcase_parameters.testcase_parameters as tc_parameters
 from src.driver_io.file.file_reader import FileReader
+from src.syslog_ng_config.config_statement import ConfigStatement
 from src.syslog_ng_config.statements.destinations.destination_driver import DestinationDriver
 
 
@@ -31,8 +32,8 @@ class FileDestination(DestinationDriver):
     def __init__(self, file_name, **options):
         self.driver_name = "file"
         self.path = Path(tc_parameters.WORKING_DIR, file_name)
+        self.options = options
+        self.options.update({"file_name": self.path})
+        self.config_statement = ConfigStatement
         self.file_reader = FileReader
-        super(FileDestination, self).__init__([self.path], options, self.file_reader(self.path))
-
-    def get_path(self):
-        return self.path
+        super(FileDestination, self).__init__(self.config_statement(self.options, "destination", self.driver_name), self.file_reader(self.path))

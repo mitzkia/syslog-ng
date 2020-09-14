@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #############################################################################
-# Copyright (c) 2015-2018 Balabit
+# Copyright (c) 2015-2020 Balabit
 #
 # This program is free software; you can redistribute it and/or modify it
 # under the terms of the GNU General Public License version 2 as published
@@ -23,17 +23,20 @@
 from pathlib2 import Path
 
 import src.testcase_parameters.testcase_parameters as tc_parameters
-from src.driver_io.file.file_reader import FileReader
-from src.syslog_ng_config.config_statement import ConfigStatement
-from src.syslog_ng_config.statements.destinations.destination_driver import DestinationDriver
 
 
-class ExampleDestination(DestinationDriver):
-    def __init__(self, filename, **options):
-        self.driver_name = "example-destination"
-        self.path = Path(tc_parameters.WORKING_DIR, filename)
+class ConfigStatement(object):
+    def __init__(self, options, group_type, driver_name):
+        self.group_type = group_type
+        self.driver_name = driver_name
         self.options = options
-        self.options.update({"filename": self.path})
-        self.file_reader = FileReader
-        self.config_statement = ConfigStatement
-        super(ExampleDestination, self).__init__(self.config_statement(self.options, "destination", self.driver_name), self.file_reader(self.path))
+        self.positional_parameters = []
+        if "file_name" in self.options:
+            self.positional_parameters = [str(self.options["file_name"])]
+            del self.options["file_name"]
+
+    def get_path(self):
+        return Path(self.positional_parameters[0])
+
+    def set_path(self, pathname):
+        self.positional_parameters = [str(Path(tc_parameters.WORKING_DIR, pathname))]

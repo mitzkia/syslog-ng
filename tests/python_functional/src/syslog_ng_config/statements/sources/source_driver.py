@@ -26,12 +26,7 @@ from src.syslog_ng_ctl.driver_stats_handler import DriverStatsHandler
 class SourceDriver(object):
     group_type = "source"
 
-    def __init__(self, positional_parameters=None, options=None, entrypoint_handler=None):
-        if positional_parameters is None:
-            positional_parameters = []
-        self.positional_parameters = positional_parameters
-        if options is None:
-            options = {}
-        self.options = options
+    def __init__(self, config_statement=None, entrypoint_handler=None):
+        self.config = config_statement
         self.entrypoint = entrypoint_handler
         self.stats = DriverStatsHandler(group_type=self.group_type, driver_name=self.driver_name)

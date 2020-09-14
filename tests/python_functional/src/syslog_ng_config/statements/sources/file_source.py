@@ -24,6 +24,7 @@ from pathlib2 import Path
 
 import src.testcase_parameters.testcase_parameters as tc_parameters
 from src.driver_io.file.file_writer import FileWriter
+from src.syslog_ng_config.config_statement import ConfigStatement
 from src.syslog_ng_config.statements.sources.source_driver import SourceDriver
 
 
@@ -31,11 +32,8 @@ class FileSource(SourceDriver):
     def __init__(self, file_name, **options):
         self.driver_name = "file"
         self.path = Path(tc_parameters.WORKING_DIR, file_name)
+        self.options = options
+        self.options.update({"file_name": self.path})
+        self.config_statement = ConfigStatement
         self.file_writer = FileWriter
-        super(FileSource, self).__init__([self.path], options, self.file_writer(self.path))
-
-    def get_path(self):
-        return self.path
-
-    def set_path(self, pathname):
-        self.path = Path(tc_parameters.WORKING_DIR, pathname)
+        super(FileSource, self).__init__(self.config_statement(self.options, "source", self.driver_name), self.file_writer(self.path))

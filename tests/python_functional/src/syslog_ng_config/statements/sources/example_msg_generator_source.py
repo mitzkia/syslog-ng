@@ -20,6 +20,7 @@
 # COPYING for details.
 #
 #############################################################################
+from src.syslog_ng_config.config_statement import ConfigStatement
 from src.syslog_ng_config.statements.sources.source_driver import SourceDriver
 
 
@@ -27,4 +28,6 @@ class ExampleMsgGeneratorSource(SourceDriver):
     def __init__(self, **options):
         self.driver_name = "example_msg_generator"
         self.DEFAULT_MESSAGE = "-- Generated message. --"
-        super(ExampleMsgGeneratorSource, self).__init__(None, options)
+        self.options = options
+        self.config_statement = ConfigStatement
+        super(ExampleMsgGeneratorSource, self).__init__(self.config_statement(self.options, "source", self.driver_name), None)
