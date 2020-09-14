@@ -34,7 +34,7 @@ def test_secure_logging(config, syslog_ng, slog):
     secure_log_template = "$(slog -k {} -m {} $MSG)".format(slog.derived_key, slog.cmac)
     file_destination = config.create_file_destination(file_name=output_file_name, template=config.stringify(secure_log_template + '\n'))
 
-    config.create_logpath(statements=[generator_source, file_destination])
+    config.create_logpath(statements=[generator_source.config, file_destination.config])
     syslog_ng.start(config)
 
     logs = file_destination.endpoint.read_logs(num_of_messages)

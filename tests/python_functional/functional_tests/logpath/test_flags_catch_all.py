@@ -36,10 +36,10 @@ def test_flags_catch_all(config, syslog_ng, log_message, bsd_formatter):
     file_destination = config.create_file_destination(file_name="output.log")
     catch_all_destination = config.create_file_destination(file_name="catchall_output.log")
 
-    inner_logpath = config.create_inner_logpath(statements=[file_destination])
+    inner_logpath = config.create_inner_logpath(statements=[file_destination.config])
 
-    config.create_logpath(statements=[file_source, inner_logpath])
-    config.create_logpath(statements=[catch_all_destination], flags="catch-all")
+    config.create_logpath(statements=[file_source.config, inner_logpath])
+    config.create_logpath(statements=[catch_all_destination.config], flags="catch-all")
     config.update_global_options(keep_hostname="yes")
 
     input_message = bsd_formatter.format_message(log_message)

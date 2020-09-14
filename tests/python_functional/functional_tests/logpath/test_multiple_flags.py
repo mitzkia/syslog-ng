@@ -56,14 +56,14 @@ def test_multiple_flags(config, syslog_ng, bsd_formatter):
     file_destination3 = config.create_file_destination(file_name="output3.log")
     file_destination4 = config.create_file_destination(file_name="output4.log")
 
-    second_level_logpath1 = config.create_inner_logpath(statements=[host_filter, file_destination1], flags="final")
-    second_level_logpath2 = config.create_inner_logpath(statements=[program_filter, file_destination2])
-    second_level_logpath3 = config.create_inner_logpath(statements=[file_destination3], flags="fallback")
+    second_level_logpath1 = config.create_inner_logpath(statements=[host_filter, file_destination1.config], flags="final")
+    second_level_logpath2 = config.create_inner_logpath(statements=[program_filter, file_destination2.config])
+    second_level_logpath3 = config.create_inner_logpath(statements=[file_destination3.config], flags="fallback")
 
     config.create_logpath(
-        statements=[file_source, second_level_logpath1, second_level_logpath2, second_level_logpath3],
+        statements=[file_source.config, second_level_logpath1, second_level_logpath2, second_level_logpath3],
     )
-    config.create_logpath(statements=[file_destination4], flags="catch-all")
+    config.create_logpath(statements=[file_destination4.config], flags="catch-all")
 
     expected_message1 = write_msg_with_fields(file_source, bsd_formatter, "host-A", "app-A")
     expected_message2 = write_msg_with_fields(file_source, bsd_formatter, "host-A", "app-B")

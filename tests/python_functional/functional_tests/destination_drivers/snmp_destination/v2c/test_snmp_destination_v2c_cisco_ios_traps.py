@@ -35,7 +35,7 @@ def test_snmp_dest_v2c_cisco_ios_trap(config, syslog_ng, snmptrapd, snmp_test_pa
         trap_obj=snmp_test_params.get_basic_trap_obj(),
         version="v2c",
     )
-    config.create_logpath(statements=[generator_source, snmp_destination])
+    config.create_logpath(statements=[generator_source.config, snmp_destination.config])
 
     syslog_ng.start(config)
 

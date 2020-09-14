@@ -47,7 +47,7 @@ def test_snmp_dest_v2c_using_macros_in_snmp_obj(config, syslog_ng, snmptrapd, sn
         trap_obj=snmp_test_params.get_cisco_trap_obj(),
         version="v2c",
     )
-    config.create_logpath(statements=[file_source, snmp_destination])
+    config.create_logpath(statements=[file_source.config, snmp_destination.config])
     file_source.entrypoint.write_log(input_message)
 
     syslog_ng.start(config)

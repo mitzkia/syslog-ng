@@ -49,10 +49,10 @@ def test_flags_fallback(config, syslog_ng, bsd_formatter):
     file_destination1 = config.create_file_destination(file_name="output1.log")
     file_destination2 = config.create_file_destination(file_name="output2.log")
 
-    inner_logpath1 = config.create_inner_logpath(statements=[host_filter, file_destination1])
-    inner_logpath2 = config.create_inner_logpath(statements=[file_destination2], flags="fallback")
+    inner_logpath1 = config.create_inner_logpath(statements=[host_filter, file_destination1.config])
+    inner_logpath2 = config.create_inner_logpath(statements=[file_destination2.config], flags="fallback")
 
-    config.create_logpath(statements=[file_source, inner_logpath1, inner_logpath2])
+    config.create_logpath(statements=[file_source.config, inner_logpath1, inner_logpath2])
 
     expected_message1 = write_msg_with_fields(file_source, bsd_formatter, "host-A")
     expected_message2 = write_msg_with_fields(file_source, bsd_formatter, "host-B")

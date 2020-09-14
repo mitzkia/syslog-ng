@@ -45,7 +45,7 @@ def test_panos_parser(config, syslog_ng, input_message, template, expected_value
     checkpoint_parser = config.create_panos_parser()
 
     file_destination = config.create_file_destination(file_name="output.log", template=config.stringify(template + "\n"))
-    config.create_logpath(statements=[generator_source, checkpoint_parser, file_destination])
+    config.create_logpath(statements=[generator_source.config, checkpoint_parser, file_destination.config])
 
     syslog_ng.start(config)
     assert file_destination.endpoint.read_log().strip() == expected_value

@@ -47,7 +47,7 @@ def test_application_raw(config, syslog_ng, input_message, template, expected_va
     app_parser = config.create_app_parser(topic="syslog-raw")
 
     file_destination = config.create_file_destination(file_name="output.log", template=config.stringify(template + '\n'))
-    config.create_logpath(statements=[generator_source, app_parser, file_destination])
+    config.create_logpath(statements=[generator_source.config, app_parser, file_destination.config])
 
     syslog_ng.start(config)
     assert file_destination.endpoint.read_log().strip() == expected_value

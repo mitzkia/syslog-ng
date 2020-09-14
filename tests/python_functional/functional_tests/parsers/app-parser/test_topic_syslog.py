@@ -42,7 +42,7 @@ def test_application_syslog(config, syslog_ng, input_message, template, expected
     syslog_parser = config.create_syslog_parser(flags="syslog-protocol")
     app_parser = config.create_app_parser(topic="syslog")
     file_destination = config.create_file_destination(file_name="output.log", template=config.stringify(template + '\n'))
-    config.create_logpath(statements=[generator_source, syslog_parser, app_parser, file_destination])
+    config.create_logpath(statements=[generator_source.config, syslog_parser, app_parser, file_destination.config])
 
     syslog_ng.start(config)
     assert file_destination.endpoint.read_log().strip() == expected_value

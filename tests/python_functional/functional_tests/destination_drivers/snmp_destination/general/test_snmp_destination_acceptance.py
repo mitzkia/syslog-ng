@@ -35,7 +35,7 @@ def test_snmp_dest_acceptance(config, syslog_ng, snmptrapd, snmp_test_params):
         snmp_obj=snmp_test_params.get_basic_snmp_obj(),
         trap_obj=snmp_test_params.get_basic_trap_obj(),
     )
-    config.create_logpath(statements=[generator_source, snmp_destination])
+    config.create_logpath(statements=[generator_source.config, snmp_destination.config])
 
     syslog_ng.start(config)
 

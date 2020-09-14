@@ -42,7 +42,7 @@ def test_checkpoint_parser(config, syslog_ng, input_message, expected_value):
     checkpoint_parser = config.create_checkpoint_parser()
 
     file_destination = config.create_file_destination(file_name="output.log", template=config.stringify('<${PROGRAM}><${HOST}><${S_DATE}>\n'))
-    config.create_logpath(statements=[generator_source, checkpoint_parser, file_destination])
+    config.create_logpath(statements=[generator_source.config, checkpoint_parser, file_destination.config])
 
     syslog_ng.start(config)
     assert file_destination.endpoint.read_log().strip() == expected_value

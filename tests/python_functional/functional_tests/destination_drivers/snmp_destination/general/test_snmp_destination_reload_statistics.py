@@ -37,7 +37,7 @@ def test_snmp_dest_reload_stat(config, syslog_ng, syslog_ng_ctl, snmptrapd, snmp
         snmp_obj=snmp_test_params.get_basic_snmp_obj(),
         trap_obj=snmp_test_params.get_basic_trap_obj(),
     )
-    config.create_logpath(statements=[generator_source, snmp_destination])
+    config.create_logpath(statements=[generator_source.config, snmp_destination.config])
 
     syslog_ng.start(config)
 

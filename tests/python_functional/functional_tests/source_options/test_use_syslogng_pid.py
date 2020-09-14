@@ -32,7 +32,7 @@ DEFAULT_PID = "pid"
 def test_use_syslogng_pid(config, syslog_ng, use_syslogng_pid):
     generator_source = config.create_example_msg_generator_source(num=1, use_syslogng_pid=use_syslogng_pid, values="PID => {}".format(DEFAULT_PID))
     file_destination = config.create_file_destination(file_name="output.log", template=config.stringify("PID=$PID\n"))
-    config.create_logpath(statements=[generator_source, file_destination])
+    config.create_logpath(statements=[generator_source.config, file_destination.config])
 
     p = syslog_ng.start(config)
     if use_syslogng_pid == "yes":

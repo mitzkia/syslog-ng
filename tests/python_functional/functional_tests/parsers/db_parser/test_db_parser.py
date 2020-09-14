@@ -33,7 +33,7 @@ def test_db_parser(config, syslog_ng):
     db_parser = config.create_db_parser(patterndb_config)
 
     file_destination = config.create_file_destination(file_name="output.log", template=config.stringify('foo=$foo class=${.classifier.class}\n'))
-    config.create_logpath(statements=[generator_source, db_parser, file_destination])
+    config.create_logpath(statements=[generator_source.config, db_parser, file_destination.config])
 
     syslog_ng.start(config)
     assert file_destination.endpoint.read_log().strip() == "foo=5 class=patterndb"

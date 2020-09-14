@@ -31,7 +31,7 @@ def test_set_tag(config, syslog_ng):
     set_tag_with_matching = config.create_rewrite_set_tag("SHOULDMATCH", condition=match)
     set_tag_without_matching = config.create_rewrite_set_tag("DONOTMATCH", condition=notmatch)
     file_destination = config.create_file_destination(file_name="output.log", template=config.stringify('${TAGS}\n'))
-    config.create_logpath(statements=[generator_source, set_tag_with_matching, set_tag_without_matching, file_destination])
+    config.create_logpath(statements=[generator_source.config, set_tag_with_matching, set_tag_without_matching, file_destination.config])
 
     syslog_ng.start(config)
     log_line = file_destination.endpoint.read_log().strip()

@@ -33,7 +33,7 @@ def test_snmp_dest_missing_trap_obj(config, syslog_ng, snmptrapd, snmp_test_para
         port=snmptrapd.get_port(),
         snmp_obj=snmp_test_params.get_basic_snmp_obj(),
     )
-    config.create_logpath(statements=[generator_source, snmp_destination])
+    config.create_logpath(statements=[generator_source.config, snmp_destination.config])
 
     with pytest.raises(Exception):
         syslog_ng.start(config)

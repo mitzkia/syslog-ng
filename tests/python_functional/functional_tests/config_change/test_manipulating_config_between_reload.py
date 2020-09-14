@@ -25,25 +25,25 @@
 def test_manipulating_config_between_reload(config, syslog_ng):
     file_source = config.create_file_source(file_name="input.log")
     file_destination = config.create_file_destination(file_name="output.log")
-    destination_group = config.create_statement_group(file_destination)
+    destination_group = config.create_statement_group(file_destination.config)
 
-    logpath = config.create_logpath(statements=[file_source, destination_group])
+    logpath = config.create_logpath(statements=[file_source.config, destination_group])
 
     syslog_ng.start(config)
 
     # update positional value of file source
-    file_source.set_path("updated_input.log")
+    file_source.config.set_path("updated_input.log")
 
     # add new option to file source
     file_source.options["log_iw_size"] = "100"
 
     # create new file source and add to separate source group
     file_source2 = config.create_file_source(file_name="input2.log")
-    source_group2 = config.create_statement_group(file_source2)
+    source_group2 = config.create_statement_group(file_source2.config)
 
     # create new file destination and update first destination group
     file_destination2 = config.create_file_destination(file_name="output2.log")
-    destination_group.append(file_destination2)
+    destination_group.append(file_destination2.config)
 
     # update first logpath group with new source group
     logpath.add_group(source_group2)
@@ -54,7 +54,7 @@ def test_manipulating_config_between_reload(config, syslog_ng):
     file_source.options.pop("log_iw_size")
 
     # remove file destination from destination group
-    destination_group.remove(file_destination2)
+    destination_group.remove(file_destination2.config)
 
     # remove second source group from logpath
     logpath.logpath.remove(source_group2)
