@@ -100,6 +100,9 @@ class SyslogNgConfig(object):
     def create_checkpoint_parser(self, **options):
         return Parser("checkpoint-parser", **options)
 
+    def create_date_parser(self, **options):
+        return Parser("date-parser", **options)
+
     def create_panos_parser(self, **options):
         return Parser("panos-parser", **options)
 
