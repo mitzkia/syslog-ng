@@ -27,8 +27,9 @@ from src.syslog_ng_config.statements.destinations.destination_driver import Dest
 def map_transport(transport):
     mapping = {
         "tcp": NetworkIO.Transport.TCP,
+        "syslog": NetworkIO.Transport.TCP,
         "udp": NetworkIO.Transport.UDP,
-        # "tls": NetworkIO.Transport.TLS,
+        "tls": NetworkIO.Transport.TLS,
     }
     transport = transport.replace("_", "-").replace("'", "").replace('"', "").lower()
 

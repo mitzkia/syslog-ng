@@ -31,6 +31,7 @@ from src.common.file import File
 from src.common.random_id import get_unique_id
 from src.helpers.loggen.loggen import Loggen
 from src.helpers.netcat.netcat import Netcat
+from src.helpers.openssl.openssl import OpenSSLServer
 
 
 class NetworkIO():
@@ -54,11 +55,18 @@ class NetworkIO():
         Loggen().start(self.__ip, self.__port, read_file=str(loggen_input_file_path), dont_parse=True, permanent=True, rate=rate, **self.__transport.to_loggen_params())
 
     def start_listener(self):
-        # TODO: if TCP or UDP
-        self.__listener = Netcat()
-        self.__listener.start(self.__ip, self.__port, l=True, k=True, **self.__transport.to_netcat_params())  # noqa: E741
-        self.__listener_output_file = File(self.__listener.output_path)
-        self.__listener_output_file.open(mode="r")
+        if self.__transport == NetworkIO.Transport.TCP or self.__transport == NetworkIO.Transport.UDP:
+            self.__listener = Netcat()
+            self.__listener.start(self.__ip, self.__port, l=True, k=True, **self.__transport.to_netcat_params())  # noqa: E741
+            self.__listener_output_file = File(self.__listener.output_path)
+            self.__listener_output_file.open(mode="r")
+        else:
+            self.__listener = OpenSSLServer()
+            key_file = ""
+            cert_file = ""
+            self.__listener.start(accept=self.__ip, port=self.__port, key=key_file, cert=cert_file)  # noqa: E741
+            self.__listener_output_file = File(self.__listener.output_path)
+            self.__listener_output_file.open(mode="r")
 
     def stop_listener(self):
         if self.__listener is not None:
@@ -91,5 +99,11 @@ class NetworkIO():
             netcat_params_mapping = {
                 NetworkIO.Transport.TCP: {},
                 NetworkIO.Transport.UDP: {"u": True},
+            }
+            return netcat_params_mapping[self]
+
+        def to_openssl_params(self):
+            netcat_params_mapping = {
+                NetworkIO.Transport.TLS: {},
             }
             return netcat_params_mapping[self]

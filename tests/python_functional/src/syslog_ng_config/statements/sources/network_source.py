@@ -48,7 +48,7 @@ class NetworkSource(SourceDriver):
     def __init__(self, **options):
         self.io = create_io(options)
 
-        self.driver_name = "network"
+        self.driver_name = "syslog"
         super(NetworkSource, self).__init__(options=options)
 
     def write_log(self, formatted_content, rate=None):
