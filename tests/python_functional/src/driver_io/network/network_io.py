@@ -27,6 +27,7 @@ from enum import Enum
 from pathlib2 import Path
 
 import src.testcase_parameters.testcase_parameters as tc_parameters
+from src.common.file import copy_file
 from src.common.file import File
 from src.common.random_id import get_unique_id
 from src.helpers.loggen.loggen import Loggen
@@ -62,9 +63,13 @@ class NetworkIO():
             self.__listener_output_file.open(mode="r")
         else:
             self.__listener = OpenSSLServer()
-            key_file = ""
-            cert_file = ""
-            self.__listener.start(accept=self.__ip, port=self.__port, key=key_file, cert=cert_file)  # noqa: E741
+            server_key_path = Path(tc_parameters.WORKING_DIR, "server.key")
+            copy_file(str(Path(__file__).parents[3]) + "/shared_files/server.key", server_key_path)
+            server_cert_path = Path(tc_parameters.WORKING_DIR, "server.crt")
+            copy_file(str(Path(__file__).parents[3]) + "/shared_files/server.crt", server_cert_path)
+            server_ca_path = Path(tc_parameters.WORKING_DIR, "ca.crt")
+            copy_file(str(Path(__file__).parents[3]) + "/shared_files/ca.crt", server_ca_path)
+            self.__listener.start(accept=self.__ip, port=self.__port, key=server_key_path, cert=server_cert_path, CAfile=server_ca_path)  # noqa: E741
             self.__listener_output_file = File(self.__listener.output_path)
             self.__listener_output_file.open(mode="r")
 

@@ -43,7 +43,7 @@ class OpenSSLServer(object):
     def output_path(self):
         return str(self.__openssl_server_stdout_path.absolute())
 
-    def __decode_start_parameters(self, accept, port, key, cert):
+    def __decode_start_parameters(self, accept, port, key, cert, CAfile):
         # TODO: other options
         start_parameters = []
 
@@ -59,9 +59,12 @@ class OpenSSLServer(object):
         if cert is not None:
             start_parameters.extend(["-cert", cert])
 
+        if CAfile is not None:
+            start_parameters.extend(["-CAfile", CAfile])
+
         return start_parameters
 
-    def start(self, accept=None, port=None, key=None, cert=None):
+    def start(self, accept=None, port=None, key=None, cert=None, CAfile=None):
         if self.openssl_server_proc is not None and self.openssl_server_proc.is_running():
             raise Exception("OpenSSLServer is already running, you shouldn't call start")
 
@@ -69,7 +72,7 @@ class OpenSSLServer(object):
         self.__openssl_server_stdout_path = Path(tc_parameters.WORKING_DIR, "openssl_server_stdout_{}".format(instanceIndex))
         openssl_server_stderr_path = Path(tc_parameters.WORKING_DIR, "openssl_server_stderr_{}".format(instanceIndex))
 
-        self.parameters = self.__decode_start_parameters(accept, port, key, cert)
+        self.parameters = self.__decode_start_parameters(accept, port, key, cert, CAfile)
 
         self.openssl_server_proc = ProcessExecutor().start(
             ["openssl", "s_server"] + self.parameters,

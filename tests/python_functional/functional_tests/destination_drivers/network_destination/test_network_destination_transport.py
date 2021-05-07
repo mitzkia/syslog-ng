@@ -34,7 +34,7 @@ from src.common.file import copy_shared_file
     ], ids=["default", "tcp", "udp", "tls"],
 )
 def test_network_destination_transport(config, syslog_ng, port_allocator, transport, testcase_parameters):
-    counter = 100
+    counter = 1000
     message = "message text"
 
     generator_source = config.create_example_msg_generator_source(num=counter, freq=0.0001, template=config.stringify(message))
@@ -42,8 +42,8 @@ def test_network_destination_transport(config, syslog_ng, port_allocator, transp
         if transport == "tls":
             client_key_path = copy_shared_file(testcase_parameters, "client.key")
             client_cert_path = copy_shared_file(testcase_parameters, "client.crt")
-            network_destination = config.create_network_destination(ip="localhost", port=port_allocator(), transport=transport, tls={"key_file": client_key_path, "cert_file": client_cert_path, "peer_verify": "optional_untrusted"})
-
+            server_ca_path = copy_shared_file(testcase_parameters, "ca.crt")
+            network_destination = config.create_network_destination(ip="localhost", port=port_allocator(), transport=transport, tls={"key_file": client_key_path, "cert_file": client_cert_path, "ca_file": server_ca_path})
         else:
             network_destination = config.create_network_destination(ip="localhost", port=port_allocator(), transport=transport)
     else:
