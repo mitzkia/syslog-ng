@@ -21,25 +21,29 @@
 #
 #############################################################################
 import atexit
+import socket
 from enum import auto
 from enum import Enum
+from enum import IntEnum
 
 from pathlib2 import Path
 
 import src.testcase_parameters.testcase_parameters as tc_parameters
+from src.common.blocking import DEFAULT_TIMEOUT
 from src.common.file import File
+from src.common.network_io import SingleConnectionTCPServer
+from src.common.network_io import UDPServer
 from src.common.random_id import get_unique_id
 from src.helpers.loggen.loggen import Loggen
-from src.helpers.netcat.netcat import Netcat
 
 
 class NetworkIO():
-    def __init__(self, ip, port, transport):
+    def __init__(self, ip, port, transport, ip_proto_version=None):
         self.__ip = ip
         self.__port = port
         self.__transport = transport
-        self.__listener = None
-        self.__listener_output_file = None
+        self.__ip_proto_version = NetworkIO.IPProtoVersion.V4 if ip_proto_version is None else ip_proto_version
+        self.__message_reader = None
 
         atexit.register(self.stop_listener)
 
@@ -54,20 +58,23 @@ class NetworkIO():
         Loggen().start(self.__ip, self.__port, read_file=str(loggen_input_file_path), dont_parse=True, permanent=True, rate=rate, **self.__transport.to_loggen_params())
 
     def start_listener(self):
-        self.__listener = Netcat()
-        self.__listener.start(self.__ip, self.__port, l=True, k=True, **self.__transport.to_netcat_params())  # noqa: E741
-        self.__listener_output_file = File(self.__listener.output_path)
-        self.__listener_output_file.open(mode="r")
+        self.__message_reader = self.__transport.construct_reader(self.__port, self.__ip, self.__ip_proto_version)
+        self.__message_reader.get_server().start()
 
     def stop_listener(self):
-        if self.__listener is not None:
-            self.__listener.stop()
+        if self.__message_reader is not None:
+            self.__message_reader.get_server().stop()
+            self.__message_reader = None
 
-    def read_number_of_lines(self, counter):
-        return self.__listener_output_file.wait_for_number_of_lines(counter)
+    def read_number_of_messages(self, counter, timeout=DEFAULT_TIMEOUT):
+        return self.__message_reader.wait_for_number_of_messages(counter, timeout)
 
-    def read_until_lines(self, lines):
-        return self.__listener_output_file.wait_for_lines(lines)
+    def read_until_messages(self, lines, timeout=DEFAULT_TIMEOUT):
+        return self.__message_reader.wait_for_messages(lines, timeout)
+
+    class IPProtoVersion(IntEnum):
+        V4 = socket.AF_INET
+        V6 = socket.AF_INET6
 
     class Transport(Enum):
         TCP = auto()
@@ -92,3 +99,102 @@ class NetworkIO():
                 NetworkIO.Transport.UDP: {"u": True},
             }
             return netcat_params_mapping[self]
+
+        def construct_reader(self, port, host=None, ip_proto_version=None):
+            transport_mapping = {
+                NetworkIO.Transport.TCP: SingleLineStreamReader(SingleConnectionTCPServer(port, host, ip_proto_version, ssl=None)),
+                NetworkIO.Transport.UDP: DatagramReader(UDPServer(port, host, ip_proto_version)),
+                # NetworkIO.Transport.TLS: SingleLineMessageReader(SingleConnectionTCPServer(port, host, ip_proto_version, ssl=TODO)),
+                # Framed: FramedStreamReader(SingleConnectionTCPServer())
+                # Frarmed TLS: FramedStreamReader(SingleConnectionTCPServer(ssl=TODO))
+            }
+            return transport_mapping[self]
+
+
+class SingleLineStreamReader(object):
+    def __init__(self, stream_server):
+        self._stream_server = stream_server
+
+    def wait_for_messages(self, lines, timeout):
+        return self._stream_server.get_event_loop().wait_async_result(self._read_until_lines_found(lines), timeout=timeout)
+
+    def wait_for_number_of_messages(self, number_of_lines, timeout):
+        return self._stream_server.get_event_loop().wait_async_result(self._read_number_of_lines(number_of_lines), timeout=timeout)
+
+    def get_server(self):
+        return self._stream_server
+
+    async def _read_until_lines_found(self, lines):
+        read_lines = []
+        lines_to_find = lines.copy()
+
+        while len(lines_to_find) > 0:
+            line = await self._stream_server._readline()
+            if len(line) == 0:
+                raise Exception("Could not find all lines. Remaining lines to find: {} Lines found: {}".format(lines_to_find, read_lines))
+            line = line.decode("utf-8")
+            read_lines.append(line)
+            _list_remove_partially_matching_element(lines_to_find, line)
+        return read_lines
+
+    async def _read_number_of_lines(self, number_of_lines):
+        lines = []
+        for i in range(number_of_lines):
+            line = await self._stream_server._readline()
+            if len(line) == 0:
+                raise Exception("Could not read {} number of lines. Connection closed after {} lines".format(number_of_lines, len(lines)))
+            lines.append(line.decode("utf-8"))
+        return lines
+
+
+class DatagramReader(object):
+    def __init__(self, datagram_server):
+        self._datagram_server = datagram_server
+
+    def wait_for_messages(self, lines, timeout, maxsize=65536):
+        return self._datagram_server.get_event_loop().wait_async_result(self._read_until_dgrams_found(lines, maxsize), timeout=timeout)
+
+    def wait_for_number_of_messages(self, number_of_msgs, timeout, maxsize=65536):
+        return self._datagram_server.get_event_loop().wait_async_result(self._read_number_of_dgrams(number_of_msgs, maxsize), timeout=timeout)
+
+    async def _read_until_dgrams_found(self, dgrams, maxsize):
+        read_dgrams = []
+        dgrams_to_find = dgrams.copy()
+
+        while len(dgrams_to_find) != 0:
+            dgram = await self._datagram_server._read_dgram(maxsize)
+            if len(dgram) == 0:
+                raise Exception("Could not find all datagrams. Remaining dgrams to find: {} Lines found: {}".format(dgrams_to_find, read_dgrams))
+            dgram = dgram.decode("utf-8")
+            read_dgrams.append(dgram)
+            _list_remove_partially_matching_element(dgrams_to_find, dgram)
+        return read_dgrams
+
+    async def _read_number_of_dgrams(self, number_of_dgrams, maxsize):
+        msgs = []
+        for i in range(number_of_dgrams):
+            msg = await self._datagram_server._read_dgram(maxsize)
+            if len(msg) == 0:
+                raise Exception("Could not read {} number of datagrams. Connection closed after {}".format(number_of_dgrams, len(msgs)))
+            msgs.append(msg.decode("utf-8"))
+
+        return msgs
+
+    def get_server(self):
+        return self._datagram_server
+
+
+class FramedStreamReader(object):
+    """RFC6587 message reader for the syslog() driver"""
+    # TODO msg_length = readuntil(' '); msg = readexactly(msg_length)
+    pass
+
+
+# FileIO and this method too operate on partial string matches
+# TODO: LogMessage instances should be used instead, matching the full msg body
+def _list_remove_partially_matching_element(list, elem):
+    for l in list:
+        if l in elem:
+            list.remove(l)
+            return True
+    return False
