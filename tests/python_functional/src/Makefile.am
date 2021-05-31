@@ -4,6 +4,7 @@ EXTRA_DIST += \
 	tests/python_functional/src/common/blocking.py \
 	tests/python_functional/src/common/file.py \
 	tests/python_functional/src/common/__init__.py \
+	tests/python_functional/src/common/network_io.py \
 	tests/python_functional/src/common/network_operations.py \
 	tests/python_functional/src/common/operations.py \
 	tests/python_functional/src/common/pytest_operations.py \
