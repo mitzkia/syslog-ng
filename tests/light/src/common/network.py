@@ -125,3 +125,49 @@ class SingleConnectionUnixStreamServer(SingleConnectionStreamServer):
         server = await asyncio.start_unix_server(self._client_accepted_cb, self._path, ssl=self._ssl)
         await server.start_serving()
         return server
+
+
+class DatagramServer(ABC):
+    def __init__(self):
+        self._event_loop = BackgroundEventLoop()
+        self._sock = None
+
+    @abstractmethod
+    async def start(self):
+        pass
+
+    async def stop(self):
+        if self._sock is not None:
+            self._sock.close()
+            self._sock = None
+
+    async def read_dgram(self, maxsize=65536):
+        return await self._event_loop.loop.sock_recv(self._sock, maxsize)
+
+    async def write_dgram(self, data):
+        raise NotImplementedError
+
+
+class UDPServer(DatagramServer):
+    def __init__(self, port, host=None, ip_protocol_version=socket.AF_INET):
+        super(UDPServer, self).__init__()
+        self._host = '' if host is None else host
+        self._port = port
+        self._family = ip_protocol_version
+
+    async def start(self):
+        self._sock = socket.socket(self._family, socket.SOCK_DGRAM)
+        self._sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        self._sock.setblocking(False)
+        self._sock.bind((self._host, self._port))
+
+
+class UnixDatagramServer(DatagramServer):
+    def __init__(self, path):
+        super(UnixDatagramServer, self).__init__()
+        self._path = path
+
+    async def start(self):
+        self._sock = socket.socket(socket.AF_UNIX, socket.SOCK_DGRAM)
+        self._sock.setblocking(False)
+        self._sock.bind(self._path)
