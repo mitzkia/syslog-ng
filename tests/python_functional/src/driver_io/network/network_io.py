@@ -29,10 +29,12 @@ from enum import IntEnum
 from pathlib2 import Path
 
 import src.testcase_parameters.testcase_parameters as tc_parameters
+from src.common.blocking import DEFAULT_TIMEOUT
 from src.common.file import File
+from src.common.network_io import SingleConnectionTCPServer
+from src.common.network_io import UDPServer
 from src.common.random_id import get_unique_id
 from src.helpers.loggen.loggen import Loggen
-from src.helpers.netcat.netcat import Netcat
 
 
 class NetworkIO():
@@ -41,8 +43,7 @@ class NetworkIO():
         self.__port = port
         self.__transport = transport
         self.__ip_proto_version = NetworkIO.IPProtoVersion.V4 if ip_proto_version is None else ip_proto_version
-        self.__listener = None
-        self.__listener_output_file = None
+        self.__message_reader = None
 
         atexit.register(self.stop_listener)
 
@@ -57,20 +58,19 @@ class NetworkIO():
         Loggen().start(self.__ip, self.__port, read_file=str(loggen_input_file_path), dont_parse=True, permanent=True, rate=rate, **self.__transport.to_loggen_params())
 
     def start_listener(self):
-        self.__listener = Netcat()
-        self.__listener.start(self.__ip, self.__port, l=True, k=True, **self.__transport.to_netcat_params())  # noqa: E741
-        self.__listener_output_file = File(self.__listener.output_path)
-        self.__listener_output_file.open(mode="r")
+        self.__message_reader = self.__transport.construct_reader(self.__port, self.__ip, self.__ip_proto_version)
+        self.__message_reader.get_server().start()
 
     def stop_listener(self):
-        if self.__listener is not None:
-            self.__listener.stop()
+        if self.__message_reader is not None:
+            self.__message_reader.get_server().stop()
+            self.__message_reader = None
 
-    def read_number_of_messages(self, counter):
-        return self.__listener_output_file.wait_for_number_of_lines(counter)
+    def read_number_of_messages(self, counter, timeout=DEFAULT_TIMEOUT):
+        return self.__message_reader.wait_for_number_of_messages(counter, timeout)
 
-    def read_until_messages(self, lines):
-        return self.__listener_output_file.wait_for_lines(lines)
+    def read_until_messages(self, lines, timeout=DEFAULT_TIMEOUT):
+        return self.__message_reader.wait_for_messages(lines, timeout)
 
     class IPProtoVersion(IntEnum):
         V4 = socket.AF_INET
@@ -99,6 +99,16 @@ class NetworkIO():
                 NetworkIO.Transport.UDP: {"u": True},
             }
             return netcat_params_mapping[self]
+
+        def construct_reader(self, port, host=None, ip_proto_version=None):
+            transport_mapping = {
+                NetworkIO.Transport.TCP: SingleLineStreamReader(SingleConnectionTCPServer(port, host, ip_proto_version, ssl=None)),
+                NetworkIO.Transport.UDP: DatagramReader(UDPServer(port, host, ip_proto_version)),
+                # NetworkIO.Transport.TLS: SingleLineMessageReader(SingleConnectionTCPServer(port, host, ip_proto_version, ssl=TODO)),
+                # Framed: FramedStreamReader(SingleConnectionTCPServer())
+                # Frarmed TLS: FramedStreamReader(SingleConnectionTCPServer(ssl=TODO))
+            }
+            return transport_mapping[self]
 
 
 class SingleLineStreamReader(object):
