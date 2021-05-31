@@ -63,10 +63,10 @@ class NetworkIO():
         if self.__listener is not None:
             self.__listener.stop()
 
-    def read_number_of_lines(self, counter):
+    def read_number_of_messages(self, counter):
         return self.__listener_output_file.wait_for_number_of_lines(counter)
 
-    def read_until_lines(self, lines):
+    def read_until_messages(self, lines):
         return self.__listener_output_file.wait_for_lines(lines)
 
     class Transport(Enum):
