@@ -21,8 +21,10 @@
 #
 #############################################################################
 import atexit
+import socket
 from enum import auto
 from enum import Enum
+from enum import IntEnum
 
 from pathlib2 import Path
 
@@ -34,10 +36,11 @@ from src.helpers.netcat.netcat import Netcat
 
 
 class NetworkIO():
-    def __init__(self, ip, port, transport):
+    def __init__(self, ip, port, transport, ip_proto_version=None):
         self.__ip = ip
         self.__port = port
         self.__transport = transport
+        self.__ip_proto_version = NetworkIO.IPProtoVersion.V4 if ip_proto_version is None else ip_proto_version
         self.__listener = None
         self.__listener_output_file = None
 
@@ -68,6 +71,10 @@ class NetworkIO():
 
     def read_until_messages(self, lines):
         return self.__listener_output_file.wait_for_lines(lines)
+
+    class IPProtoVersion(IntEnum):
+        V4 = socket.AF_INET
+        V6 = socket.AF_INET6
 
     class Transport(Enum):
         TCP = auto()
