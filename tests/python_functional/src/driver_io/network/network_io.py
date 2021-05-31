@@ -99,3 +99,92 @@ class NetworkIO():
                 NetworkIO.Transport.UDP: {"u": True},
             }
             return netcat_params_mapping[self]
+
+
+class SingleLineStreamReader(object):
+    def __init__(self, stream_server):
+        self._stream_server = stream_server
+
+    def wait_for_messages(self, lines, timeout):
+        return self._stream_server.get_event_loop().wait_async_result(self._read_until_lines_found(lines), timeout=timeout)
+
+    def wait_for_number_of_messages(self, number_of_lines, timeout):
+        return self._stream_server.get_event_loop().wait_async_result(self._read_number_of_lines(number_of_lines), timeout=timeout)
+
+    def get_server(self):
+        return self._stream_server
+
+    async def _read_until_lines_found(self, lines):
+        read_lines = []
+        lines_to_find = lines.copy()
+
+        while len(lines_to_find) > 0:
+            line = await self._stream_server._readline()
+            if len(line) == 0:
+                raise Exception("Could not find all lines. Remaining lines to find: {} Lines found: {}".format(lines_to_find, read_lines))
+            line = line.decode("utf-8")
+            read_lines.append(line)
+            _list_remove_partially_matching_element(lines_to_find, line)
+        return read_lines
+
+    async def _read_number_of_lines(self, number_of_lines):
+        lines = []
+        for i in range(number_of_lines):
+            line = await self._stream_server._readline()
+            if len(line) == 0:
+                raise Exception("Could not read {} number of lines. Connection closed after {} lines".format(number_of_lines, len(lines)))
+            lines.append(line.decode("utf-8"))
+        return lines
+
+
+class DatagramReader(object):
+    def __init__(self, datagram_server):
+        self._datagram_server = datagram_server
+
+    def wait_for_messages(self, lines, timeout, maxsize=65536):
+        return self._datagram_server.get_event_loop().wait_async_result(self._read_until_dgrams_found(lines, maxsize), timeout=timeout)
+
+    def wait_for_number_of_messages(self, number_of_msgs, timeout, maxsize=65536):
+        return self._datagram_server.get_event_loop().wait_async_result(self._read_number_of_dgrams(number_of_msgs, maxsize), timeout=timeout)
+
+    async def _read_until_dgrams_found(self, dgrams, maxsize):
+        read_dgrams = []
+        dgrams_to_find = dgrams.copy()
+
+        while len(dgrams_to_find) != 0:
+            dgram = await self._datagram_server._read_dgram(maxsize)
+            if len(dgram) == 0:
+                raise Exception("Could not find all datagrams. Remaining dgrams to find: {} Lines found: {}".format(dgrams_to_find, read_dgrams))
+            dgram = dgram.decode("utf-8")
+            read_dgrams.append(dgram)
+            _list_remove_partially_matching_element(dgrams_to_find, dgram)
+        return read_dgrams
+
+    async def _read_number_of_dgrams(self, number_of_dgrams, maxsize):
+        msgs = []
+        for i in range(number_of_dgrams):
+            msg = await self._datagram_server._read_dgram(maxsize)
+            if len(msg) == 0:
+                raise Exception("Could not read {} number of datagrams. Connection closed after {}".format(number_of_dgrams, len(msgs)))
+            msgs.append(msg.decode("utf-8"))
+
+        return msgs
+
+    def get_server(self):
+        return self._datagram_server
+
+
+class FramedStreamReader(object):
+    """RFC6587 message reader for the syslog() driver"""
+    # TODO msg_length = readuntil(' '); msg = readexactly(msg_length)
+    pass
+
+
+# FileIO and this method too operate on partial string matches
+# TODO: LogMessage instances should be used instead, matching the full msg body
+def _list_remove_partially_matching_element(list, elem):
+    for l in list:
+        if l in elem:
+            list.remove(l)
+            return True
+    return False
