@@ -103,7 +103,7 @@ class SyslogNgConfig(object):
         return SetPri(pri, **options)
 
     def create_filter(self, **options):
-        return Filter([], **options)
+        return Filter("", [], **options)
 
     def create_app_parser(self, **options):
         return Parser("app-parser", **options)
