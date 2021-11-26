@@ -41,7 +41,7 @@ def create_throttled_logpath(config, port_allocator, throttle_rate):
     port = port_allocator()
 
     s_network = config.create_network_source(port=port, transport="tcp")
-    f_throttle = Throttle(value="PROGRAM", rate=throttle_rate)
+    f_throttle = Throttle(template="'$PROGRAM'", rate=throttle_rate)
     d_file = config.create_file_destination(file_name="output_{}.log".format(port))
 
     config.create_logpath(statements=[s_network, f_throttle, d_file])
