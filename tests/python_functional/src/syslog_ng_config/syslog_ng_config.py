@@ -39,6 +39,7 @@ from src.syslog_ng_config.statements.sources.example_msg_generator_source import
 from src.syslog_ng_config.statements.sources.file_source import FileSource
 from src.syslog_ng_config.statements.sources.internal_source import InternalSource
 from src.syslog_ng_config.statements.sources.network_source import NetworkSource
+from src.syslog_ng_config.statements.filters.filter import Throttle
 
 logger = logging.getLogger(__name__)
 
@@ -104,6 +105,9 @@ class SyslogNgConfig(object):
 
     def create_filter(self, **options):
         return Filter("", [], **options)
+
+    def create_throttle_filter(self, **options):
+        return Throttle(**options)
 
     def create_app_parser(self, **options):
         return Parser("app-parser", **options)
