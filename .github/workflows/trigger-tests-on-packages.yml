@@ -1,0 +1,17 @@
+name: Trigger tests for APT packages
+
+on:
+  push:
+
+jobs:
+  test-nightly-packages:
+    uses: ./.github/workflows/tests-on-packages.yml
+    with:
+      pkg_type: "nightly"
+      revision_name: "snapshot"
+
+  test-stable-packages:
+    uses: ./.github/workflows/tests-on-packages.yml
+    with:
+      pkg_type: "stable"
+      revision_name: "stable"

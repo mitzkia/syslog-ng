@@ -1,0 +1,65 @@
+name: Run tests on APT packages
+
+on:
+  workflow_call:
+    inputs:
+      pkg_type:
+        required: true
+        type: string
+      revision_name:
+        required: true
+        type: string
+
+jobs:
+  TestPackagesWithLight:
+    strategy:
+      matrix:
+        distro:
+          - "debian:stretch"
+          - "debian:buster"
+          - "debian:bullseye"
+          - "debian:testing"
+          - "debian:sid"
+          - "ubuntu:xenial"
+          - "ubuntu:bionic"
+          - "ubuntu:focal"
+          - "ubuntu:impish"
+      fail-fast: false
+    runs-on: ubuntu-latest
+    container: ${{ matrix.distro }}
+    steps:
+      - name: Add ${{ inputs.pkg_type }} OSE repository and install syslog-ng (for Debian based OS)
+        run: |
+          apt-get update -qq
+          apt-get install -y wget gnupg2 ca-certificates apt-transport-https
+          wget -qO - https://ose-repo.syslog-ng.com/apt/syslog-ng-ose-pub.asc | apt-key add -
+          echo "deb [trusted=yes] https://ose-repo.syslog-ng.com/apt/ ${{ inputs.pkg_type }} $(echo ${{ matrix.distro }} | sed 's/:/-/g')" | tee -a /etc/apt/sources.list.d/syslog-ng-ose.list
+          apt-get update -qq
+          DEBIAN_FRONTEND=noninteractive apt-get install -y syslog-ng
+
+      - name: Get syslog-ng revision
+        run: |
+          syslog-ng -V
+          echo "::set-output name=REVISION::$(syslog-ng -V | grep Revision | cut -d" " -f2)"
+        id: syslog_ng_revision
+
+      - name: Check if revision is snapshot revision
+        if: inputs.revision_name == 'snapshot'
+        run: |
+          echo ${{ steps.syslog_ng_revision.outputs.REVISION }} | grep ${{ inputs.revision_name }}
+
+      - name: Check if revision is stable revision
+        if: inputs.revision_name == 'stable'
+        run: |
+          echo ${{ steps.syslog_ng_revision.outputs.REVISION }} | egrep "^[0-9]{1}.[0-9]{1,2}.[0-9]{1}-[0-9]{1}$"
+
+      - name: Check if installed package version match with install revision
+        run: |
+          echo "Installed revision value: ${{ steps.syslog_ng_revision.outputs.REVISION }}"
+          dpkg -l | grep syslog-ng | while read installed_syslog_ng_package ; do echo $installed_syslog_ng_package | grep ABC ; done
+
+      - name: Check if syslog-ng can start with default config
+        run: |
+          nohup syslog-ng -Fe &
+          sleep 5
+          syslog-ng-ctl stop
