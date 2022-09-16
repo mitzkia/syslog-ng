@@ -34,16 +34,26 @@ from src.syslog_ng_config.statements.destinations.destination_driver import Dest
 class UnixStreamDestination(DestinationDriver):
     def __init__(self, file_name, **options):
         self.driver_name = "unix-stream"
-        self.path = Path(file_name)
+        self.options = options
+        self.set_path(file_name)
 
         self.__server = None
         self.__message_reader = None
 
         atexit.register(self.stop_listener)
-        super(UnixStreamDestination, self).__init__([self.path], options)
+
+    def get_path(self):
+        return self.__path
+
+    def set_path(self, pathname):
+        self.__path = Path(self.__testcase_parameters.get_relative_working_dir(), pathname)
+        self.update_options()
+
+    def update_options(self):
+        super(UnixStreamDestination, self).__init__([self.get_path()], self.options)
 
     def start_listener(self):
-        self.__server = SingleConnectionUnixStreamServer(self.path)
+        self.__server = SingleConnectionUnixStreamServer(self.get_path())
         self.__message_reader = message_readers.SingleLineStreamReader(self.__server)
         BackgroundEventLoop().wait_async_result(self.__server.start(), timeout=DEFAULT_TIMEOUT)
 

@@ -34,3 +34,25 @@ def test_unix_dgram_destination(config, syslog_ng):
     syslog_ng.start(config)
     assert unix_dgram_destination.read_until_logs([message] * counter)
     assert unix_dgram_destination.get_stats()["written"] == counter
+
+
+def test_unix_dgram_destination2(config, syslog_ng):
+    counter = 100
+    message = "message text"
+
+    generator_source = config.create_example_msg_generator_source(num=counter, freq=0.0001, template=config.stringify(message))
+    unix_dgram_destination = config.create_unix_dgram_destination(file_name="output_unix_dgram")
+    config.create_logpath(statements=[generator_source, unix_dgram_destination])
+
+    unix_dgram_destination.start_listener()
+    syslog_ng.start(config)
+    assert unix_dgram_destination.read_until_logs([message] * counter)
+    assert unix_dgram_destination.get_stats()["written"] == counter
+    unix_dgram_destination.stop_listener()
+
+    unix_dgram_destination.set_path("output_unix_dgram2")
+
+    unix_dgram_destination.start_listener()
+    syslog_ng.reload(config)
+    assert unix_dgram_destination.read_until_logs([message] * counter)
+    assert unix_dgram_destination.get_stats()["written"] == counter

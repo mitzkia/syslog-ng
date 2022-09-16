@@ -43,21 +43,33 @@ def create_io(ip, options):
 class NetworkDestination(DestinationDriver):
     def __init__(self, ip, **options):
         self.driver_name = "network"
-        self.ip = ip
-        self.io = create_io(self.ip, options)
-        super(NetworkDestination, self).__init__([self.ip], options)
+        self.options = options
+        self.set_ip(ip)
+
+        self.__io = None
+
+    def get_ip(self):
+        return self.__ip
+
+    def set_ip(self, ip):
+        self.__ip = ip
+        self.update_options()
+
+    def update_options(self):
+        super(NetworkDestination, self).__init__([self.get_ip()], self.options)
 
     def start_listener(self):
-        self.io.start_listener()
+        self.__io = create_io(self.get_ip(), self.options)
+        self.__io.start_listener()
 
     def stop_listener(self):
-        self.io.stop_listener()
+        self.__io.stop_listener()
 
     def read_log(self):
         return self.read_logs(1)[0]
 
     def read_logs(self, counter):
-        return self.io.read_number_of_messages(counter)
+        return self.__io.read_number_of_messages(counter)
 
     def read_until_logs(self, logs):
-        return self.io.read_until_messages(logs)
+        return self.__io.read_until_messages(logs)

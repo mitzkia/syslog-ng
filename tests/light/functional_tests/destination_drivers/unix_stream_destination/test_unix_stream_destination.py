@@ -34,3 +34,25 @@ def test_unix_stream_destination(config, syslog_ng):
     syslog_ng.start(config)
     assert unix_stream_destination.read_until_logs([message] * counter)
     assert unix_stream_destination.get_stats()["written"] == counter
+
+
+def test_unix_stream_destination2(config, syslog_ng):
+    counter = 100
+    message = "message text"
+
+    generator_source = config.create_example_msg_generator_source(num=counter, freq=0.0001, template=config.stringify(message))
+    unix_stream_destination = config.create_unix_stream_destination(file_name="output_unix_stream")
+    config.create_logpath(statements=[generator_source, unix_stream_destination])
+
+    unix_stream_destination.start_listener()
+    syslog_ng.start(config)
+    assert unix_stream_destination.read_until_logs([message] * counter)
+    assert unix_stream_destination.get_stats()["written"] == counter
+    unix_stream_destination.stop_listener()
+
+    unix_stream_destination.set_path("output_unix_stream2")
+
+    unix_stream_destination.start_listener()
+    syslog_ng.reload(config)
+    assert unix_stream_destination.read_until_logs([message] * counter)
+    assert unix_stream_destination.get_stats()["written"] == counter

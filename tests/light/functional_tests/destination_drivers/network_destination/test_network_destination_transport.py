@@ -44,3 +44,26 @@ def test_network_destination_transport(config, syslog_ng, port_allocator, transp
     network_destination.start_listener()
     syslog_ng.start(config)
     assert network_destination.read_until_logs([message] * counter)
+
+
+def test_network_destination_transport2(config, syslog_ng, port_allocator):
+    counter = 100
+    message = "message text"
+
+    generator_source = config.create_example_msg_generator_source(num=counter, freq=0.0001, template=config.stringify(message))
+    network_destination = config.create_network_destination(ip="localhost", port=port_allocator(), transport="tcp")
+    config.create_logpath(statements=[generator_source, network_destination])
+
+    network_destination.start_listener()
+    syslog_ng.start(config)
+    assert network_destination.read_until_logs([message] * counter)
+    network_destination.stop_listener()
+
+    network_destination.set_ip("127.0.0.2")
+    network_destination.options['port'] = port_allocator()
+    network_destination.options['transport'] = "udp"
+    network_destination.start_listener()
+
+    syslog_ng.reload(config)
+    assert network_destination.read_until_logs([message] * counter)
+    assert network_destination.get_stats()["written"] == counter
