@@ -81,8 +81,9 @@ class SyslogNgCli(object):
     def __wait_for_control_socket_alive(self):
         def is_alive(s):
             if not s.is_process_running():
+                process_returncode = self.__process.returncode
                 self.__process = None
-                self.__error_handling("syslog-ng is not running")
+                self.__error_handling("syslog-ng is not running, returncode: {}".format(process_returncode))
             return s.__syslog_ng_ctl.is_control_socket_alive()
         return wait_until_true(is_alive, self)
 

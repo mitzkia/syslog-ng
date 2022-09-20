@@ -41,17 +41,18 @@ def map_transport(transport):
 
 def create_io(options):
     ip = options["ip"] if "ip" in options else "localhost"
+    port = options["port"] if "port" in options else options["localport"]
     transport = options["transport"] if "transport" in options else "tcp"
 
-    return NetworkIO(ip, options["port"], map_transport(transport))
+    return NetworkIO(ip, port, map_transport(transport))
 
 
 class NetworkSource(SourceDriver):
     def __init__(self, **options):
-        self.io = create_io(options)
-
+        self.options = options
         self.driver_name = "network"
-        super(NetworkSource, self).__init__(options=options)
+        super(NetworkSource, self).__init__(options=self.options)
 
     def write_log(self, formatted_content, rate=None):
+        self.io = create_io(self.options)
         self.io.write(formatted_content, rate=rate)
