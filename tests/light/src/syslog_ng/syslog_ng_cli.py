@@ -82,8 +82,8 @@ class SyslogNgCli(object):
         def is_alive(s):
             if not s.is_process_running():
                 process_returncode = self.__process.returncode
-                self.__process = None
-                self.__error_handling("syslog-ng is not running, returncode: {}".format(process_returncode))
+                # self.__process = None
+                self.__error_handling("syslog-ng is not running")
             return s.__syslog_ng_ctl.is_control_socket_alive()
         return wait_until_true(is_alive, self)
 
@@ -157,14 +157,14 @@ class SyslogNgCli(object):
     def __error_handling(self, error_message):
         self.__console_log_reader.dump_stderr()
         self.__handle_core_file()
-        raise Exception(error_message)
+        raise Exception("{}, returncode: {}".format(error_message, self.__process.returncode))
 
     def __handle_core_file(self):
         if not self.is_process_running():
             core_file_found = False
             for core_file in Path(".").glob("*core*"):
                 core_file_found = True
-                self.__process = None
+                # self.__process = None
                 self.__syslog_ng_executor.get_backtrace_from_core(core_file=str(core_file))
                 core_file.replace(Path(core_file))
             if core_file_found:
