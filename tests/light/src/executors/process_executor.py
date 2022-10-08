@@ -43,4 +43,6 @@ class ProcessExecutor(object):
         self.process = psutil.Popen(
             executable_command, stdout=stdout.open(mode="a"), stderr=stderr.open(mode="a"),
         )
+        stdout.close()
+        stderr.close()
         return self.process

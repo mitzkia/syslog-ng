@@ -32,6 +32,10 @@ class ConsoleLogReader(object):
         self.__stderr_path = instance_paths.get_stderr_path()
         self.__stderr_file = File(self.__stderr_path)
 
+    def __del__(self):
+        if self.__stderr_file.is_opened():
+            self.__stderr_file.close()
+
     def wait_for_start_message(self):
         syslog_ng_start_message = ["syslog-ng starting up;"]
         return self.wait_for_messages_in_console_log(syslog_ng_start_message)

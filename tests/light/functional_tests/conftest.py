@@ -22,6 +22,8 @@
 #############################################################################
 import logging
 import os
+import psutil
+import subprocess
 
 import pytest
 from pathlib2 import Path
@@ -61,13 +63,36 @@ def light_extra_files(target_dir):
                 copy_file(f, target_dir)
 
 
+def get_number_of_open_fds_with_lsof():
+    result = subprocess.check_output(["lsof"])
+    return len(result.splitlines())
+    # for item in result.splitlines():
+    #     print("--- %s" % item)
+
+def show_relevant_open_fds_with_lsof():
+    result = subprocess.check_output(["lsof"])
+    for item in result.splitlines():
+        if "light" in str(item):
+            print("--- %s" % item)
+
+
+def get_open_fds_with_psutil():
+    pass
+
 @pytest.fixture(autouse=True)
 def setup(request):
+    print("\n>>> test-setup-start\n")
+    print("\n>>> number of all open fds (setup): %s\n" % get_number_of_open_fds_with_lsof())
     testcase_parameters = request.getfixturevalue("testcase_parameters")
 
     copy_file(testcase_parameters.get_testcase_file(), Path.cwd())
     light_extra_files(Path.cwd())
     request.addfinalizer(lambda: logger.info("Report file path\n{}\n".format(calculate_report_file_path(Path.cwd()))))
+    request.addfinalizer(lambda: print("\n>>> test-teardown\n"))
+    request.addfinalizer(lambda: print("\n>>> number of all open fds (teardown): %s\n" % get_number_of_open_fds_with_lsof()))
+    request.addfinalizer(lambda: print("\n>>> relevant open fds (teardown): %s\n" % show_relevant_open_fds_with_lsof()))
+    print(">>> test-setup-finish\n")
+
 
 
 class PortAllocator():
