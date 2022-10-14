@@ -81,7 +81,7 @@ class SyslogNgCli(object):
     def __wait_for_control_socket_alive(self):
         def is_alive(s):
             if not s.is_process_running():
-                self.__process = None
+                # self.__process = None
                 self.__error_handling("syslog-ng is not running")
             return s.__syslog_ng_ctl.is_control_socket_alive()
         return wait_until_true(is_alive, self)
@@ -149,7 +149,7 @@ class SyslogNgCli(object):
             self.__console_log_reader.check_for_unexpected_messages(unexpected_messages)
             if self.__external_tool == "valgrind":
                 self.__console_log_reader.handle_valgrind_log(self.__instance_paths.get_external_tool_output_path(self.__external_tool))
-            self.__process = None
+            # self.__process = None
             logger.info("syslog-ng process has been stopped with PID: {}\n".format(saved_pid))
 
     # Helper functions

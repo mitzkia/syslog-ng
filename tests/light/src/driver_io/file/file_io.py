@@ -28,6 +28,12 @@ class FileIO():
         self.__readable_file = File(file_path)
         self.__writeable_file = File(file_path)
 
+    def __del__(self):
+        if self.__writeable_file.is_opened():
+            self.__writeable_file.close()
+        if self.__readable_file.is_opened():
+            self.__readable_file.close()
+
     def read_number_of_messages(self, counter):
         if not self.__readable_file.is_opened():
             if not self.__readable_file.wait_for_creation():
