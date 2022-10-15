@@ -105,7 +105,7 @@ class SyslogNgCli(object):
     def start(self, config, stderr, debug, trace, verbose, startup_debug, no_caps, config_path, persist_path, pid_path, control_socket_path):
         self.set_start_parameters(stderr, debug, trace, verbose, startup_debug, no_caps, config_path, persist_path, pid_path, control_socket_path)
         if self.__process:
-            raise Exception("syslog-ng has been already started")
+            raise Exception("syslog-ng has been already starteda")
 
         config.write_config(self.__instance_paths.get_config_path())
 
