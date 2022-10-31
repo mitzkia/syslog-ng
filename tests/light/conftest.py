@@ -107,9 +107,9 @@ def config(request, teardown):
 
 
 @pytest.fixture
-def syslog_ng(request, testcase_parameters):
+def syslog_ng(request, testcase_parameters, teardown):
     tc_parameters.INSTANCE_PATH = SyslogNgPaths(testcase_parameters).set_syslog_ng_paths("server")
-    syslog_ng = SyslogNg(tc_parameters.INSTANCE_PATH, testcase_parameters)
+    syslog_ng = SyslogNg(tc_parameters.INSTANCE_PATH, testcase_parameters, teardown)
     request.addfinalizer(lambda: syslog_ng.stop())
     return syslog_ng
 
