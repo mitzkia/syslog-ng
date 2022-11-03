@@ -55,6 +55,10 @@ class File(object):
         self.path = Path(file_path)
         self.__opened_file = None
 
+    def __del__(self):
+        if self.is_opened():
+            print("TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT: %s" % self.path)
+
     def wait_for_creation(self):
         file_created = wait_until_true(self.path.exists)
         if file_created:
@@ -69,6 +73,7 @@ class File(object):
 
     def close(self):
         if self.is_opened():
+            print("CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC: %s" % self.path)
             self.__opened_file.close()
             self.__opened_file = None
 
@@ -92,6 +97,12 @@ class File(object):
     def write(self, content):
         self.__opened_file.write(content)
         self.__opened_file.flush()
+
+    def write_content_and_close(self, content):
+        if not self.is_opened():
+            self.open(mode="w+")
+        self.write(content)
+        self.close()
 
     def wait_for_lines(self, lines, timeout=DEFAULT_TIMEOUT):
         def find_lines_in_file(lines_to_find, lines_found, f):

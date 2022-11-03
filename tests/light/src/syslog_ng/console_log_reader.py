@@ -31,7 +31,7 @@ class ConsoleLogReader(object):
     def __init__(self, instance_paths, teardown):
         self.__stderr_path = instance_paths.get_stderr_path()
         self.__stderr_file = File(self.__stderr_path)
-        teardown.register(self.__stderr_file.close)
+        self.__teardown = teardown
 
     def wait_for_start_message(self):
         syslog_ng_start_message = ["syslog-ng starting up;"]
@@ -56,6 +56,7 @@ class ConsoleLogReader(object):
         if not self.__stderr_file.is_opened():
             self.__stderr_file.wait_for_creation()
             self.__stderr_file.open("r")
+            self.__teardown.register(self.__stderr_file.close)
         return self.__stderr_file.wait_for_lines(expected_messages, timeout=5)
 
     def check_for_unexpected_messages(self, unexpected_messages=None):
