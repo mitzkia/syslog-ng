@@ -5,7 +5,7 @@ from functional_tests.parametrize_testcases import generate_options_and_values_f
 
 
 @pytest.mark.parametrize("option_and_value", generate_options_and_values_for_driver("destination", "file"), ids=generate_id_name)
-def test_file_source_smoke(config, syslog_ng, bsd_formatter, log_message, option_and_value):
+def test_file_destination_smoke(config, syslog_ng, bsd_formatter, log_message, option_and_value):
 
     config.update_global_options(stats_level=5)
     generator_source = config.create_example_msg_generator_source(num=1, template=config.stringify(bsd_formatter.format_message(log_message)))
