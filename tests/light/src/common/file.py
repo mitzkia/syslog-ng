@@ -55,9 +55,9 @@ class File(object):
         self.path = Path(file_path)
         self.__opened_file = None
 
-    def __del__(self):
-        if self.is_opened():
-            print("TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT: %s" % self.path)
+    # def __del__(self):
+    #     if self.is_opened():
+    #         print("TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT: %s" % self.path)
 
     def wait_for_creation(self):
         file_created = wait_until_true(self.path.exists)
@@ -73,7 +73,7 @@ class File(object):
 
     def close(self):
         if self.is_opened():
-            print("CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC: %s" % self.path)
+            # print("CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC: %s" % self.path)
             self.__opened_file.close()
             self.__opened_file = None
 

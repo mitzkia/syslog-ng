@@ -41,6 +41,7 @@ def generate_options_and_values_for_driver(expected_context, expected_driver):
         'default-priority': "'emerg'",
         'default-severity': "'emerg'",
         "cipher-suite": "ECDHE-RSA-AES256-SHA",
+        "class": "sngexample.DummyPythonDest",
         "client-sigalgs": "'RSA-PSS+SHA256:ed25519'",
         "curve-list": "'secp384r1:prime256v1'",
         "ecdh-curve-list": "'secp384r1:prime256v1'",
@@ -88,6 +89,8 @@ def generate_options_and_values_for_driver(expected_context, expected_driver):
             return ""
         if option_name in option_name_to_value_map:
             return option_name_to_value_map[option_name]
+        if option_name == "":
+            return ""
         else:
             return option_value_type_to_value_map[option_type]
 
@@ -119,6 +122,8 @@ def generate_options_and_values_for_driver(expected_context, expected_driver):
                 result_option_block = build_option_block(block_names, {option_name: get_option_value(option_name, option_type)})
                 options.append(result_option_block)
 
+    print("GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGg")
+    print(options)
     return options
 
 

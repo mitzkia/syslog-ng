@@ -121,7 +121,7 @@ class TeardownRegistry:
         TeardownRegistry.teardown_callbacks.append(teardown_callback)
 
     def execute_teardown_callbacks(self):
-        print("RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRr")
+        # print("RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRr")
         for teardown_callback in TeardownRegistry.teardown_callbacks:
             teardown_callback()
 
