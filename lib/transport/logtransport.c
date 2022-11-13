@@ -27,6 +27,65 @@
 
 #include <unistd.h>
 
+/*
+ * log_transport_read_chunk():
+ *
+ * Reads up to count bytes even if we need multiple read invocations.
+ *   * it attempts to read as many bytes as requested (e.g. count)
+ *
+ *   * if we encounter an error during reading of the input, that error is
+ *     returned, potentially discarding partial data.
+ *
+ *   * if we encounter EOF we return partial data (or EOF it we don't have
+ *     partial data)
+ *
+ *   * if we encounter EAGAIN, we return partial data (e.g.  this is not a
+ *     busy loop)
+ *
+ * Returns: the number of bytes read
+ */
+gssize
+log_transport_read_chunk(LogTransport *self, gpointer buf, gsize count, LogTransportAuxData *aux)
+{
+  gsize bytes_so_far = 0;
+  gssize rc = 1;
+
+  while (bytes_so_far < count)
+    {
+      rc = log_transport_read(self,
+                              (gchar *) buf + bytes_so_far, count - bytes_so_far,
+                              bytes_so_far == 0 ? aux : NULL);
+
+      if (rc < 0)
+        {
+          if (errno == EAGAIN && bytes_so_far == 0)
+            {
+              /* EAGAIN at first read(): return EAGAIN to the caller */
+              return rc;
+            }
+          if (errno != EAGAIN)
+            {
+              /* error, return the error.  We might have some buffered data
+               * already, which is discarded */
+              return rc;
+            }
+          /* we can't read anymore, exit the loop and return the data read so far */
+          break;
+        }
+      else if (rc > 0)
+        {
+          /* some data was read, let's continue and see if it was enough */
+          bytes_so_far += rc;
+        }
+      else if (rc == 0)
+        {
+          /* EOF, we return the data we consumed so far */
+          break;
+        }
+    }
+  return bytes_so_far;
+}
+
 void
 log_transport_free_method(LogTransport *s)
 {
