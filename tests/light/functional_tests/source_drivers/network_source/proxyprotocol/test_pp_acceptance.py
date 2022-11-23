@@ -20,6 +20,9 @@
 # COPYING for details.
 #
 #############################################################################
+import pytest
+
+from src.common.file import copy_shared_file
 
 TEMPLATE = r'"${PROXIED_SRCIP} ${PROXIED_DSTIP} ${PROXIED_SRCPORT} ${PROXIED_DSTPORT} ${PROXIED_IP_VERSION} ${MESSAGE}\n"'
 INPUT_MESSAGES = "PROXY TCP4 1.1.1.1 2.2.2.2 3333 4444\r\n" \
@@ -27,13 +30,31 @@ INPUT_MESSAGES = "PROXY TCP4 1.1.1.1 2.2.2.2 3333 4444\r\n" \
 EXPECTED_MESSAGE0 = "1.1.1.1 2.2.2.2 3333 4444 4 message 0\n"
 
 
-def test_pp_acceptance(config, syslog_ng, loggen, port_allocator):
+@pytest.mark.parametrize(
+    "pp_version", [
+        ("proxy-protocol-v1"),
+        ("proxy-protocol-v2"),
+    ], ids=["pp_v1", "pp_v2"],
+)
+def test_pp_acceptance(config, syslog_ng, loggen, port_allocator, testcase_parameters, pp_version):
     network_source = config.create_network_source(ip="localhost", port=port_allocator(), transport='"proxied-tcp"', flags="no-parse")
     file_destination = config.create_file_destination(file_name="output.log", template=TEMPLATE)
     config.create_logpath(statements=[network_source, file_destination])
 
     syslog_ng.start(config)
 
-    network_source.write_log(INPUT_MESSAGES)
+    if pp_version == "proxy-protocol-v1":
+        network_source.write_log(INPUT_MESSAGES)
+    else:
+        copy_shared_file(testcase_parameters, "proxy_protocol_v2_input/message0_input")
+        loggen.start(
+            target=network_source.options["ip"],
+            port=network_source.options["port"],
+            inet=True,
+            stream=True,
+            dont_parse=True,
+            permanent=True,
+            read_file="message0_input",
+        )
 
     assert file_destination.read_log() == EXPECTED_MESSAGE0
