@@ -20,12 +20,20 @@
 # COPYING for details.
 #
 #############################################################################
+import pytest
+
 from src.common.blocking import wait_until_true
 
 NUMBER_OF_MESSAGES = 10
 
 
-def test_pp_with_simple_tcp_connection(config, port_allocator, syslog_ng, loggen):
+@pytest.mark.parametrize(
+    "pp_version", [
+        ("proxy-protocol-v1"),
+        ("proxy-protocol-v2"),
+    ], ids=["pp_v1", "pp_v2"],
+)
+def test_pp_with_simple_tcp_connection(config, port_allocator, syslog_ng, loggen, testcase_parameters, pp_version):
     network_source = config.create_network_source(ip="localhost", port=port_allocator(), transport="proxied-tcp")
     file_destination = config.create_file_destination(file_name="output.log")
     config.create_logpath(statements=[network_source, file_destination])

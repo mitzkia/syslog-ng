@@ -46,7 +46,7 @@ def test_pp_acceptance(config, syslog_ng, loggen, port_allocator, testcase_param
     if pp_version == "proxy-protocol-v1":
         network_source.write_log(INPUT_MESSAGES)
     else:
-        copy_shared_file(testcase_parameters, "proxy_protocol_v2_input/message0_input")
+        loggen_input_file_path = copy_shared_file(testcase_parameters, "proxy_protocol_v2_input/message0_input")
         loggen.start(
             target=network_source.options["ip"],
             port=network_source.options["port"],
@@ -54,7 +54,7 @@ def test_pp_acceptance(config, syslog_ng, loggen, port_allocator, testcase_param
             stream=True,
             dont_parse=True,
             permanent=True,
-            read_file="message0_input",
+            read_file=loggen_input_file_path,
         )
 
     assert file_destination.read_log() == EXPECTED_MESSAGE0

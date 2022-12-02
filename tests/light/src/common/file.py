@@ -21,6 +21,7 @@
 #
 #############################################################################
 import logging
+import os
 import shutil
 from pathlib import Path
 
@@ -42,7 +43,7 @@ def copy_file(src_file_path, dst_dir):
 def copy_shared_file(testcase_parameters, shared_file_name):
     shared_dir = testcase_parameters.get_shared_dir()
     copy_file(Path(shared_dir, shared_file_name), Path.cwd())
-    return Path(Path.cwd(), shared_file_name)
+    return Path(Path.cwd(), os.path.basename(shared_file_name))
 
 
 def delete_session_file(shared_file_name):

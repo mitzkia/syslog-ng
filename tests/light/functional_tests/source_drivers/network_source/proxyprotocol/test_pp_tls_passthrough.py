@@ -22,6 +22,8 @@
 #############################################################################
 from pathlib import Path
 
+import pytest
+
 from src.common.blocking import wait_until_true
 from src.common.file import copy_shared_file
 from src.common.file import File
@@ -33,7 +35,13 @@ EXPECTED_MESSAGES = "1.1.1.1 2.2.2.2 3333 4444 4 message 0\n"
 NUMBER_OF_MESSAGES = 1
 
 
-def test_pp_tls_passthrough(config, syslog_ng, port_allocator, loggen, testcase_parameters):
+@pytest.mark.parametrize(
+    "pp_version", [
+        ("proxy-protocol-v1"),
+        ("proxy-protocol-v2"),
+    ], ids=["pp_v1", "pp_v2"],
+)
+def test_pp_tls_passthrough(config, syslog_ng, port_allocator, loggen, testcase_parameters, pp_version):
     server_key_path = copy_shared_file(testcase_parameters, "server.key")
     server_cert_path = copy_shared_file(testcase_parameters, "server.crt")
 
@@ -54,16 +62,36 @@ def test_pp_tls_passthrough(config, syslog_ng, port_allocator, loggen, testcase_
 
     syslog_ng.start(config)
 
-    loggen_input_file_path = Path("loggen_input_{}.txt".format(get_unique_id()))
-    loggen_input_file = File(loggen_input_file_path)
-    loggen_input_file.write_content_and_close(INPUT_MESSAGES)
+    if pp_version == "proxy-protocol-v1":
+        loggen_input_file_path = Path("loggen_input_{}.txt".format(get_unique_id()))
+        loggen_input_file = File(loggen_input_file_path)
+        loggen_input_file.open(mode="w")
+        loggen_input_file.write(INPUT_MESSAGES)
+        loggen_input_file.close()
 
-    loggen.start(
-        network_source.options["ip"], network_source.options["port"], number=NUMBER_OF_MESSAGES,
-        use_ssl=True, proxied_tls_passthrough=True, read_file=str(loggen_input_file_path),
-        dont_parse=True, proxy_src_ip="1.1.1.1", proxy_dst_ip="2.2.2.2", proxy_src_port="3333",
-        proxy_dst_port="4444",
-    )
+        loggen.start(
+            network_source.options["ip"], network_source.options["port"], number=NUMBER_OF_MESSAGES,
+            use_ssl=True, proxied_tls_passthrough=True, read_file=str(loggen_input_file_path),
+            dont_parse=True, proxy_src_ip="1.1.1.1", proxy_dst_ip="2.2.2.2", proxy_src_port="3333",
+            proxy_dst_port="4444",
+        )
+    else:
+        loggen_input_file_path = copy_shared_file(testcase_parameters, "proxy_protocol_v2_input/message0_input")
+        loggen.start(
+            network_source.options["ip"], network_source.options["port"], number=NUMBER_OF_MESSAGES,
+            use_ssl=True, proxied_tls_passthrough=True, read_file=str(loggen_input_file_path),
+            dont_parse=True, debug=True,
+        )
+        # loggen.start(
+        #     target=network_source.options["ip"],
+        #     port=network_source.options["port"],
+        #     inet=True,
+        #     stream=True,
+        #     dont_parse=True,
+        #     use_ssl=True,
+        #     proxied_tls_passthrough=True,
+        #     read_file=loggen_input_file_path,
+        # )
 
     wait_until_true(lambda: loggen.get_sent_message_count() == NUMBER_OF_MESSAGES)
     assert file_destination.read_log() == EXPECTED_MESSAGES
