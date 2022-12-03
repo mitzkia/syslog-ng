@@ -88,8 +88,8 @@ class Loggen(object):
         if syslog_proto is True:
             start_parameters.append("--syslog-proto")
 
-        if proxied is True:
-            start_parameters.append("--proxied")
+        if proxied is not None:
+            start_parameters.append("--proxied={}".format(proxied))
 
         if proxy_src_ip is not None:
             start_parameters.append("--proxy-src-ip={}".format(proxy_src_ip))
