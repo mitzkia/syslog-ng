@@ -1,5 +1,6 @@
 import pytest
 
+from src.common.blocking import wait_until_true
 from src.common.file import copy_shared_file
 
 
@@ -56,13 +57,13 @@ def set_loggen_parameter(pp_type, loggen_input_method, testcase_parameters):
 
 
 @pytest.mark.parametrize("pp_version", [1, 2])
-# @pytest.mark.parametrize("pp_version", [1])
+# @pytest.mark.parametrize("pp_version", [2])
 @pytest.mark.parametrize("pp_type", ["non_tls", "tls"])
-# @pytest.mark.parametrize("pp_type", ["non_tls"])
+# @pytest.mark.parametrize("pp_type", ["tls"])
 @pytest.mark.parametrize("loggen_input_method", ["native", "file"])
-# @pytest.mark.parametrize("loggen_input_method", ["native"])
+# @pytest.mark.parametrize("loggen_input_method", ["file"])
 # @pytest.mark.parametrize("loggen_message_counter", [1, 2, 5, 10])
-@pytest.mark.parametrize("loggen_message_counter", [2])
+@pytest.mark.parametrize("loggen_message_counter", [10])
 def test_pp_acceptance(config, syslog_ng, loggen, port_allocator, testcase_parameters, pp_version, pp_type, loggen_input_method, loggen_message_counter):
     config.update_global_options(stats_level=1)
     network_source = configure_network_source(config, port_allocator, testcase_parameters, pp_type)
@@ -73,14 +74,37 @@ def test_pp_acceptance(config, syslog_ng, loggen, port_allocator, testcase_param
     syslog_ng.start(config)
 
     loggen_custom_options = set_loggen_parameter(pp_type, loggen_input_method, testcase_parameters)
+    m_number = 10000
     loggen.start(
         debug=True,
         target=network_source.options["ip"],
         port=network_source.options["port"],
         proxied=pp_version,
-        number=loggen_message_counter,
+        rate=m_number,
+        interval=10,
+        size=5000,
         **loggen_custom_options,
     )
+    import time
+    for i in range(1, 20):
+        syslog_ng.reload(config)
+        # time.sleep(0.5)
+        print(network_source.get_stats())
+        print(file_destination.get_stats())
 
-    output_log = file_destination.read_logs(counter=loggen_message_counter - 1)
-    print("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA: input msg num: %s vs written: %s vs arrived lines: %s" % (loggen_message_counter, file_destination.get_stats()["written"], len(output_log)))
+    time.sleep(6)
+    wait_until_true(lambda: loggen.get_sent_message_count() == m_number - 1)
+    # wait_until_true(lambda: file_destination.get_stats()["written"] == m_number-1)
+    # syslog_ng.reload(config)
+
+    for i in range(1, 20):
+        syslog_ng.reload(config)
+        # time.sleep(0.5)
+        print(network_source.get_stats())
+        print(file_destination.get_stats())
+
+    print(network_source.get_stats())
+    print(file_destination.get_stats())
+
+    # output_log = file_destination.read_logs(counter=loggen_message_counter - 1)
+    # print("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA: input msg num: %s vs written: %s vs arrived lines: %s" % (loggen_message_counter, file_destination.get_stats()["written"], len(output_log)))

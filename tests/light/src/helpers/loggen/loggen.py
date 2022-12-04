@@ -201,4 +201,6 @@ class Loggen(object):
             return 0
         index_end = content.find(end_pattern, index_start)
 
+        print(content)
+        print(int(content[index_start:index_end]))
         return int(content[index_start:index_end])
